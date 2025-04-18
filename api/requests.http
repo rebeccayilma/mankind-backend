@@ -1,0 +1,18 @@
+### GET request to get product by ID
+@id =1
+GET http://localhost:8080/api/v1/products/{{id}}
+
+###
+
+### Post request to Register Product
+POST http://localhost:8080/api/v1/products/add
+Content-Type: application/json
+
+{
+  "name": "Sample product",
+  "brand": "Sample product brand",
+  "category": "Product Category",
+  "specifications": "Product specifications",
+  "price": 12.98,
+  "imageUrl": "url"
+}
