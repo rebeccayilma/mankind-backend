@@ -1,12 +1,9 @@
 package com.mankind.matrix_product_service.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class ProductDTO {
-    private Long id;
     private String name;
     private String brand;
     private String category;
