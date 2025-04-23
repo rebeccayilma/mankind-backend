@@ -1,6 +1,8 @@
 ### GET request to get product by ID
 @id =1
 GET http://localhost:8080/api/v1/products/{{id}}
+Accept: application/json
+
 
 ###
 
@@ -9,10 +11,11 @@ POST http://localhost:8080/api/v1/products/add
 Content-Type: application/json
 
 {
-  "name": "Sample product",
-  "brand": "Sample product brand",
-  "category": "Product Category",
-  "specifications": "Product specifications",
-  "price": 12.98,
-  "imageUrl": "url"
+  "name": "NeuraX AI Processor",
+  "brand": "NeuraTech",
+  "category": "Processor",
+  "specifications": "Cores: 64, Clock Speed: 3.2GHz, AI Boost Engine v2",
+  "price": 1799.00,
+  "imageUrl": "https://example.com/images/neurax.jpg",
+  "availability": true
 }
