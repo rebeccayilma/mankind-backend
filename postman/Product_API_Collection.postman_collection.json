@@ -16,19 +16,12 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"name\": \"Sample Product\",\n  \"description\": \"This is a test product\",\n  \"price\": 19.99,\n  \"category\": \"electronics\"\n}"
+          "raw": "{\n  \"name\": \"QuantumCompute Z1\",\n  \"brand\": \"Quantix\",\n  \"category\": \"Quantum Processor\",\n  \"specifications\": \"Qubits: 256, Coherence Time: 150us, Quantum Volume: 128\",\n  \"price\": 9999.99,\n  \"imageUrl\": \"https://example.com/images/quantum.jpg\",\n  \"availability\": true\n}"
         },
         "url": {
-          "raw": "{{base_url}}/api/v1/products/add",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "products",
-            "add"
-          ]
+          "raw": "{{base_url}}/api/v1/products",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "products"]
         }
       },
       "response": [],
@@ -59,15 +52,8 @@
         "header": [],
         "url": {
           "raw": "{{base_url}}/api/v1/products/{{product_id}}",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "products",
-            "{{product_id}}"
-          ]
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "products", "{{product_id}}"]
         }
       },
       "response": [],
@@ -89,6 +75,34 @@
           }
         }
       ]
+    },
+    {
+      "name": "Get All Products (Paginated)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/products?page=0&size=10",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "products"],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "response": []
     }
   ]
 }
