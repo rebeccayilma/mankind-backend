@@ -42,4 +42,9 @@ public class ProductService {
         product.setUpdateTime(LocalDateTime.now());
         return productMapper.toDto(productRepository.save(product));
     }
+
+    public Page<ProductDTO> getProductByCategory(String category, Pageable pageable) {
+        Page<Product> product = productRepository.findByCategoryIgnoreCase(category, pageable);
+        return product.map(productMapper::toDto);
+    }
 }

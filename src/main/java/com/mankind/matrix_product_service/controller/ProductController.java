@@ -39,4 +39,9 @@ public class ProductController {
     public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(productDTO));
     }
+
+    @GetMapping(value = "/category/{category}")
+    public ResponseEntity<Page<ProductDTO>> getProductByCategory(@PathVariable  String category, Pageable pageable) {
+        return ResponseEntity.ok(productService.getProductByCategory(category,pageable));
+    }
 }
