@@ -49,5 +49,9 @@ Use browser or  Postman to test:
 GET http://localhost:8080/api/v1/products/1
 Accept: application/json
 ```
+```http
+GET http://localhost:8080/api/v1/products/category/{category}
+Accept: application/json
+```
 
 
