@@ -7,8 +7,11 @@ Accept: application/json
 GET http://localhost:8080/api/v1/products/{{id}}
 Accept: application/json
 
+### GET request to get all products
+@category = Processor
+GET http://localhost:8080/api/v1/products/category/{{category}}
+Accept: application/json
 
-###
 
 ### Post request to Register Product
 POST http://localhost:8080/api/v1/products
