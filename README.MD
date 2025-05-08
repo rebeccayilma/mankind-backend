@@ -135,18 +135,6 @@ mysqladmin -u root -p ping
 mysql -u root -p < scripts/setup.sql
 ```
 
-**Step 2**: Create the product table
-
-```bash
-mysql -u root -p < scripts/create_table.sql
-```
-
-**Step 3**: Load sample product data
-
-```bash
-mysql -u root -p mankind_matrix_db < scripts/sample_product_insert.sql
-```
-
 #### 3. Run the Application
 
 ```bash
@@ -155,6 +143,12 @@ mysql -u root -p mankind_matrix_db < scripts/sample_product_insert.sql
 
 Or using your IDE:
 - Open the project and run `ProductServiceApplication.java`
+
+**Optional Step**: Load sample product data
+
+```bash
+mysql -u root -p mankind_matrix_db < scripts/sample_product_insert.sql
+```
 
 ### Testing the API
 
