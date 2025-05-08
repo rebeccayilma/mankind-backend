@@ -1,0 +1,26 @@
+### Create User
+POST http://localhost:8081/api/v1/users
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "sample",
+  "email": "test@example.com",
+  "firstName": "Someone",
+  "lastName": "SomeoneElse",
+  "password": "secret123",
+  "role": "USER",
+  "active": true
+}
+
+###
+
+### Get User by ID
+GET http://localhost:8081/api/v1/users/1
+Accept: application/json
+
+###
+
+### Get All Users
+GET http://localhost:8081/api/v1/users
+Accept: application/json
