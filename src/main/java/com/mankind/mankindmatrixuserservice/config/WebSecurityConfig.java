@@ -16,7 +16,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll()
                 )
-                .csrf(csrf -> csrf.disable()); // ✅ CSRF disabled using the new API
+                .csrf(csrf -> csrf.disable());
 
         return http.build();
     }

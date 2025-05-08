@@ -19,10 +19,10 @@
           "raw": "{\n  \"username\": \"rebecca\",\n  \"email\": \"rebecca@example.com\",\n  \"firstName\": \"Rebecca\",\n  \"lastName\": \"Yil\",\n  \"password\": \"secret123\",\n  \"role\": \"USER\",\n  \"active\": true\n}"
         },
         "url": {
-          "raw": "http://localhost:8080/api/v1/users",
+          "raw": "http://localhost:8081/api/v1/users",
           "protocol": "http",
           "host": ["localhost"],
-          "port": "8080",
+          "port": "8081",
           "path": ["api", "v1", "users"]
         }
       }
@@ -33,10 +33,10 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:8080/api/v1/users/1",
+          "raw": "http://localhost:8081/api/v1/users/1",
           "protocol": "http",
           "host": ["localhost"],
-          "port": "8080",
+          "port": "8081",
           "path": ["api", "v1", "users", "1"]
         }
       }
@@ -47,10 +47,10 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:8080/api/v1/users",
+          "raw": "http://localhost:8081/api/v1/users",
           "protocol": "http",
           "host": ["localhost"],
-          "port": "8080",
+          "port": "8081",
           "path": ["api", "v1", "users"]
         }
       }
