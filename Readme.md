@@ -56,7 +56,32 @@ Or from your IDE:
 
 Use Postman or your browser (for GETs):
 
+#### ✅ Register a User
 
+```http
+POST http://localhost:8081/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "username": "jane_doe",
+  "email": "jane@example.com",
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "password": "password123"
+}
+```
+
+#### ✅ Login User
+
+```http
+POST http://localhost:8081/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "username": "jane_doe",
+  "password": "password123"
+}
+```
 
 #### ✅ Get All Users
 
