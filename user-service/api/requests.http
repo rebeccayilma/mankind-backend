@@ -41,3 +41,32 @@ Authorization: Bearer {{token}}
 GET http://localhost:8081/api/v1/users
 Accept: application/json
 Authorization: Bearer {{token}}
+
+
+###
+
+### Update User
+PUT http://localhost:8081/api/v1/users/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{token}}
+
+{
+  "firstName": "UpdatedFirstName",
+  "lastName": "UpdatedLastName",
+  "email": "updated.email@example.com"
+}
+
+### Test Update User with Invalid Fields (should be ignored)
+PUT http://localhost:8081/api/v1/users/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1wbGVVc2VyIiwiaWF0IjoxNzQ3MTkxNTM4LCJleHAiOjE3NDcyNzc5Mzh9.U3EKjp9Y6H4cE2kv_SWXi8_vVffwn1apKqYHw-fJNRE
+
+{
+  "firstName": "Arjun",
+  "lastName": "Sura",
+  "email": "arjun.email@example.com",
+  "profilePictureUrl": "N/A"
+
+}
