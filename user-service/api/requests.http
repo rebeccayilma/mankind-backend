@@ -1,0 +1,43 @@
+##replace Token value after each login
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1wbGVVc2VyIiwiaWF0IjoxNzQ3MDU4NDY0LCJleHAiOjE3NDcxNDQ4NjR9.5w8X3eDOWTVc_N9kDMCFASjhqwJTrw0C8aCMh0PwG2c
+### Create User
+
+POST http://localhost:8081/api/v1/auth/register
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "sampleUser",
+  "email": "sampleUser@email.com",
+  "firstName": "sampleUser",
+  "lastName": "SomeoneElse",
+  "password": "secret1234",
+  "role": "USER",
+  "active": true
+}
+
+### Login
+## get auth token
+
+POST http://localhost:8081/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "username": "sampleUser",
+  "password": "secret1234"
+}
+
+
+###
+
+### Get User by ID
+GET http://localhost:8081/api/v1/users/1
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Get All Users
+GET http://localhost:8081/api/v1/users
+Accept: application/json
+Authorization: Bearer {{token}}
