@@ -1,4 +1,4 @@
-# Mankind Matrix AI Backend Monorepo
+# Mankind Matrix AI Backend
 
 This repository contains the backend microservices for the **Mankind Matrix AI** platform.
 
