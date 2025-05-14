@@ -1,5 +1,6 @@
 package com.mankind.mankindmatrixuserservice.controller;
 
+import com.mankind.mankindmatrixuserservice.dto.UpdateUserDTO;
 import com.mankind.mankindmatrixuserservice.dto.UserDTO;
 import com.mankind.mankindmatrixuserservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,6 @@ public class UserController {
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
-
 
     @PutMapping("/{id}")
     public ResponseEntity<UpdateUserDTO> updateUser(@PathVariable Long id, @RequestBody UpdateUserDTO updateUserDTO) {
