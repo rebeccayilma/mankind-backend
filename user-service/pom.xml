@@ -3,16 +3,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.5</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <groupId>com.mankind</groupId>
+        <artifactId>mankind-backend</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
-    <groupId>com.mankind</groupId>
-    <artifactId>MankindMatrixUserService</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>MankindMatrixUserService</name>
-    <description>MankindMatrixUserService</description>
+    <artifactId>user-service</artifactId>
+    <name>user-service</name>
+    <description>User microservice for Mankind Matrix</description>
     <url/>
     <licenses>
         <license/>
@@ -27,7 +25,6 @@
         <url/>
     </scm>
     <properties>
-        <java.version>17</java.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
     </properties>
     <dependencies>
