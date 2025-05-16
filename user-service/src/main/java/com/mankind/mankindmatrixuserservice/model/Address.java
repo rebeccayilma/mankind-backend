@@ -27,32 +27,33 @@ public class Address {
     private User user;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "address_type", nullable = false)
+    @Column(nullable = false)
     private AddressType addressType;
 
-    @Column(name = "is_default", nullable = false)
+    @Column(nullable = false)
     private Boolean isDefault = false;
 
-    @Column(name = "street_address", nullable = false)
+    @Column(nullable = false)
     private String streetAddress;
 
     @Column(nullable = false)
     private String city;
 
+    @Column(nullable = false)
     private String state;
 
-    @Column(name = "postal_code", nullable = false)
+    @Column(nullable = false)
     private String postalCode;
 
     @Column(nullable = false)
     private String country;
 
     @CreatedDate
-    @Column(name = "created_at", updatable = false, nullable = false)
+    @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(name = "updated_at")
+    @Column()
     private LocalDateTime updatedAt;
 
     public enum AddressType {
