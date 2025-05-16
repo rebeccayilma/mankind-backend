@@ -1,10 +1,10 @@
 # Mankind Matrix Product Service
 
-A microservice for managing products, using MySQL as the database.
+A microservice for managing products with MySQL database integration.
 
 ## Overview
 
-This service provides REST API endpoints to manage product data with full CRUD operations.
+This service provides REST API endpoints for complete product data management, supporting full CRUD (Create, Read, Update, Delete) operations.
 
 ## Setup Guide
 
@@ -12,7 +12,7 @@ This service provides REST API endpoints to manage product data with full CRUD o
 
 - **Java**: JDK 17
 - **MySQL**: 8.0 or newer
-- **Git**: For cloning the repository
+- **Git**: For version control and repository cloning
 
 ### Installation Steps
 
@@ -21,14 +21,18 @@ This service provides REST API endpoints to manage product data with full CRUD o
 <details>
 <summary><b>macOS</b></summary>
 
+1. Install Homebrew (if not already installed)
 ```bash
-# Install Homebrew (if not installed)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
 
-# Install with Homebrew
+2. Install Java using Homebrew
+```bash
 brew install openjdk@17
+```
 
-# Link Java
+3. Create Java symlink
+```bash
 sudo ln -sfn $(brew --prefix)/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-17.jdk
 ```
 </details>
@@ -38,14 +42,19 @@ sudo ln -sfn $(brew --prefix)/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/J
 
 1. Download OpenJDK 17 from [Adoptium](https://adoptium.net/)
 2. Run the installer
-3. Add to PATH: Set JAVA_HOME in Environment Variables
+3. Configure environment: Set JAVA_HOME in System Environment Variables
 </details>
 
 <details>
 <summary><b>Linux (Ubuntu/Debian)</b></summary>
 
+1. Update system packages
 ```bash
 sudo apt update
+```
+
+2. Install Java JDK
+```bash
 sudo apt install openjdk-17-jdk
 ```
 </details>
@@ -55,16 +64,14 @@ sudo apt install openjdk-17-jdk
 <details>
 <summary><b>macOS</b></summary>
 
+1. Install MySQL using Homebrew
 ```bash
-# Install MySQL
 brew install mysql
+```
 
-# Start MySQL service
+2. Start MySQL service
+```bash
 brew services start mysql
-
-# Secure the installation
-mysql_secure_installation
-
 ```
 </details>
 
@@ -72,122 +79,92 @@ mysql_secure_installation
 <summary><b>Windows</b></summary>
 
 1. Download MySQL Installer from [MySQL Website](https://dev.mysql.com/downloads/installer/)
-2. Select "Server only" or "Custom" installation
-3. Complete the setup wizard (note your root password)
+2. Choose "Server only" or "Custom" installation type
+3. Follow the setup wizard (remember to note your root password)
 </details>
 
 <details>
 <summary><b>Linux (Ubuntu/Debian)</b></summary>
 
+Install MySQL Server:
 ```bash
-sudo apt update
 sudo apt install mysql-server
-sudo mysql_secure_installation
 ```
 </details>
 
-#### 3. Verify Installations
+#### 3. Verify Installation
+
+<details>
+<summary>Check installed versions</summary>
 
 ```bash
-# Check Java version (should show version 17.x)
+# Verify Java version (should display version 17.x)
 java --version
 
-# Check MySQL version
+# Verify MySQL version
 mysql --version
-
-# Check if MySQL is running
-brew services list | grep mysql
-
-# Stop MySQL service
-brew services stop mysql
-
-# Restart MySQL service
-brew services restart mysql
 ```
+</details>
 
-### Project Setup
+## Project Setup
 
-#### 1. Clone the Repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/rebeccayilma/Mankind_Matrix_Product_Service.git
-cd Mankind_Matrix_Product_Service
 ```
 
-#### 2. Database Setup
+### 2. Configure Environment
 
-Ensure MySQL is running on:
-- **Host:** `localhost`
-- **Port:** `3306`
+1. Copy the example environment file:
+   ```bash
+   cp .env.example .env
+   ```
 
-To verify MySQL is running on the correct host and port:
-```bash
-# Check if MySQL is running
-mysql -u root -p -e "SELECT @@hostname AS 'Host', @@port AS 'Port';"
+### 3. Database Configuration
 
-# Alternative command to check MySQL status
-mysqladmin -u root -p ping
+If you haven't set up the database yet, please follow the [Database Setup Guide](scripts/README.MD).
+
+Update the `.env` file with your database connection details:
+
+```properties
+# Database Configuration
+DB_HOST=mankind-matrix-db.cd0qkick6gy2.us-west-1.rds.amazonaws.com
+DB_PORT=3306
+DB_NAME=mankind_matrix_db
+DB_USERNAME=matrix_user
+DB_PASSWORD=matrix_pass
+
+# Database Connection Properties
+DB_CONNECT_TIMEOUT=60000
+DB_SOCKET_TIMEOUT=60000
+DB_USE_SSL=false
+DB_ALLOW_PUBLIC_KEY_RETRIEVAL=true
+DB_SERVER_TIMEZONE=UTC
+DB_AUTO_RECONNECT=true
+DB_FAIL_OVER_READ_ONLY=false
+
+# Hikari Connection Pool Settings
+DB_HIKARI_MAX_POOL_SIZE=10
+DB_HIKARI_MIN_IDLE=5
+DB_HIKARI_CONNECTION_TIMEOUT=60000
+DB_HIKARI_IDLE_TIMEOUT=300000
+DB_HIKARI_MAX_LIFETIME=1200000
 ```
 
-**Step 1**: Create the database and user
+### 4. Start the Application
 
-```bash
-mysql -u root -p < scripts/setup.sql
-```
-
-#### 3. Run the Application
+Run the following command to start the service:
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-Or using your IDE:
-- Open the project and run `ProductServiceApplication.java`
+### 5. Access the API
 
-**Optional Step**: Load sample product data
-
-```bash
-mysql -u root -p mankind_matrix_db < scripts/sample_product_insert.sql
-```
-
-### Testing the API
-
-The service will be available at `http://localhost:8080`
-
-#### Available Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/v1/products/{id}` | GET | Get product by ID |
-| `/api/v1/products/category/{category}` | GET | Get products by category |
-
-#### Sample Request
-
-Using cURL:
-
-```bash
-curl -X GET http://localhost:8080/api/v1/products/1 -H "Accept: application/json"
-```
-
-Using Postman:
-1. Create a new GET request
-2. Enter URL: `http://localhost:8080/api/v1/products/1`
-3. Add header: `Accept: application/json`
-4. Click Send
-
-## Troubleshooting
-
-### Common Issues
-
-1. **MySQL Connection Failure**
-   - Verify MySQL is running: `brew services list | grep mysql` (macOS) or `systemctl status mysql` (Linux)
-   - Check credentials in application properties
-
-2. **Java Version Mismatch**
-   - Ensure you're using JDK 17: `java --version`
-
-3. **Port Already in Use**
-   - Change the port in `application.properties` if port 8080 is occupied
+The service will be available at:
+- API Endpoint: `http://localhost:8080`
+- API Documentation: `http://localhost:8080/swagger-ui/index.html`
 
 ## Additional Resources
 
