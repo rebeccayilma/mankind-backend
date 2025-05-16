@@ -1,5 +1,6 @@
 ##replace Token value after each login
 @token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1wbGVVc2VyIiwiaWF0IjoxNzQ3MDU4NDY0LCJleHAiOjE3NDcxNDQ4NjR9.5w8X3eDOWTVc_N9kDMCFASjhqwJTrw0C8aCMh0PwG2c
+@userId = 1
 ### Create User
 
 POST http://localhost:8081/api/v1/auth/register
@@ -70,3 +71,57 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1wbGVVc2VyIiwiaWF0IjoxN
   "profilePictureUrl": "N/A"
 
 }
+
+### Get User Addresses
+GET http://localhost:8081/api/v1/users/{{userId}}/addresses
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Get User Address by ID
+GET http://localhost:8081/api/v1/users/{{userId}}/addresses/1
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Create Address
+POST http://localhost:8081/api/v1/users/{{userId}}/addresses
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{token}}
+
+{
+  "addressType": "shipping",
+  "isDefault": true,
+  "streetAddress": "123 Main St",
+  "city": "New York",
+  "state": "NY",
+  "postalCode": "10001",
+  "country": "USA"
+}
+
+###
+
+### Update Address
+PUT http://localhost:8081/api/v1/users/{{userId}}/addresses/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{token}}
+
+{
+  "addressType": "billing",
+  "isDefault": true,
+  "streetAddress": "456 Park Ave",
+  "city": "New York",
+  "state": "NY",
+  "postalCode": "10022",
+  "country": "USA"
+}
+
+###
+
+### Delete Address
+DELETE http://localhost:8081/api/v1/users/{{userId}}/addresses/1
+Authorization: Bearer {{token}}
