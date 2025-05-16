@@ -52,6 +52,9 @@ public class User {
     @Column(nullable = false)
     private boolean active = true;
 
+    @Column
+    private String profilePictureUrl;
+
     @CreatedDate
     @Column(updatable = false, nullable = false)
     private LocalDateTime createTime;
