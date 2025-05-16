@@ -36,13 +36,16 @@ public class JwtService {
     }
 
     public String extractUsername(String token) {
-
-        return Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+        try {
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getSubject();
+        } catch (Exception e) {
+            throw new RuntimeException("Error extracting username from token", e);
+        }
     }
 
     public String extractTokenFromRequest(HttpServletRequest request) {
@@ -54,9 +57,22 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        String username = extractUsername(token);
-        return username.equals(userDetails.getUsername());
+        try {
+            String username = extractUsername(token);
+
+            // Check if token is expired
+            Date expiration = Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getExpiration();
+
+            boolean isExpired = expiration.before(new Date());
+
+            return username.equals(userDetails.getUsername()) && !isExpired;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
-
-

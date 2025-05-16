@@ -15,3 +15,14 @@ logging:
     org.springframework.security: DEBUG
 jwt:
   secret: a-sample-long-secret-key-that-is-over-32-characters
+
+# Swagger/OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    tryItOutEnabled: true
+  packages-to-scan: com.mankind.mankindmatrixuserservice.controller
