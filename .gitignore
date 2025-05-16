@@ -4,9 +4,6 @@
 # Log files
 *.log
 
-# Environment variables
-.env
-
 # Maven
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -32,3 +29,8 @@ out/
 # Test reports
 surefire-reports/
 test-output/
+
+### Environment Variables ###
+.env
+.env.*
+!.env.example
