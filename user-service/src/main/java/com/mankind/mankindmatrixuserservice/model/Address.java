@@ -1,14 +1,6 @@
 package com.mankind.mankindmatrixuserservice.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,43 +15,48 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users")
-public class User {
+@Table(name = "address")
+public class Address {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String username;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    private AddressType addressType;
 
     @Column(nullable = false)
-    private String firstName;
+    private Boolean isDefault = false;
 
     @Column(nullable = false)
-    private String lastName;
-
-    @Column(nullable = false, unique = true)
-    private String email;
+    private String streetAddress;
 
     @Column(nullable = false)
-    private String password;
+    private String city;
 
     @Column(nullable = false)
-    private boolean active = true;
+    private String state;
 
-    @Column
-    private String profilePictureUrl;
+    @Column(nullable = false)
+    private String postalCode;
+
+    @Column(nullable = false)
+    private String country;
 
     @CreatedDate
     @Column(updatable = false, nullable = false)
-    private LocalDateTime createTime;
+    private LocalDateTime createdAt;
 
-    @Column
     @LastModifiedDate
-    private LocalDateTime updateTime;
+    @Column()
+    private LocalDateTime updatedAt;
+
+    public enum AddressType {
+        billing, shipping
+    }
 }
