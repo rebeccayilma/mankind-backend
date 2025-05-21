@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: Matrix_wishlish_service
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/wishlistdb?allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: 1436
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+server:
+  port: 8082
