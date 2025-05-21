@@ -1,50 +1,226 @@
 package com.mankind.matrix_product_service.service;
 
-import com.mankind.matrix_product_service.dto.ProductDTO;
-import com.mankind.matrix_product_service.exception.ProductNotFoundException;
+import com.mankind.matrix_product_service.dto.product.ProductDTO;
+import com.mankind.matrix_product_service.dto.product.ProductResponseDTO;
+import com.mankind.matrix_product_service.exception.ResourceNotFoundException;
 import com.mankind.matrix_product_service.mapper.ProductMapper;
 import com.mankind.matrix_product_service.model.Product;
 import com.mankind.matrix_product_service.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
-
     private final ProductRepository productRepository;
-
     private final ProductMapper productMapper;
 
-    @Autowired
-    public ProductService(ProductRepository productRepository, ProductMapper productMapper) {
-        this.productRepository = productRepository;
-        this.productMapper = productMapper;
+    @Transactional
+    public ProductResponseDTO createProduct(ProductDTO productDTO) {
+        if (productRepository.existsByNameAndCategoryId(productDTO.getName(), productDTO.getCategoryId())) {
+            throw new IllegalStateException("Product name already exists in this category");
+        }
+
+        Product product = productMapper.toEntity(productDTO);
+        product.setActive(true);
+        product.setFeatured(productDTO.getIsFeatured() != null ? productDTO.getIsFeatured() : false);
+        product = productRepository.save(product);
+
+        return productMapper.toResponseDTO(product);
     }
 
-    public ProductDTO getProductById(Long id) {
-        Optional<Product> product = productRepository.findById(id);
-        return product.map(productMapper::toDto).orElseThrow(() -> new ProductNotFoundException(id));
+    public Page<ProductResponseDTO> getAllProducts(Pageable pageable) {
+        return productRepository.findByIsActiveTrue(pageable)
+                .map(productMapper::toResponseDTO);
     }
 
-    public Page<ProductDTO> getAllProducts(Pageable pageable) {
-        return productRepository.findAll(pageable)
-                .map(productMapper::toDto);
+    public ProductResponseDTO getProductById(Long id) {
+        return productRepository.findByIdAndIsActiveTrue(id)
+                .map(productMapper::toResponseDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
     }
 
-    public ProductDTO createProduct(ProductDTO dto) {
-        Product product = productMapper.toEntity(dto);
-        product.setCreateTime(LocalDateTime.now());
-        product.setUpdateTime(LocalDateTime.now());
-        return productMapper.toDto(productRepository.save(product));
+    public Page<ProductResponseDTO> getProductsByCategory(Long categoryId, Pageable pageable) {
+        return productRepository.findByCategoryIdAndIsActiveTrue(categoryId, pageable)
+                .map(productMapper::toResponseDTO);
     }
 
-    public Page<ProductDTO> getProductByCategory(String category, Pageable pageable) {
-        Page<Product> product = productRepository.findByCategoryIgnoreCase(category, pageable);
-        return product.map(productMapper::toDto);
+    public Page<ProductResponseDTO> getFeaturedProducts(Pageable pageable) {
+        return productRepository.findByIsFeaturedTrueAndIsActiveTrue(pageable)
+                .map(productMapper::toResponseDTO);
+    }
+
+    @Transactional
+    public ProductResponseDTO updateProduct(Long id, ProductDTO productDTO) {
+        // Validate input
+        if (productDTO == null) {
+            throw new IllegalArgumentException("Update data cannot be null");
+        }
+
+        // Retrieve the product
+        Product product = productRepository.findByIdAndIsActiveTrue(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+
+        // Only update name if it's provided in the request
+        if (productDTO.getName() != null) {
+            String newName = productDTO.getName().trim();
+            if (newName.isEmpty()) {
+                throw new IllegalArgumentException("Product name cannot be empty");
+            }
+            
+            // Only check for name uniqueness if the name is actually being changed
+            if (!product.getName().equals(newName)) {
+                Long categoryId = productDTO.getCategoryId() != null ? 
+                    productDTO.getCategoryId() : product.getCategoryId();
+                
+                if (productRepository.existsByNameAndCategoryIdAndIdNot(newName, categoryId, id)) {
+                    throw new IllegalStateException("Product name already exists in this category");
+                }
+            }
+            product.setName(newName);
+        }
+
+        // Only update category if it's provided
+        if (productDTO.getCategoryId() != null) {
+            // If name is not being updated, check if the new category would cause a name conflict
+            if (productDTO.getName() == null && 
+                productRepository.existsByNameAndCategoryIdAndIdNot(product.getName(), productDTO.getCategoryId(), id)) {
+                throw new IllegalStateException("Product name already exists in the target category");
+            }
+            product.setCategoryId(productDTO.getCategoryId());
+        }
+
+        // Only update other fields if they are provided in the request
+        if (productDTO.getDescription() != null) {
+            validateDescription(productDTO.getDescription().trim());
+            product.setDescription(productDTO.getDescription().trim());
+        }
+        if (productDTO.getSku() != null) {
+            validateSku(productDTO.getSku().trim(), product.getId());
+            product.setSku(productDTO.getSku().trim());
+        }
+        if (productDTO.getBrand() != null) {
+            validateBrand(productDTO.getBrand().trim());
+            product.setBrand(productDTO.getBrand().trim());
+        }
+        if (productDTO.getModel() != null) {
+            validateModel(productDTO.getModel().trim());
+            product.setModel(productDTO.getModel().trim());
+        }
+        if (productDTO.getSpecifications() != null) {
+            validateSpecifications(productDTO.getSpecifications());
+            if (product.getSpecifications() == null) {
+                product.setSpecifications(new HashMap<>());
+            }
+            product.getSpecifications().clear();
+            product.getSpecifications().putAll(productDTO.getSpecifications());
+        }
+        if (productDTO.getImages() != null) {
+            validateImages(productDTO.getImages());
+            product.setImages(productDTO.getImages());
+        }
+
+        // Update featured status if provided
+        if (productDTO.getIsFeatured() != null) {
+            product.setFeatured(productDTO.getIsFeatured());
+        }
+
+        // Save and return
+        Product savedProduct = productRepository.save(product);
+        return productMapper.toResponseDTO(savedProduct);
+    }
+
+    @Transactional
+    public ProductResponseDTO toggleFeaturedStatus(Long id) {
+        Product product = productRepository.findByIdAndIsActiveTrue(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+        
+        product.setFeatured(!product.isFeatured());
+        return productMapper.toResponseDTO(productRepository.save(product));
+    }
+
+    private void validateProductName(String name, Long categoryId, Long productId) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Product name cannot be empty");
+        }
+        if (name.length() > 100) {
+            throw new IllegalArgumentException("Product name cannot exceed 100 characters");
+        }
+        if (productRepository.existsByNameAndCategoryIdAndIdNot(name, categoryId, productId)) {
+            throw new IllegalStateException("Product name already exists in this category");
+        }
+    }
+
+    private void validateCategoryId(Long categoryId) {
+        if (categoryId == null) {
+            throw new IllegalArgumentException("Category ID cannot be null");
+        }
+        // Add category existence validation if you have a category service/repository
+    }
+
+    private void validateDescription(String description) {
+        if (description != null && description.length() > 2000) {
+            throw new IllegalArgumentException("Description cannot exceed 2000 characters");
+        }
+    }
+
+    private void validateSku(String sku, Long productId) {
+        if (sku != null) {
+            if (sku.length() > 50) {
+                throw new IllegalArgumentException("SKU cannot exceed 50 characters");
+            }
+            // Add SKU uniqueness validation if needed
+        }
+    }
+
+    private void validateBrand(String brand) {
+        if (brand != null && brand.length() > 50) {
+            throw new IllegalArgumentException("Brand cannot exceed 50 characters");
+        }
+    }
+
+    private void validateModel(String model) {
+        if (model != null && model.length() > 50) {
+            throw new IllegalArgumentException("Model cannot exceed 50 characters");
+        }
+    }
+
+    private void validateSpecifications(Map<String, String> specifications) {
+        if (specifications != null) {
+            specifications.forEach((key, value) -> {
+                if (key == null || key.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Specification key cannot be empty");
+                }
+                if (value != null && value.length() > 255) {
+                    throw new IllegalArgumentException("Specification value cannot exceed 255 characters");
+                }
+            });
+        }
+    }
+
+    private void validateImages(String[] images) {
+        if (images != null) {
+            for (String image : images) {
+                if (image != null && image.length() > 255) {
+                    throw new IllegalArgumentException("Image URL cannot exceed 255 characters");
+                }
+            }
+        }
+    }
+
+    @Transactional
+    public void deleteProduct(Long id) {
+        Product product = productRepository.findByIdAndIsActiveTrue(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+
+        product.setActive(false);
+        productRepository.save(product);
     }
 }
