@@ -379,7 +379,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"price\": 1799.00,\n  \"currency\": \"USD\",\n  \"availableQuantity\": 15,\n  \"minStockLevel\": 8,\n  \"maxStockLevel\": 100,\n  \"reorderPoint\": 20\n}"
+              "raw": "{\n  \"price\": 1799.00,\n  \"currency\": \"USD\",\n  \"availableQuantity\": 15\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/v1/inventory/{{product_id}}",
