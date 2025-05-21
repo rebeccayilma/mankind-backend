@@ -1,30 +1,19 @@
 package com.mankind.matrix_product_service.exception;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    @Value("${spring.profiles.active:prod}")
-    private String activeProfile;
-
-    private List<String> sanitizeStackTrace(StackTraceElement[] stackTrace) {
-        return Arrays.stream(stackTrace)
-                .limit(5) // Limit to first 5 frames for security
-                .map(StackTraceElement::toString)
-                .collect(Collectors.toList());
-    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
@@ -53,28 +42,75 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = error.getObjectName() + "." + error.getDefaultMessage();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+
+        String message = "Validation failed: " + String.join(", ", errors.values());
+        log.error("Validation error: {}", message);
+        return new ResponseEntity<>(
+            ErrorResponse.of(HttpStatus.BAD_REQUEST.value(), message),
+            HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        log.error("Invalid argument: {}", ex.getMessage());
+        return new ResponseEntity<>(
+            ErrorResponse.of(HttpStatus.BAD_REQUEST.value(), ex.getMessage()),
+            HttpStatus.BAD_REQUEST
+        );
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, WebRequest request) {
-        log.error("Unexpected error occurred", ex);
-        
-        if ("dev".equals(activeProfile)) {
-            return new ResponseEntity<>(
-                ErrorResponse.of(
-                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                    ex.getMessage(),
-                    ex.getClass().getName(),
-                    sanitizeStackTrace(ex.getStackTrace())
-                ),
-                HttpStatus.INTERNAL_SERVER_ERROR
-            );
+        String errorMessage = getDescriptiveErrorMessage(ex);
+        log.error("Unexpected error occurred: {}", ex.getMessage(), ex);
+        return new ResponseEntity<>(
+            ErrorResponse.of(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                errorMessage
+            ),
+            HttpStatus.INTERNAL_SERVER_ERROR
+        );
+    }
+
+    private String getDescriptiveErrorMessage(Exception ex) {
+        String className = ex.getClass().getSimpleName();
+        String message = ex.getMessage();
+
+        // Handle common exceptions with more descriptive messages
+        if (ex instanceof NullPointerException) {
+            return "A required value was not provided";
+        } else if (ex instanceof IllegalStateException) {
+            return message != null ? message : "Operation cannot be performed in the current state";
+        } else if (ex instanceof ArithmeticException) {
+            return "A calculation error occurred";
+        } else if (ex instanceof IndexOutOfBoundsException) {
+            return "An attempt was made to access an invalid position";
+        } else if (ex instanceof ClassCastException) {
+            return "Invalid type conversion attempted";
+        } else if (message != null && !message.isEmpty()) {
+            // If the exception has a message, use it but sanitize it
+            return sanitizeErrorMessage(message);
         } else {
-            return new ResponseEntity<>(
-                ErrorResponse.of(
-                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                    "An unexpected error occurred"
-                ),
-                HttpStatus.INTERNAL_SERVER_ERROR
-            );
+            // For unknown exceptions, provide a descriptive message based on the exception type
+            return String.format("An error occurred while processing your request: %s", 
+                className.replace("Exception", "").replaceAll("([A-Z])", " $1").trim());
         }
+    }
+
+    private String sanitizeErrorMessage(String message) {
+        // Remove any potential sensitive information or stack traces
+        return message.split("\n")[0]  // Take only the first line
+                     .replaceAll("at\\s+[\\w\\.]+\\.[\\w\\$]+\\([^)]+\\)", "") // Remove stack trace patterns
+                     .replaceAll("\\s+", " ")  // Normalize whitespace
+                     .trim();
     }
 }

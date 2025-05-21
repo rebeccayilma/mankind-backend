@@ -10,6 +10,11 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Standardized error response for the API.
+ * Note: Stack traces are only included in development mode and are sanitized
+ * to include only the first 5 frames for security reasons.
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -24,6 +29,11 @@ public class ErrorResponse {
     private LocalDateTime timestamp = LocalDateTime.now();
     
     private String error;
+    
+    /**
+     * Stack trace information. Only included in development mode and limited to 5 frames
+     * for security reasons. Always null in production.
+     */
     private List<String> stackTrace;
 
     public static ErrorResponse of(int status, String message) {

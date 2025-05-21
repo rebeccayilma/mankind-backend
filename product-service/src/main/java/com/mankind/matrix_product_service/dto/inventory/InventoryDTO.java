@@ -1,7 +1,7 @@
 package com.mankind.matrix_product_service.dto.inventory;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -23,7 +23,7 @@ public class InventoryDTO {
     private String currency;
 
     @NotNull(message = "Available quantity is required")
-    @Min(value = 0, message = "Available quantity cannot be negative")
+    @DecimalMin(value = "0.0", inclusive = true, message = "Available quantity cannot be negative")
     @Schema(description = "Available quantity in stock", example = "10", required = true)
     private BigDecimal availableQuantity;
 } 
