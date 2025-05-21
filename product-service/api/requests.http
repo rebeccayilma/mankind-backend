@@ -85,10 +85,7 @@ Accept: application/json
 {
   "price": 1799.00,
   "currency": "USD",
-  "availableQuantity": 15,
-  "minStockLevel": 8,
-  "maxStockLevel": 100,
-  "reorderPoint": 20
+  "availableQuantity": 15
 }
 
 ### Get inventory for product
@@ -107,10 +104,7 @@ Accept: application/json
 {
   "price": 1899.00,
   "currency": "USD",
-  "availableQuantity": 20,
-  "minStockLevel": 10,
-  "maxStockLevel": 120,
-  "reorderPoint": 25
+  "availableQuantity": 20
 }
 
 ### Get inventory logs for product
