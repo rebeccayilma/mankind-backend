@@ -1,4 +1,4 @@
-package com.example.demo.exception;
+package com.mankind.matrix_wishlistservice.exception;
 
 public class ProductNotFoundException extends RuntimeException {
 	

@@ -1,4 +1,4 @@
-package com.example.demo.exception;
+package com.mankind.matrix_wishlistservice.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

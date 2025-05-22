@@ -1,6 +1,6 @@
-package com.example.demo.repository;
+package com.mankind.matrix_wishlistservice.repository;
 
-import com.example.demo.model.WishlistItem;
+import com.mankind.matrix_wishlistservice.model.WishlistItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

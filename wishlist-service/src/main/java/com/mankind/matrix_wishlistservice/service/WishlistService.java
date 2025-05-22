@@ -1,9 +1,9 @@
-package com.example.demo.service;
+package com.mankind.matrix_wishlistservice.service;
 
-import com.example.demo.exception.DuplicateWishlistItemException;
-import com.example.demo.exception.UserNotFoundException;
-import com.example.demo.model.WishlistItem;
-import com.example.demo.repository.WishlistRepository;
+import com.mankind.matrix_wishlistservice.exception.DuplicateWishlistItemException;
+import com.mankind.matrix_wishlistservice.exception.UserNotFoundException;
+import com.mankind.matrix_wishlistservice.model.WishlistItem;
+import com.mankind.matrix_wishlistservice.repository.WishlistRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 

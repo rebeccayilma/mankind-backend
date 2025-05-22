@@ -1,4 +1,4 @@
-package com.example.demo.model;
+package com.mankind.matrix_wishlistservice.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: Matrix_wishlish_service
+    name: matrix-wishlist-service
 
   datasource:
     url: jdbc:mysql://localhost:3306/wishlistdb?allowPublicKeyRetrieval=true&useSSL=false
@@ -14,3 +14,20 @@ spring:
 
 server:
   port: 8082
+
+# Swagger/OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    tryItOutEnabled: true
+    disable-swagger-default-url: true
+  packages-to-scan: com.mankind.matrix_wishlistservice.controller
+  paths-to-match: /api/**
+  show-actuator: false
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json
