@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
+import com.mankind.matrix_wishlistservice.exception.ErrorResponse;
 import com.mankind.matrix_wishlistservice.model.WishlistItem;
 import com.mankind.matrix_wishlistservice.service.WishlistService;
 
@@ -31,7 +32,7 @@ public class WishlistController {
         @ApiResponse(responseCode = "200", description = "Item added successfully", 
                     content = @Content(schema = @Schema(implementation = WishlistItem.class))),
         @ApiResponse(responseCode = "400", description = "Item already in wishlist", 
-                    content = @Content)
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping
     public WishlistItem add(
@@ -43,7 +44,8 @@ public class WishlistController {
     @Operation(summary = "Get user's wishlist", description = "Returns all items in a user's wishlist")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Wishlist retrieved successfully"),
-        @ApiResponse(responseCode = "404", description = "User not found or wishlist is empty")
+        @ApiResponse(responseCode = "404", description = "User not found or wishlist is empty",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/{userId}")
     public List<WishlistItem> get(
@@ -54,7 +56,8 @@ public class WishlistController {
     @Operation(summary = "Remove item from wishlist", description = "Removes a product from a user's wishlist")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Item removed successfully"),
-        @ApiResponse(responseCode = "400", description = "Item not found in wishlist")
+        @ApiResponse(responseCode = "404", description = "User not found, no wishlist items available, or product not in wishlist",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @DeleteMapping
     public void delete(
@@ -65,7 +68,9 @@ public class WishlistController {
 
     @Operation(summary = "Check if item is in wishlist", description = "Checks if a product is in a user's wishlist")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Check completed successfully")
+        @ApiResponse(responseCode = "200", description = "Item is in wishlist"),
+        @ApiResponse(responseCode = "404", description = "User not found, no wishlist items available, or product not in wishlist",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/check")
     public boolean check(
