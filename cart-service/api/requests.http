@@ -1,0 +1,43 @@
+### Get all cart items
+GET http://localhost:8082/api/cart-items
+Accept: application/json
+
+### Get cart item by ID
+@id = 1
+GET http://localhost:8082/api/cart-items/{{id}}
+Accept: application/json
+
+### Get cart items by user ID
+@userId = 101
+GET http://localhost:8082/api/cart-items/user/{{userId}}
+Accept: application/json
+
+### Create cart item
+POST http://localhost:8082/api/cart-items
+Content-Type: application/json
+Accept: application/json
+
+{
+  "userId": 101,
+  "productId": 204,
+  "quantity": 1
+}
+
+### Update cart item
+PUT http://localhost:8082/api/cart-items/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "userId": 101,
+  "productId": 204,
+  "quantity": 2
+}
+
+### Delete cart item
+DELETE http://localhost:8082/api/cart-items/1
+Accept: application/json
+
+### Delete cart items by user ID
+DELETE http://localhost:8082/api/cart-items/user/101
+Accept: application/json
