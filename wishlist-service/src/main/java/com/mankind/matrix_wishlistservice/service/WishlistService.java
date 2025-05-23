@@ -6,6 +6,7 @@ import com.mankind.matrix_wishlistservice.exception.UserNotFoundException;
 import com.mankind.matrix_wishlistservice.model.WishlistItem;
 import com.mankind.matrix_wishlistservice.repository.WishlistRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
@@ -17,6 +18,7 @@ public class WishlistService {
         this.repository = repository;
     }
 
+    @Transactional
     public WishlistItem addItem(Long userId, Long productId) {
         repository.findByUserIdAndProductId(userId, productId)
                 .ifPresent(item -> {
@@ -35,6 +37,7 @@ public class WishlistService {
         return wishlist;
     }
 
+    @Transactional
     public void removeItem(Long userId, Long productId) {
         // Check if user has any wishlist items
         List<WishlistItem> userWishlist = repository.findByUserId(userId);
