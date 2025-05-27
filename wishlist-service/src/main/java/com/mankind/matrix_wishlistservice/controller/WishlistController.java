@@ -38,8 +38,12 @@ public class WishlistController {
     @PostMapping
     public WishlistItem add(
             @Parameter(description = "ID of the user") @RequestParam Long userId, 
-            @Parameter(description = "ID of the product to add") @RequestParam Long productId) {
-        return service.addItem(userId, productId);
+            @Parameter(description = "ID of the product to add") @RequestParam Long productId,
+            @Parameter(description = "Name of the product") @RequestParam(required = false) String name,
+            @Parameter(description = "Brand of the product") @RequestParam(required = false) String brand,
+            @Parameter(description = "Price of the product") @RequestParam(required = false) java.math.BigDecimal price,
+            @Parameter(description = "Image URL of the product") @RequestParam(required = false) String imageUrl) {
+        return service.addItem(userId, productId, name, brand, price, imageUrl);
     }
 
     @Operation(summary = "Get user's wishlist", description = "Returns all items in a user's wishlist")

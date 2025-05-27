@@ -19,14 +19,20 @@ public class WishlistService {
     }
 
     @Transactional
-    public WishlistItem addItem(Long userId, Long productId) {
+    public WishlistItem addItem(Long userId, Long productId, String name, String brand, java.math.BigDecimal price, String imageUrl) {
         repository.findByUserIdAndProductId(userId, productId)
                 .ifPresent(item -> {
                     throw new DuplicateWishlistItemException("Item already in wishlist");
                 });
 
-        WishlistItem item = new WishlistItem(null, userId, productId);
+        WishlistItem item = new WishlistItem(null, userId, productId, name, brand, price, imageUrl);
         return repository.save(item);
+    }
+
+    @Transactional
+    public WishlistItem addItem(Long userId, Long productId) {
+        // For backward compatibility
+        return addItem(userId, productId, null, null, null, null);
     }
 
     public List<WishlistItem> getUserWishlist(Long userId) {
