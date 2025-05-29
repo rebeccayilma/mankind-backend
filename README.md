@@ -22,10 +22,87 @@ This repository contains the backend microservices for the **Mankind Matrix AI**
 - **Java**: JDK 17
 - **MySQL**: 8.0 or newer
 - **Git**: For version control and repository cloning
+- **Docker**: For containerization
+- **Docker Compose**: For multi-container orchestration
 
 ### Installation Steps
 
-#### 1. Install Java (JDK 17)
+#### 1. Install Docker and Docker Compose
+
+<details>
+<summary><b>macOS</b></summary>
+
+1. Install Docker Desktop for Mac
+   - Download from [Docker's official website](https://www.docker.com/products/docker-desktop)
+   - Docker Desktop includes both Docker Engine and Docker Compose
+   - Follow the installation wizard
+
+2. Verify installation:
+```bash
+docker --version
+docker-compose --version
+```
+</details>
+
+<details>
+<summary><b>Windows</b></summary>
+
+1. Install Docker Desktop for Windows
+   - Download from [Docker's official website](https://www.docker.com/products/docker-desktop)
+   - Ensure WSL 2 is installed (Docker Desktop will prompt if not)
+   - Docker Desktop includes both Docker Engine and Docker Compose
+   - Follow the installation wizard
+
+2. Verify installation:
+```bash
+docker --version
+docker-compose --version
+```
+</details>
+
+<details>
+<summary><b>Linux (Ubuntu/Debian)</b></summary>
+
+1. Install Docker Engine:
+```bash
+# Update package index
+sudo apt-get update
+
+# Install prerequisites
+sudo apt-get install \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+
+# Add Docker's official GPG key
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+# Set up the repository
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Install Docker Engine
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+```
+
+2. Install Docker Compose:
+```bash
+# Install Docker Compose
+sudo apt-get install docker-compose-plugin
+```
+
+3. Verify installation:
+```bash
+docker --version
+docker compose version
+```
+</details>
+
+#### 2. Install Java (JDK 17)
 
 <details>
 <summary><b>macOS</b></summary>
@@ -68,7 +145,7 @@ sudo apt install openjdk-17-jdk
 ```
 </details>
 
-#### 2. Install MySQL
+#### 3. Install MySQL
 
 <details>
 <summary><b>macOS</b></summary>
@@ -101,7 +178,7 @@ sudo apt install mysql-server
 ```
 </details>
 
-#### 3. Verify Installation
+#### 4. Verify Installation
 
 <details>
 <summary>Check installed versions</summary>
@@ -199,8 +276,63 @@ cd ../product-service
 
 They run on separate ports and are accessible at:
 
-- `http://localhost:8081/swagger-ui.html` (user-service)
-- `http://localhost:8080/swagger-ui.html` (product-service)
+- `http://localhost:8080/swagger-ui/index.html` (product-service)
+- `http://localhost:8081/swagger-ui/index.html` (user-service)
+- `http://localhost:8082/swagger-ui/index.html` (cart-service)
+- `http://localhost:8083/swagger-ui/index.html` (wishlist-service)
+
+---
+
+## Running Services with Docker
+
+To run all services using Docker:
+
+1. Make sure Docker and Docker Compose are installed and running
+   ```bash
+   # Verify Docker is running
+   docker info
+   
+   # If Docker is not running, start Docker Desktop:
+   # - Open Docker Desktop from Applications
+   # - Wait for the whale icon in the menu bar to stop animating
+   # - Run 'docker info' again to verify it's running
+   ```
+
+   > **Note for Apple Silicon (M1/M2) Users**: 
+   > The Dockerfiles are configured to use `--platform=linux/amd64` for compatibility.
+   > Docker Desktop will automatically handle the emulation.
+
+2. Ensure all `.env` files are properly configured in each service directory
+3. From the root directory, run:
+
+```bash
+# Build and start all services
+docker-compose up --build
+
+# To run in detached mode (background)
+docker-compose up -d --build
+
+# To stop all services
+docker-compose down
+```
+
+The services will be available at:
+- `http://localhost:8080/swagger-ui/index.html` (product-service)
+- `http://localhost:8081/swagger-ui/index.html` (user-service)
+- `http://localhost:8082/swagger-ui/index.html` (cart-service)
+- `http://localhost:8083/swagger-ui/index.html` (wishlist-service)
+
+To check the status of your containers:
+```bash
+# List running containers
+docker-compose ps
+
+# View logs for all services
+docker-compose logs
+
+# View logs for a specific service
+docker-compose logs product-service
+```
 
 ---
 
@@ -219,3 +351,9 @@ mankind-backend/
 ##  Contributing
 
 Create a branch for the feature you are working on and when done, create a Pull request and share it for review before merging.
+
+---
+
+## Deployment
+
+For detailed deployment instructions, including AWS setup and cost-effective deployment options, please refer to [DEPLOY.md](DEPLOY.md).
