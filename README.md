@@ -199,8 +199,10 @@ cd ../product-service
 
 They run on separate ports and are accessible at:
 
-- `http://localhost:8081/swagger-ui.html` (user-service)
 - `http://localhost:8080/swagger-ui.html` (product-service)
+- `http://localhost:8081/swagger-ui.html` (user-service)
+- `http://localhost:8082/swagger-ui.html` (cart-service)
+- `http://localhost:8083/swagger-ui.html` (whishlist-service)
 
 ---
 
