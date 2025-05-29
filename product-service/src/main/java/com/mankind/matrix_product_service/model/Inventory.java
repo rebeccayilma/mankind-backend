@@ -45,6 +45,9 @@ public class Inventory {
     @Column(length = 3, nullable = false)
     private String currency;
 
+    @Column(name = "max_quantity_per_purchase")
+    private BigDecimal maxQuantityPerPurchase;
+
     @Column(nullable = false)
     private boolean active;
 

@@ -26,4 +26,8 @@ public class InventoryDTO {
     @DecimalMin(value = "0.0", inclusive = true, message = "Available quantity cannot be negative")
     @Schema(description = "Available quantity in stock", example = "10", required = true)
     private BigDecimal availableQuantity;
+
+    @DecimalMin(value = "1.0", inclusive = true, message = "Max quantity per purchase must be at least 1")
+    @Schema(description = "Maximum quantity allowed per purchase. If not set, no limit will be applied", example = "5", required = false)
+    private BigDecimal maxQuantityPerPurchase;
 } 

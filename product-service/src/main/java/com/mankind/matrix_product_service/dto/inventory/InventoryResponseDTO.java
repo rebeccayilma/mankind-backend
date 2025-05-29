@@ -41,4 +41,7 @@ public class InventoryResponseDTO {
 
     @Schema(description = "Timestamp when the inventory was last updated")
     private LocalDateTime updatedAt;
+
+    @Schema(description = "Maximum quantity allowed per purchase. If not set, no limit will be applied", example = "5")
+    private BigDecimal maxQuantityPerPurchase;
 } 
