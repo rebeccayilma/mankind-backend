@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -124,7 +126,11 @@ public class ProductService {
         }
         if (productDTO.getImages() != null) {
             validateImages(productDTO.getImages());
-            product.setImages(productDTO.getImages());
+            if (product.getImages() == null) {
+                product.setImages(new ArrayList<>());
+            }
+            product.getImages().clear();
+            product.getImages().addAll(productDTO.getImages());
         }
 
         // Update featured status if provided
@@ -205,7 +211,7 @@ public class ProductService {
         }
     }
 
-    private void validateImages(String[] images) {
+    private void validateImages(List<String> images) {
         if (images != null) {
             for (String image : images) {
                 if (image != null && image.length() > 255) {
@@ -224,3 +230,4 @@ public class ProductService {
         productRepository.save(product);
     }
 }
+

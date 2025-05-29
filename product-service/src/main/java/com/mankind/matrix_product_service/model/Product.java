@@ -9,7 +9,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.HashMap;
 
 @Entity
 @Table(name = "products")
@@ -48,13 +51,14 @@ public class Product {
         joinColumns = @JoinColumn(name = "product_id"))
     @MapKeyColumn(name = "spec_key")
     @Column(name = "spec_value", length = 255)
-    private Map<String, String> specifications;
+    private Map<String, String> specifications = new HashMap<>();
 
     @ElementCollection
     @CollectionTable(name = "product_images", 
         joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "image_url", length = 255)
-    private String[] images;
+    @OrderColumn(name = "images_order", nullable = true)
+    private List<String> images = new ArrayList<>();
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;

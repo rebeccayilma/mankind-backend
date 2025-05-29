@@ -6,6 +6,7 @@ import com.mankind.matrix_product_service.dto.inventory.InventoryStatusDTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -36,7 +37,7 @@ public class ProductResponseDTO {
     private Map<String, String> specifications;
 
     @Schema(description = "List of image URLs for the product")
-    private String[] images;
+    private List<String> images;
 
     @Schema(description = "Whether the product is active", example = "true")
     private boolean active;
