@@ -1,5 +1,5 @@
 # Build stage
-FROM --platform=$BUILDPLATFORM maven:3.9-eclipse-temurin-17 AS build
+FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /build
 
 # Copy the entire project
@@ -11,7 +11,7 @@ RUN cd cart-service && \
     ls -la target/
 
 # Run stage
-FROM --platform=$TARGETPLATFORM eclipse-temurin:17-jre
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 
 # Copy the built jar from build stage
