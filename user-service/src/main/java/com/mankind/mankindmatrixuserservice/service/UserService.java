@@ -61,6 +61,20 @@ public class UserService {
         return new AuthResponse(token);
     }
 
+    /**
+     * Logs out a user by revoking their token
+     * @param token The JWT token to invalidate
+     * @return true if the token was successfully revoked, false otherwise
+     */
+    public boolean logout(String token) {
+        try {
+            jwtService.revokeToken(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public UserDTO getUserById(Long id) {
         return userRepository.findById(id)
                 .map(userMapper::toDto)
