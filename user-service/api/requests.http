@@ -125,3 +125,14 @@ Authorization: Bearer {{token}}
 ### Delete Address
 DELETE http://localhost:8081/api/v1/users/{{userId}}/addresses/1
 Authorization: Bearer {{token}}
+
+###
+
+### Logout User
+# This will invalidate the current JWT token
+# Expected responses:
+# 200 - Logout successful
+# 400 - No token provided
+# 500 - Internal server error
+POST http://localhost:8081/api/v1/auth/logout
+Authorization: Bearer {{token}}
