@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: product-service/Dockerfile
+      args:
+        MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
     container_name: mankind-product-service
     ports:
       - "8080:8080"
@@ -10,6 +12,13 @@ services:
       - product-service/.env
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 512M
     networks:
       - mankind-network
     healthcheck:
@@ -18,11 +27,14 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    restart: unless-stopped
 
   user-service:
     build:
       context: .
       dockerfile: user-service/Dockerfile
+      args:
+        MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
     container_name: mankind-user-service
     ports:
       - "8081:8080"
@@ -30,6 +42,13 @@ services:
       - user-service/.env
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 512M
     networks:
       - mankind-network
     healthcheck:
@@ -38,11 +57,14 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    restart: unless-stopped
 
   cart-service:
     build:
       context: .
       dockerfile: cart-service/Dockerfile
+      args:
+        MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
     container_name: mankind-cart-service
     ports:
       - "8082:8080"
@@ -50,6 +72,13 @@ services:
       - cart-service/.env
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 512M
     networks:
       - mankind-network
     healthcheck:
@@ -58,11 +87,14 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    restart: unless-stopped
 
   wishlist-service:
     build:
       context: .
       dockerfile: wishlist-service/Dockerfile
+      args:
+        MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
     container_name: mankind-wishlist-service
     ports:
       - "8083:8080"
@@ -70,6 +102,13 @@ services:
       - wishlist-service/.env
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 512M
     networks:
       - mankind-network
     healthcheck:
@@ -78,6 +117,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    restart: unless-stopped
 
 networks:
   mankind-network:
