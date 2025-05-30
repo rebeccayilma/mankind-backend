@@ -351,3 +351,9 @@ mankind-backend/
 ##  Contributing
 
 Create a branch for the feature you are working on and when done, create a Pull request and share it for review before merging.
+
+---
+
+## Deployment
+
+For detailed deployment instructions, including AWS setup and cost-effective deployment options, please refer to [DEPLOY.md](DEPLOY.md).

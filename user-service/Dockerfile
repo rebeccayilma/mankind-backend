@@ -1,7 +1,3 @@
-# Build arguments for platform selection
-ARG TARGETPLATFORM
-ARG BUILDPLATFORM
-
 # Build stage
 FROM --platform=$BUILDPLATFORM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /build
