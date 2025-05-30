@@ -7,6 +7,11 @@ import com.mankind.matrix_product_service.model.Inventory;
 import com.mankind.matrix_product_service.model.Product;
 import org.mapstruct.*;
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProductMapper {
@@ -27,16 +32,34 @@ public interface ProductMapper {
     void updateEntity(@MappingTarget Product product, ProductDTO dto);
 
     @Mapping(target = "inventoryStatus", expression = "java(mapInventoryStatus(product.getInventory()))")
-    @Mapping(target = "images", expression = "java(filterNullImages(product.getImages()))")
+    @Mapping(target = "images", source = "images", qualifiedByName = "filterImages")
+    @Mapping(target = "specifications", source = "specifications", qualifiedByName = "filterSpecifications")
     ProductResponseDTO toResponseDTO(Product product);
 
-    default String[] filterNullImages(String[] images) {
+    @Named("filterImages")
+    default List<String> filterImages(List<String> images) {
         if (images == null) {
-            return new String[0];
+            return new ArrayList<>();
         }
-        return java.util.Arrays.stream(images)
+        return images.stream()
             .filter(image -> image != null && !image.trim().isEmpty())
-            .toArray(String[]::new);
+            .collect(Collectors.toList());
+    }
+
+    @Named("filterSpecifications")
+    default Map<String, String> filterSpecifications(Map<String, String> specifications) {
+        if (specifications == null) {
+            return new HashMap<>();
+        }
+        return specifications.entrySet().stream()
+            .filter(entry -> entry.getKey() != null && !entry.getKey().trim().isEmpty() &&
+                           entry.getValue() != null && !entry.getValue().trim().isEmpty())
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                Map.Entry::getValue,
+                (v1, v2) -> v1,  // In case of duplicate keys, keep the first one
+                HashMap::new
+            ));
     }
 
     default InventoryStatusDTO mapInventoryStatus(Inventory inventory) {

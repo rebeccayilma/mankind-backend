@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -37,7 +38,7 @@ public class ProductDTO {
     private Map<String, String> specifications;
 
     @Schema(description = "List of image URLs for the product")
-    private String[] images;
+    private List<String> images;
 
     @Schema(description = "Whether the product is featured", example = "false")
     private Boolean isFeatured;

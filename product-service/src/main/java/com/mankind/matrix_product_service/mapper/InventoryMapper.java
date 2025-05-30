@@ -18,6 +18,7 @@ public interface InventoryMapper {
     @Mapping(target = "reservedQuantity", expression = "java(java.math.BigDecimal.ZERO)")
     @Mapping(target = "soldQuantity", expression = "java(java.math.BigDecimal.ZERO)")
     @Mapping(target = "active", constant = "true")
+    @Mapping(target = "maxQuantityPerPurchase", source = "maxQuantityPerPurchase")
     Inventory toEntity(InventoryDTO dto);
 
     @Mapping(target = "id", ignore = true)
@@ -27,11 +28,13 @@ public interface InventoryMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "reservedQuantity", ignore = true)
     @Mapping(target = "soldQuantity", ignore = true)
+    @Mapping(target = "maxQuantityPerPurchase", source = "maxQuantityPerPurchase")
     void updateEntity(@MappingTarget Inventory entity, InventoryDTO dto);
 
     @Mapping(target = "productId", source = "product.id")
     @Mapping(target = "productName", source = "product.name")
     @Mapping(target = "priceDisplay", expression = "java(formatPriceDisplay(inventory.getPrice(), inventory.getCurrency()))")
+    @Mapping(target = "maxQuantityPerPurchase", source = "maxQuantityPerPurchase")
     InventoryResponseDTO toResponseDTO(Inventory inventory);
 
     @Mapping(target = "productId", source = "product.id")
