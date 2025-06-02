@@ -60,7 +60,7 @@ public class AuthController {
     @Operation(summary = "Logout user", description = "Invalidates the user's JWT token")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Logout successful"),
-            @ApiResponse(responseCode = "400", description = "Invalid token or token not provided"),
+            @ApiResponse(responseCode = "400", description = "Invalid token, token not provided, or token already invalidated"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping("/logout")
@@ -69,6 +69,11 @@ public class AuthController {
 
         if (token == null) {
             return ResponseEntity.badRequest().body("No token provided");
+        }
+
+        // Check if token is already revoked
+        if (jwtService.isTokenRevoked(token)) {
+            return ResponseEntity.badRequest().body("Token already invalidated");
         }
 
         boolean logoutSuccessful = userService.logout(token);

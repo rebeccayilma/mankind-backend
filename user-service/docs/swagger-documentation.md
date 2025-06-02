@@ -29,6 +29,14 @@ To logout and invalidate your token:
 2. The endpoint will automatically extract your token from the Authorization header
 3. The token will be invalidated and can no longer be used for authentication
 
+The logout endpoint can return different responses based on the token status:
+- 200 OK: Logout successful
+- 400 Bad Request: 
+  - No token provided
+  - Invalid token format
+  - Token already invalidated
+- 500 Internal Server Error: An unexpected error occurred during logout
+
 ## Available API Groups
 
 ### Authentication

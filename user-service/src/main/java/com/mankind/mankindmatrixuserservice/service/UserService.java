@@ -16,11 +16,15 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @Service
 public class UserService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -71,6 +75,10 @@ public class UserService {
             jwtService.revokeToken(token);
             return true;
         } catch (Exception e) {
+            // Log the exception with a masked token for security
+            String maskedToken = token.length() > 10 ? 
+                token.substring(0, 5) + "..." + token.substring(token.length() - 5) : "***";
+            logger.error("Failed to revoke token: {}", maskedToken, e);
             return false;
         }
     }

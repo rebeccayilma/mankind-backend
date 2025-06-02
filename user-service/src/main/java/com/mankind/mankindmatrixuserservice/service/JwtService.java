@@ -14,6 +14,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +25,8 @@ public class JwtService {
 
     private SecretKey key;
 
-    // Set to store revoked tokens
-    private final Set<String> revokedTokens = new HashSet<>();
+    // Set to store revoked tokens (thread-safe)
+    private final Set<String> revokedTokens = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     @PostConstruct
     public void init() {

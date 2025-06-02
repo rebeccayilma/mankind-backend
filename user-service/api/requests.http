@@ -133,6 +133,8 @@ Authorization: Bearer {{token}}
 # Expected responses:
 # 200 - Logout successful
 # 400 - No token provided
+# 400 - Invalid token format
+# 400 - Token already invalidated
 # 500 - Internal server error
 POST http://localhost:8081/api/v1/auth/logout
 Authorization: Bearer {{token}}
