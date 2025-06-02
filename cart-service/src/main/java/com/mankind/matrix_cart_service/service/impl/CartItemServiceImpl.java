@@ -9,12 +9,10 @@ import com.mankind.matrix_cart_service.model.CartItem;
 import com.mankind.matrix_cart_service.repository.CartItemRepository;
 import com.mankind.matrix_cart_service.repository.CartRepository;
 import com.mankind.matrix_cart_service.service.CartItemService;
-import com.mankind.matrix_cart_service.service.PriceHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -24,7 +22,6 @@ public class CartItemServiceImpl implements CartItemService {
     private final CartItemRepository cartItemRepository;
     private final CartRepository cartRepository;
     private final CartItemMapper cartItemMapper;
-    private final PriceHistoryService priceHistoryService;
 
     @Override
     public List<CartItemResponseDto> getAllCartItems() {
@@ -81,14 +78,8 @@ public class CartItemServiceImpl implements CartItemService {
         CartItem cartItem = cartItemRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", id));
 
-        // Store the old price before updating
-        BigDecimal oldPrice = cartItem.getPriceAtAddition();
-
         cartItemMapper.updateEntityFromDto(cartItemRequestDto, cartItem);
         CartItem updatedCartItem = cartItemRepository.save(cartItem);
-
-        // Record price change if the price has changed
-        priceHistoryService.recordPriceChange(updatedCartItem, oldPrice);
 
         return cartItemMapper.toDto(updatedCartItem);
     }

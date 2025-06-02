@@ -22,22 +22,22 @@ public class CartResponseDto {
     private CartStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    
+
     @Builder.Default
     private List<CartItemResponseDto> cartItems = new ArrayList<>();
-    
+
     // Calculated fields
     private Integer totalItems;
     private BigDecimal subtotal;
-    
+
     // Helper method to calculate totals
     public void calculateTotals() {
         this.totalItems = cartItems.stream()
                 .mapToInt(CartItemResponseDto::getQuantity)
                 .sum();
-        
+
         this.subtotal = cartItems.stream()
-                .map(CartItemResponseDto::getTotalPrice)
+                .map(item -> BigDecimal.valueOf(item.getPrice() * item.getQuantity()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

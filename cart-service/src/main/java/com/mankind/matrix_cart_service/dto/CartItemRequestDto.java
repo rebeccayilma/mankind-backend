@@ -2,13 +2,10 @@ package com.mankind.matrix_cart_service.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
 
 @Data
 @Builder
@@ -23,19 +20,8 @@ public class CartItemRequestDto {
 
     @NotNull(message = "Quantity cannot be null")
     @Min(value = 1, message = "Quantity must be greater than zero")
-    private Integer quantity;
+    private int quantity;
 
-    // Product information for display
-    @Size(max = 255, message = "Product name cannot exceed 255 characters")
-    private String productName;
-
-    @Size(max = 1000, message = "Product image URL cannot exceed 1000 characters")
-    private String productImageUrl;
-
-    // Price tracking
-    @NotNull(message = "Price at addition cannot be null")
-    private BigDecimal priceAtAddition;
-
-    // Save for later functionality
-    private Boolean savedForLater;
+    @NotNull(message = "Price cannot be null")
+    private double price;
 }
