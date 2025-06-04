@@ -55,7 +55,7 @@ For detailed database setup instructions, including:
 - Required tables and schemas
 - Sample data
 
-[View Database Setup Guide →](docs/database/README.md)
+[View Database Setup Guide →](docs/database/README.MD)
 
 After setting up the database, configure the connection in each service:
 
