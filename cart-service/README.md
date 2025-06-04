@@ -63,14 +63,8 @@ The service exposes RESTful endpoints for cart management:
 
 - `GET /api/price-history/cart-item/{cartItemId}` - Get price history for a specific cart item
 
-## Running Locally
 
-```bash
-cd cart-service
-./mvnw spring-boot:run
-```
-
-The service will be available at `http://localhost:8082/swagger-ui.html`
+## The service will be available at `http://localhost:8082/swagger-ui.html`
 
 ## Configuration
 
