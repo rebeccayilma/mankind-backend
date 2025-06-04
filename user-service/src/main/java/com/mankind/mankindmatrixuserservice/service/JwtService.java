@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +24,9 @@ public class JwtService {
     private String secret;
 
     private SecretKey key;
+
+    // Set to store revoked tokens (thread-safe)
+    private final Set<String> revokedTokens = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     @PostConstruct
     public void init() {
@@ -58,6 +65,11 @@ public class JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         try {
+            // Check if token is revoked
+            if (isTokenRevoked(token)) {
+                return false;
+            }
+
             String username = extractUsername(token);
 
             // Check if token is expired
@@ -74,5 +86,22 @@ public class JwtService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    /**
+     * Adds a token to the revoked list
+     * @param token The token to revoke
+     */
+    public void revokeToken(String token) {
+        revokedTokens.add(token);
+    }
+
+    /**
+     * Checks if a token is revoked
+     * @param token The token to check
+     * @return true if the token is revoked, false otherwise
+     */
+    public boolean isTokenRevoked(String token) {
+        return revokedTokens.contains(token);
     }
 }

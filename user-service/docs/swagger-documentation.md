@@ -24,12 +24,26 @@ Most endpoints in the User Service require authentication. To use these endpoint
 3. Enter your JWT token with the Bearer prefix (e.g., `Bearer eyJhbGciOiJIUzI1NiJ9...`)
 4. Click "Authorize" to apply the token to all subsequent requests
 
+To logout and invalidate your token:
+1. Use the `/api/v1/auth/logout` endpoint
+2. The endpoint will automatically extract your token from the Authorization header
+3. The token will be invalidated and can no longer be used for authentication
+
+The logout endpoint can return different responses based on the token status:
+- 200 OK: Logout successful
+- 400 Bad Request: 
+  - No token provided
+  - Invalid token format
+  - Token already invalidated
+- 500 Internal Server Error: An unexpected error occurred during logout
+
 ## Available API Groups
 
 ### Authentication
 Endpoints for user registration and authentication:
 - `POST /api/v1/auth/register` - Register a new user
 - `POST /api/v1/auth/login` - Authenticate a user and get a JWT token
+- `POST /api/v1/auth/logout` - Invalidate a user's JWT token
 
 ### User Management
 Endpoints for managing users and their addresses:
