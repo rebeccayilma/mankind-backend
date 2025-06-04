@@ -44,7 +44,9 @@ Choose one of the following setup options based on your needs:
    mysql -u matrix_user -p'matrix_pass' -e "SHOW DATABASES;"
    ```
 
-2. Insert sample data (optional):
+2. Run the application to create database tables.
+
+3. Insert sample data (optional):
    ```bash
    mysql -u matrix_user -p'matrix_pass' mankind_matrix_db < docs/database/sample_product_insert.sql
    ```

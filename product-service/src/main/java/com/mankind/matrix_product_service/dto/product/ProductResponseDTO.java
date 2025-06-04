@@ -3,6 +3,7 @@ package com.mankind.matrix_product_service.dto.product;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import com.mankind.matrix_product_service.dto.inventory.InventoryStatusDTO;
+import com.mankind.matrix_product_service.dto.category.CategoryResponseDTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -21,8 +22,8 @@ public class ProductResponseDTO {
     @Schema(description = "Detailed description of the product", example = "Latest iPhone model with advanced camera system")
     private String description;
 
-    @Schema(description = "ID of the category this product belongs to", example = "1")
-    private Long categoryId;
+    @Schema(description = "Category information")
+    private CategoryResponseDTO category;
 
     @Schema(description = "SKU (Stock Keeping Unit) of the product", example = "IP13P-256-BLK")
     private String sku;

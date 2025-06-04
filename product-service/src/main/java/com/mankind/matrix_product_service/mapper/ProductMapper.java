@@ -3,6 +3,7 @@ package com.mankind.matrix_product_service.mapper;
 import com.mankind.matrix_product_service.dto.product.ProductDTO;
 import com.mankind.matrix_product_service.dto.product.ProductResponseDTO;
 import com.mankind.matrix_product_service.dto.inventory.InventoryStatusDTO;
+import com.mankind.matrix_product_service.dto.category.CategoryResponseDTO;
 import com.mankind.matrix_product_service.model.Inventory;
 import com.mankind.matrix_product_service.model.Product;
 import org.mapstruct.*;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = {CategoryMapper.class})
 public interface ProductMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "active", constant = "true")
@@ -34,6 +35,7 @@ public interface ProductMapper {
     @Mapping(target = "inventoryStatus", expression = "java(mapInventoryStatus(product.getInventory()))")
     @Mapping(target = "images", source = "images", qualifiedByName = "filterImages")
     @Mapping(target = "specifications", source = "specifications", qualifiedByName = "filterSpecifications")
+    @Mapping(target = "category", source = "category")
     ProductResponseDTO toResponseDTO(Product product);
 
     @Named("filterImages")
