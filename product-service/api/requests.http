@@ -75,6 +75,9 @@ Accept: application/json
 DELETE {{baseUrl}}/api/v1/products/{{id}}
 Accept: application/json
 
+### Recently Viewed Products Management ###
+# See recently-viewed-requests.http for detailed examples
+
 ### Inventory Management ###
 
 ### Create inventory for product
