@@ -27,19 +27,13 @@ http://localhost:8082/api-docs
 The Swagger UI displays all available endpoints grouped by controller:
 
 - **Cart API**
-  - GET /api/carts
   - GET /api/carts/{id}
   - GET /api/carts/user/{userId}/active
   - GET /api/carts/session/{sessionId}/active
-  - GET /api/carts/user/{userId}
-  - GET /api/carts/session/{sessionId}
-  - GET /api/carts/status/{status}
   - POST /api/carts
   - PUT /api/carts/{id}
   - PATCH /api/carts/{id}/status/{status}
   - DELETE /api/carts/{id}
-  - DELETE /api/carts/user/{userId}
-  - DELETE /api/carts/session/{sessionId}
 
 - **Cart Item API**
   - GET /api/cart-items
@@ -50,8 +44,6 @@ The Swagger UI displays all available endpoints grouped by controller:
   - DELETE /api/cart-items/{id}
   - DELETE /api/cart-items/cart/{cartId}
 
-- **Price History API**
-  - GET /api/price-history/cart-item/{cartItemId}
 
 ### For Each Endpoint
 - **Summary**: Brief description of what the endpoint does
@@ -110,27 +102,17 @@ The Swagger UI also provides detailed information about the data models used in 
   - updatedAt: Last update timestamp
   - cartItems: List of items in the cart
   - totalItems: Total number of items in the cart
-  - subtotal: Total price of all items in the cart
+  - subtotal: Sum of all items price * quantity
+  - tax: Calculated tax amount
+  - total: Total price including tax
 
 - **CartItem**: Item in a shopping cart
   - id: Unique identifier
   - cartId: ID of the cart this item belongs to
   - productId: ID of the product
   - quantity: Number of units
-  - productName: Name of the product
-  - productImageUrl: URL to the product image
-  - priceAtAddition: Price of the product when added to cart
-  - totalPrice: Total price (price * quantity)
-  - savedForLater: Whether the item is saved for later
-  - createdAt: Creation timestamp
-  - updatedAt: Last update timestamp
+  - price: Price of the product
 
-- **PriceHistory**: Record of price changes for a cart item
-  - id: Unique identifier
-  - cartItemId: ID of the cart item
-  - oldPrice: Previous price
-  - newPrice: New price
-  - changeDate: Date when the price changed
 
 ## Best Practices
 When using the API through Swagger:

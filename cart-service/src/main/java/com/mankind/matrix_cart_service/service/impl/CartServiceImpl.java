@@ -12,20 +12,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;
     private final CartMapper cartMapper;
-
-    @Override
-    public List<CartResponseDto> getAllCarts() {
-        List<Cart> carts = cartRepository.findAll();
-        return cartMapper.toDtoList(carts);
-    }
 
     @Override
     public CartResponseDto getCartById(Long id) {
@@ -49,26 +41,24 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public List<CartResponseDto> getCartsByUserId(Long userId) {
-        List<Cart> carts = cartRepository.findByUserId(userId);
-        return cartMapper.toDtoList(carts);
-    }
-
-    @Override
-    public List<CartResponseDto> getCartsBySessionId(String sessionId) {
-        List<Cart> carts = cartRepository.findBySessionId(sessionId);
-        return cartMapper.toDtoList(carts);
-    }
-
-    @Override
-    public List<CartResponseDto> getCartsByStatus(CartStatus status) {
-        List<Cart> carts = cartRepository.findByStatus(status);
-        return cartMapper.toDtoList(carts);
-    }
-
-    @Override
     @Transactional
     public CartResponseDto createCart(CartRequestDto cartRequestDto) {
+        // Check if user already has an active cart
+        if (cartRequestDto.getUserId() != null) {
+            cartRepository.findByUserIdAndStatus(cartRequestDto.getUserId(), CartStatus.ACTIVE)
+                    .ifPresent(existingCart -> {
+                        throw new IllegalStateException("User already has an active cart with ID: " + existingCart.getId());
+                    });
+        }
+
+        // Check if session already has an active cart
+        if (cartRequestDto.getSessionId() != null) {
+            cartRepository.findBySessionIdAndStatus(cartRequestDto.getSessionId(), CartStatus.ACTIVE)
+                    .ifPresent(existingCart -> {
+                        throw new IllegalStateException("Session already has an active cart with ID: " + existingCart.getId());
+                    });
+        }
+
         Cart cart = cartMapper.toEntity(cartRequestDto);
         Cart savedCart = cartRepository.save(cart);
         return cartMapper.toDto(savedCart);
@@ -79,7 +69,7 @@ public class CartServiceImpl implements CartService {
     public CartResponseDto updateCart(Long id, CartRequestDto cartRequestDto) {
         Cart cart = cartRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart", "id", id));
-        
+
         cartMapper.updateEntityFromDto(cartRequestDto, cart);
         Cart updatedCart = cartRepository.save(cart);
         return cartMapper.toDto(updatedCart);
@@ -90,7 +80,7 @@ public class CartServiceImpl implements CartService {
     public CartResponseDto updateCartStatus(Long id, CartStatus status) {
         Cart cart = cartRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart", "id", id));
-        
+
         cart.setStatus(status);
         Cart updatedCart = cartRepository.save(cart);
         return cartMapper.toDto(updatedCart);
@@ -103,19 +93,5 @@ public class CartServiceImpl implements CartService {
             throw new ResourceNotFoundException("Cart", "id", id);
         }
         cartRepository.deleteById(id);
-    }
-
-    @Override
-    @Transactional
-    public void deleteCartsByUserId(Long userId) {
-        List<Cart> carts = cartRepository.findByUserId(userId);
-        cartRepository.deleteAll(carts);
-    }
-
-    @Override
-    @Transactional
-    public void deleteCartsBySessionId(String sessionId) {
-        List<Cart> carts = cartRepository.findBySessionId(sessionId);
-        cartRepository.deleteAll(carts);
     }
 }

@@ -1,13 +1,12 @@
 # Cart API Documentation
 
 ## Overview
-The Cart API provides endpoints for managing shopping carts and cart items in the Mankind Matrix system. This API allows clients to create, read, update, and delete carts and cart items, as well as track price history.
+The Cart API provides endpoints for managing shopping carts and cart items in the Mankind Matrix system. This API allows clients to create, read, update, and delete carts and cart items.
 
 ## Base URLs
 ```
 /api/carts
 /api/cart-items
-/api/price-history
 ```
 
 ## Authentication
@@ -17,56 +16,6 @@ Authorization: Bearer <your_jwt_token>
 ```
 
 ## Cart Endpoints
-
-### Get All Carts
-Retrieves a list of all carts.
-
-**Request:**
-```
-GET /api/carts
-```
-
-**Response:**
-```json
-[
-  {
-    "id": 1,
-    "userId": 101,
-    "sessionId": null,
-    "status": "ACTIVE",
-    "createdAt": "2023-05-15T10:30:00Z",
-    "updatedAt": "2023-05-15T10:30:00Z",
-    "cartItems": [
-      {
-        "id": 1,
-        "cartId": 1,
-        "productId": 201,
-        "quantity": 2,
-        "productName": "Product 1",
-        "productImageUrl": "http://example.com/product1.jpg",
-        "priceAtAddition": 19.99,
-        "totalPrice": 39.98,
-        "savedForLater": false,
-        "createdAt": "2023-05-15T10:30:00Z",
-        "updatedAt": "2023-05-15T10:30:00Z"
-      }
-    ],
-    "totalItems": 2,
-    "subtotal": 39.98
-  },
-  {
-    "id": 2,
-    "userId": 102,
-    "sessionId": null,
-    "status": "ACTIVE",
-    "createdAt": "2023-05-16T14:20:00Z",
-    "updatedAt": "2023-05-16T14:20:00Z",
-    "cartItems": [],
-    "totalItems": 0,
-    "subtotal": 0.00
-  }
-]
-```
 
 ### Get Cart by ID
 Retrieves a specific cart by its ID.
@@ -88,23 +37,19 @@ GET /api/carts/{id}
   "status": "ACTIVE",
   "createdAt": "2023-05-15T10:30:00Z",
   "updatedAt": "2023-05-15T10:30:00Z",
+  "subtotal": 39.98,
+  "tax": 4.00,
+  "total": 43.98,
   "cartItems": [
     {
       "id": 1,
       "cartId": 1,
       "productId": 201,
       "quantity": 2,
-      "productName": "Product 1",
-      "productImageUrl": "http://example.com/product1.jpg",
-      "priceAtAddition": 19.99,
-      "totalPrice": 39.98,
-      "savedForLater": false,
-      "createdAt": "2023-05-15T10:30:00Z",
-      "updatedAt": "2023-05-15T10:30:00Z"
+      "price": 19.99
     }
   ],
-  "totalItems": 2,
-  "subtotal": 39.98
+  "totalItems": 2
 }
 ```
 
@@ -128,23 +73,19 @@ GET /api/carts/user/{userId}/active
   "status": "ACTIVE",
   "createdAt": "2023-05-15T10:30:00Z",
   "updatedAt": "2023-05-15T10:30:00Z",
+  "subtotal": 39.98,
+  "tax": 4.00,
+  "total": 43.98,
   "cartItems": [
     {
       "id": 1,
       "cartId": 1,
       "productId": 201,
       "quantity": 2,
-      "productName": "Product 1",
-      "productImageUrl": "http://example.com/product1.jpg",
-      "priceAtAddition": 19.99,
-      "totalPrice": 39.98,
-      "savedForLater": false,
-      "createdAt": "2023-05-15T10:30:00Z",
-      "updatedAt": "2023-05-15T10:30:00Z"
+      "price": 19.99
     }
   ],
-  "totalItems": 2,
-  "subtotal": 39.98
+  "totalItems": 2
 }
 ```
 
@@ -168,23 +109,19 @@ GET /api/carts/session/{sessionId}/active
   "status": "ACTIVE",
   "createdAt": "2023-05-17T09:45:00Z",
   "updatedAt": "2023-05-17T09:45:00Z",
+  "subtotal": 29.99,
+  "tax": 3.00,
+  "total": 32.99,
   "cartItems": [
     {
       "id": 3,
       "cartId": 3,
       "productId": 203,
       "quantity": 1,
-      "productName": "Product 3",
-      "productImageUrl": "http://example.com/product3.jpg",
-      "priceAtAddition": 29.99,
-      "totalPrice": 29.99,
-      "savedForLater": false,
-      "createdAt": "2023-05-17T09:45:00Z",
-      "updatedAt": "2023-05-17T09:45:00Z"
+      "price": 29.99
     }
   ],
-  "totalItems": 1,
-  "subtotal": 29.99
+  "totalItems": 1
 }
 ```
 
@@ -212,9 +149,11 @@ Content-Type: application/json
   "status": "ACTIVE",
   "createdAt": "2023-05-20T09:15:00Z",
   "updatedAt": "2023-05-20T09:15:00Z",
+  "subtotal": 0.00,
+  "tax": 0.00,
+  "total": 0.00,
   "cartItems": [],
-  "totalItems": 0,
-  "subtotal": 0.00
+  "totalItems": 0
 }
 ```
 
@@ -245,9 +184,11 @@ Content-Type: application/json
   "status": "ABANDONED",
   "createdAt": "2023-05-20T09:15:00Z",
   "updatedAt": "2023-05-20T10:25:00Z",
+  "subtotal": 0.00,
+  "tax": 0.00,
+  "total": 0.00,
   "cartItems": [],
-  "totalItems": 0,
-  "subtotal": 0.00
+  "totalItems": 0
 }
 ```
 
@@ -272,9 +213,11 @@ PATCH /api/carts/{id}/status/{status}
   "status": "CONVERTED",
   "createdAt": "2023-05-20T09:15:00Z",
   "updatedAt": "2023-05-20T11:30:00Z",
+  "subtotal": 0.00,
+  "tax": 0.00,
+  "total": 0.00,
   "cartItems": [],
-  "totalItems": 0,
-  "subtotal": 0.00
+  "totalItems": 0
 }
 ```
 
@@ -312,26 +255,14 @@ GET /api/cart-items
     "cartId": 1,
     "productId": 201,
     "quantity": 2,
-    "productName": "Product 1",
-    "productImageUrl": "http://example.com/product1.jpg",
-    "priceAtAddition": 19.99,
-    "totalPrice": 39.98,
-    "savedForLater": false,
-    "createdAt": "2023-05-15T10:30:00Z",
-    "updatedAt": "2023-05-15T10:30:00Z"
+    "price": 19.99
   },
   {
     "id": 2,
     "cartId": 2,
     "productId": 202,
     "quantity": 1,
-    "productName": "Product 2",
-    "productImageUrl": "http://example.com/product2.jpg",
-    "priceAtAddition": 14.99,
-    "totalPrice": 14.99,
-    "savedForLater": false,
-    "createdAt": "2023-05-16T14:20:00Z",
-    "updatedAt": "2023-05-16T14:20:00Z"
+    "price": 14.99
   }
 ]
 ```
@@ -354,13 +285,7 @@ GET /api/cart-items/{id}
   "cartId": 1,
   "productId": 201,
   "quantity": 2,
-  "productName": "Product 1",
-  "productImageUrl": "http://example.com/product1.jpg",
-  "priceAtAddition": 19.99,
-  "totalPrice": 39.98,
-  "savedForLater": false,
-  "createdAt": "2023-05-15T10:30:00Z",
-  "updatedAt": "2023-05-15T10:30:00Z"
+  "price": 19.99
 }
 ```
 
@@ -383,26 +308,14 @@ GET /api/cart-items/cart/{cartId}
     "cartId": 1,
     "productId": 201,
     "quantity": 2,
-    "productName": "Product 1",
-    "productImageUrl": "http://example.com/product1.jpg",
-    "priceAtAddition": 19.99,
-    "totalPrice": 39.98,
-    "savedForLater": false,
-    "createdAt": "2023-05-15T10:30:00Z",
-    "updatedAt": "2023-05-15T10:30:00Z"
+    "price": 19.99
   },
   {
     "id": 4,
     "cartId": 1,
     "productId": 204,
     "quantity": 1,
-    "productName": "Product 4",
-    "productImageUrl": "http://example.com/product4.jpg",
-    "priceAtAddition": 9.99,
-    "totalPrice": 9.99,
-    "savedForLater": true,
-    "createdAt": "2023-05-17T11:20:00Z",
-    "updatedAt": "2023-05-17T11:20:00Z"
+    "price": 9.99
   }
 ]
 ```
@@ -419,10 +332,7 @@ Content-Type: application/json
   "cartId": 1,
   "productId": 205,
   "quantity": 1,
-  "productName": "Product 5",
-  "productImageUrl": "http://example.com/product5.jpg",
-  "priceAtAddition": 24.99,
-  "savedForLater": false
+  "price": 24.99
 }
 ```
 
@@ -433,13 +343,7 @@ Content-Type: application/json
   "cartId": 1,
   "productId": 205,
   "quantity": 1,
-  "productName": "Product 5",
-  "productImageUrl": "http://example.com/product5.jpg",
-  "priceAtAddition": 24.99,
-  "totalPrice": 24.99,
-  "savedForLater": false,
-  "createdAt": "2023-05-20T09:15:00Z",
-  "updatedAt": "2023-05-20T09:15:00Z"
+  "price": 24.99
 }
 ```
 
@@ -455,10 +359,7 @@ Content-Type: application/json
   "cartId": 1,
   "productId": 205,
   "quantity": 2,
-  "productName": "Product 5",
-  "productImageUrl": "http://example.com/product5.jpg",
-  "priceAtAddition": 24.99,
-  "savedForLater": false
+  "price": 24.99
 }
 ```
 
@@ -472,13 +373,7 @@ Content-Type: application/json
   "cartId": 1,
   "productId": 205,
   "quantity": 2,
-  "productName": "Product 5",
-  "productImageUrl": "http://example.com/product5.jpg",
-  "priceAtAddition": 24.99,
-  "totalPrice": 49.98,
-  "savedForLater": false,
-  "createdAt": "2023-05-20T09:15:00Z",
-  "updatedAt": "2023-05-20T10:25:00Z"
+  "price": 24.99
 }
 ```
 
@@ -514,38 +409,6 @@ DELETE /api/cart-items/cart/{cartId}
 204 No Content
 ```
 
-## Price History Endpoints
-
-### Get Price History by Cart Item ID
-Retrieves the price history for a specific cart item.
-
-**Request:**
-```
-GET /api/price-history/cart-item/{cartItemId}
-```
-
-**Path Parameters:**
-- `cartItemId`: Cart item ID
-
-**Response:**
-```json
-[
-  {
-    "id": 1,
-    "cartItemId": 1,
-    "oldPrice": 17.99,
-    "newPrice": 19.99,
-    "changeDate": "2023-05-16T08:30:00Z"
-  },
-  {
-    "id": 2,
-    "cartItemId": 1,
-    "oldPrice": 15.99,
-    "newPrice": 17.99,
-    "changeDate": "2023-05-15T14:45:00Z"
-  }
-]
-```
 
 ## Error Responses
 
@@ -585,4 +448,3 @@ GET /api/price-history/cart-item/{cartItemId}
   "path": "/api/carts"
 }
 ```
-

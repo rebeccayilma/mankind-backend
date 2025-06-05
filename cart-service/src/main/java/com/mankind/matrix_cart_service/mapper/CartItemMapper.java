@@ -35,9 +35,6 @@ public abstract class CartItemMapper {
      */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "cart", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "totalPrice", ignore = true)
     public abstract CartItem toEntity(CartItemRequestDto cartItemRequestDto);
 
     /**
@@ -45,13 +42,10 @@ public abstract class CartItemMapper {
      */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "cart", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "totalPrice", ignore = true)
     public abstract void updateEntityFromDto(CartItemRequestDto cartItemRequestDto, @MappingTarget CartItem cartItem);
 
     /**
-     * After mapping, set the cart and calculate the total price
+     * After mapping, set the cart
      */
     @AfterMapping
     protected void afterMapping(CartItemRequestDto dto, @MappingTarget CartItem entity) {
@@ -60,11 +54,6 @@ public abstract class CartItemMapper {
             Cart cart = cartRepository.findById(dto.getCartId())
                     .orElseThrow(() -> new IllegalArgumentException("Cart not found with ID: " + dto.getCartId()));
             entity.setCart(cart);
-        }
-
-        // Calculate total price
-        if (entity.getPriceAtAddition() != null && entity.getQuantity() != null) {
-            entity.calculateTotalPrice();
         }
     }
 }
