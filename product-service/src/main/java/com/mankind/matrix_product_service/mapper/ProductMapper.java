@@ -79,12 +79,22 @@ public interface ProductMapper {
         return InventoryStatusDTO.builder()
             .productId(inventory.getProduct().getId())
             .productName(inventory.getProduct().getName())
+            .price(inventory.getPrice())
+            .priceDisplay(formatPriceDisplay(inventory.getPrice(), inventory.getCurrency()))
+            .currency(inventory.getCurrency())
             .availableQuantity(inventory.getAvailableQuantity())
             .reservedQuantity(inventory.getReservedQuantity())
             .soldQuantity(inventory.getSoldQuantity())
             .totalQuantity(totalQuantity)
             .status(determineStatus(inventory))
             .build();
+    }
+
+    default String formatPriceDisplay(BigDecimal price, String currency) {
+        if (price == null || currency == null) {
+            return null;
+        }
+        return String.format("%s %.2f", currency, price);
     }
 
     default String determineStatus(Inventory inventory) {

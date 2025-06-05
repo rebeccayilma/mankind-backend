@@ -16,6 +16,15 @@ public class InventoryStatusDTO {
     @Schema(description = "Name of the product", example = "iPhone 13 Pro")
     private String productName;
 
+    @Schema(description = "Price of the product", example = "999.99")
+    private BigDecimal price;
+
+    @Schema(description = "Formatted price display", example = "$999.99")
+    private String priceDisplay;
+
+    @Schema(description = "Currency code for the price", example = "USD")
+    private String currency;
+
     @Schema(description = "Available quantity in stock", example = "10.00")
     private BigDecimal availableQuantity;
 
