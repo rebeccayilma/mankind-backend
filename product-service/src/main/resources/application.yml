@@ -44,3 +44,7 @@ management:
       enabled: true
     readinessState:
       enabled: true
+
+app:
+  recently-viewed:
+    max-items: 10
