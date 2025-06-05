@@ -16,24 +16,8 @@ Comprehensive documentation for this service is available in the [docs](./docs) 
 - [API Documentation](./docs/API-DOCUMENTATION.md) - Detailed API endpoint documentation
 - [Technical Architecture](./docs/TECHNICAL-ARCHITECTURE.md) - Technical design and architecture
 
-## Quick Start
-
-### Prerequisites
-- Java 17 or higher
-- MySQL 8.0 or higher
-- Maven 3.6 or higher
-
-### Running the Service
-1. Configure the database connection in `src/main/resources/application.yml`
-2. Build the service:
-   ```bash
-   mvn clean package
    ```
-3. Run the service:
-   ```bash
-   java -jar target/wishlist-service-0.0.1-SNAPSHOT.jar
-   ```
-4. Access the Swagger UI at: http://localhost:8082/swagger-ui.html
+## Access the Swagger UI at: http://localhost:8082/swagger-ui.html
 
 ## API Endpoints
 - `POST /api/wishlist` - Add item to wishlist

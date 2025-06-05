@@ -2,220 +2,337 @@
 
 This repository contains the backend microservices for the **Mankind Matrix AI** platform.
 
-## Services
+## Quick Start
 
-### `user-service/`
-- Handles user registration, login, and authentication
-- Secured using JWT (JSON Web Tokens)
-- Role-based access control
-- Centralized exception handling and error responses
+This project can be run in two ways:
 
-### `product-service/`
-- Manages product catalog with full CRUD operations
-- Supports category-based filtering and searching
-- Includes sample SQL scripts and Postman collection
----
-# Setup Guide
+1. **Local Development** - Run services directly on your machine
+   - Requires: JDK 17, MySQL, Maven
+   - Best for: Development and debugging
+   - [Jump to Local Setup →](#local-development)
+
+2. **Docker Environment** - Run services in containers
+   - Requires: Docker and Docker Compose
+   - Best for: Production-like environment and quick setup
+   - [Jump to Docker Setup →](#docker-environment)
+
+Choose your preferred method based on your needs. Docker is recommended for most users as it provides a consistent environment and simpler setup.
+
+## Setup Guide
+
+### Clone Repository
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/rebeccayilma/mankind-backend.git
+   cd mankind-backend
+   ```
+
+2. **Verify the Clone**
+   ```bash
+   # List all services
+   ls
+   
+   # Expected output should include:
+   # user-service/
+   # product-service/
+   # cart-service/
+   # wishlist-service/
+   # docs/
+   # README.md
+   ```
+
+### Database Setup
+
+Before running the services, you need to have a MySQL database running. You have two options:
+
+1. **Local Database**: Run MySQL on your machine
+2. **External Database**: Use a remote MySQL database
+
+For detailed database setup instructions, including:
+- Database creation
+- User setup
+- Required tables and schemas
+- Sample data
+
+[View Database Setup Guide →](docs/database/README.MD)
+
+After setting up the database, configure the connection in each service:
+
+1. Copy the `.env.example` file from the root directory to each service directory:
+   ```bash
+   # From the root directory
+   cp .env.example user-service/.env
+   cp .env.example product-service/.env
+   cp .env.example cart-service/.env
+   cp .env.example wishlist-service/.env
+   ```
+
+2. Update the database connection variables in each service's `.env` file:
+   - `DB_HOST`: Your database host (localhost or remote)
+   - `DB_USERNAME`: Your database username
+   - `DB_PASSWORD`: Your database password
+   - Other variables can remain as they are in the example file
+
+> **Note:** The `.env.example` file in the root directory contains all necessary configuration variables with sample values. You only need to update the database connection details in each service's `.env` file.
 
 ### Prerequisites
 
+#### Local Development
 - **Java**: JDK 17
 - **MySQL**: 8.0 or newer
-- **Git**: For version control and repository cloning
+- **Maven**: For building the project
 
-### Installation Steps
+#### Docker Environment
+- **Docker**: For containerization
+- **Docker Compose**: For multi-container orchestration
 
-#### 1. Install Java (JDK 17)
+> **Note:** You only need to install the prerequisites for your chosen method. If you're using Docker, you don't need to install Java, MySQL, or Maven locally.
 
+### Installation
+
+#### Local Development
+
+##### Java (JDK 17)
 <details>
-<summary><b>macOS</b></summary>
+<summary><b>Installation Instructions</b></summary>
 
-1. Install Homebrew (if not already installed)
+###### macOS
 ```bash
+# Install Homebrew (if not already installed)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
 
-2. Install Java using Homebrew
-```bash
+# Install Java
 brew install openjdk@17
-```
 
-3. Create Java symlink
-```bash
+# Create Java symlink
 sudo ln -sfn $(brew --prefix)/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-17.jdk
 ```
-</details>
 
-<details>
-<summary><b>Windows</b></summary>
-
+###### Windows
 1. Download OpenJDK 17 from [Adoptium](https://adoptium.net/)
 2. Run the installer
 3. Configure environment: Set JAVA_HOME in System Environment Variables
-</details>
 
-<details>
-<summary><b>Linux (Ubuntu/Debian)</b></summary>
-
-1. Update system packages
+###### Linux (Ubuntu/Debian)
 ```bash
 sudo apt update
-```
-
-2. Install Java JDK
-```bash
 sudo apt install openjdk-17-jdk
 ```
 </details>
 
-#### 2. Install MySQL
-
+##### MySQL
 <details>
-<summary><b>macOS</b></summary>
+<summary><b>Installation Instructions</b></summary>
 
-1. Install MySQL using Homebrew
+###### macOS
 ```bash
 brew install mysql
-```
-
-2. Start MySQL service
-```bash
 brew services start mysql
 ```
-</details>
 
-<details>
-<summary><b>Windows</b></summary>
-
+###### Windows
 1. Download MySQL Installer from [MySQL Website](https://dev.mysql.com/downloads/installer/)
 2. Choose "Server only" or "Custom" installation type
-3. Follow the setup wizard (remember to note your root password)
-</details>
+3. Follow the setup wizard
 
-<details>
-<summary><b>Linux (Ubuntu/Debian)</b></summary>
-
-Install MySQL Server:
+###### Linux (Ubuntu/Debian)
 ```bash
 sudo apt install mysql-server
 ```
 </details>
 
-#### 3. Verify Installation
+#### Docker Environment
 
+##### Docker and Docker Compose
 <details>
-<summary>Check installed versions</summary>
+<summary><b>Installation Instructions</b></summary>
 
+###### macOS
+1. Install Docker Desktop for Mac
+   - Download from [Docker's official website](https://www.docker.com/products/docker-desktop)
+   - Docker Desktop includes both Docker Engine and Docker Compose
+   - Follow the installation wizard
+
+###### Windows
+1. Install Docker Desktop for Windows
+   - Download from [Docker's official website](https://www.docker.com/products/docker-desktop)
+   - Ensure WSL 2 is installed (Docker Desktop will prompt if not)
+   - Docker Desktop includes both Docker Engine and Docker Compose
+   - Follow the installation wizard
+
+###### Linux (Ubuntu/Debian)
 ```bash
-# Verify Java version (should display version 17.x)
-java --version
+# Update package index
+sudo apt-get update
 
-# Verify MySQL version
-mysql --version
+# Install prerequisites
+sudo apt-get install \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+
+# Add Docker's official GPG key
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+# Set up the repository
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Install Docker Engine and Docker Compose
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 ```
 </details>
----
 
-## Project Setup
+## Services
 
+Each service has its own detailed documentation. Click on the service name to view its specific README:
 
-### 1. Clone the Repository
+### Available Services
+- [`user-service/`](user-service/README.md)
+- [`product-service/`](product-service/README.md)
+- [`cart-service/`](cart-service/README.md)
+- [`wishlist-service/`](wishlist-service/README.md)
 
-```bash
-git clone https://github.com/rebeccayilma/mankind-backend.git
-```
+> **Note:** Each service's README contains specific setup instructions, API documentation, and additional details about that service.
 
-### 2. Configure Environment
+## Running the Services
 
-1. Copy the example environment file inside of each microservice folder
-2. Update the `.env` file with your database connection details. Example bellow:
+### Local Development
 
-```properties
-# Database Configuration
-DB_HOST=mankind-matrix-db.cd0qkick6gy2.us-west-1.rds.amazonaws.com
-DB_PORT=3306
-DB_NAME=mankind_matrix_db
-DB_USERNAME=matrix_user
-DB_PASSWORD=matrix_pass
+#### Prerequisites
+- JDK 17
+- MySQL 8.0+
+- Maven
 
-# Database Connection Properties
-DB_CONNECT_TIMEOUT=60000
-DB_SOCKET_TIMEOUT=60000
-DB_USE_SSL=false
-DB_ALLOW_PUBLIC_KEY_RETRIEVAL=true
-DB_SERVER_TIMEZONE=UTC
-DB_AUTO_RECONNECT=true
-DB_FAIL_OVER_READ_ONLY=false
+#### Steps
 
-# Hikari Connection Pool Settings
-DB_HIKARI_MAX_POOL_SIZE=10
-DB_HIKARI_MIN_IDLE=5
-DB_HIKARI_CONNECTION_TIMEOUT=60000
-DB_HIKARI_IDLE_TIMEOUT=300000
-DB_HIKARI_MAX_LIFETIME=1200000
-```
+1. **Configure Environment**
+   - Copy `.env.example` to `.env` in each microservice directory
+   - Update the database connection details in each `.env` file
+   - For detailed database configuration, see [Database Setup](#database-setup) section
 
-### 3. Database Configuration
+2. **Build the Services**
+   ```bash
+   # Build all services at once
+   mvn clean install
+   
+   # OR build individually
+   cd user-service
+   ./mvnw clean install
+   
+   cd ../product-service
+   ./mvnw clean install
+   ```
 
-If you haven't set up the database yet, please follow the [Database Setup Guide](product-service/scripts/README.MD).
+3. **Run Each Service**
+   ```bash
+   # Start user-service
+   cd user-service
+   ./mvnw spring-boot:run
+   
+   # In a new terminal, start product-service
+   cd product-service
+   ./mvnw spring-boot:run
+   ```
 
----
+**Service URLs (Local):**
+- Product Service: `http://localhost:8080/swagger-ui/index.html`
+- User Service: `http://localhost:8081/swagger-ui/index.html`
+- Cart Service: `http://localhost:8082/swagger-ui/index.html`
+- Wishlist Service: `http://localhost:8083/swagger-ui/index.html`
 
-##  Build Instructions
+### Docker Environment
 
-To build **all services at once** from the root:
+#### Prerequisites
+- Docker
+- Docker Compose
 
-```bash
-mvn clean install
-```
+#### Steps
 
-Or build each microservice individually:
+1. **Verify Docker Installation**
+   ```bash
+   # Check if Docker is running
+   docker info
+   ```
 
-```bash
-cd user-service
-./mvnw clean install
+2. **Configure Environment**
+   - Copy `.env.example` to `.env` in each microservice directory
+   - Update the database connection details in each `.env` file
+   - For detailed database configuration, see [Database Setup](#database-setup) section
 
-cd ../product-service
-./mvnw clean install
-```
+3. **Run All Services**
+   ```bash
+   # Build and start all services
+   docker-compose up --build
+   
+   # OR run in detached mode (background)
+   docker-compose up -d --build
+   ```
 
----
+4. **Manage Docker Services**
+   ```bash
+   # Check running containers
+   docker-compose ps
+   
+   # View logs for all services
+   docker-compose logs
+   
+   # View logs for a specific service
+   docker-compose logs product-service
+   
+   # Stop all services
+   docker-compose down
+   ```
 
-## Running Services Locally
+**Service URLs (Docker):**
+- Product Service: `http://localhost:8080/swagger-ui/index.html`
+- User Service: `http://localhost:8081/swagger-ui/index.html`
+- Cart Service: `http://localhost:8082/swagger-ui/index.html`
+- Wishlist Service: `http://localhost:8083/swagger-ui/index.html`
 
-Each service is a Spring Boot application and runs independently:
+**Note for Apple Silicon (M1/M2) Users:**
+The Docker setup is configured to use `--platform=linux/amd64` for compatibility. Docker Desktop will handle the emulation automatically.
 
-```bash
-# Start user-service
-cd user-service
-./mvnw spring-boot:run
-```
+## Deployment
 
-```bash
-# Start product-service
-cd ../product-service
-./mvnw spring-boot:run
-```
+The Mankind Matrix AI Backend can be deployed on different cloud platforms. Choose the platform that best suits your needs:
 
-They run on separate ports and are accessible at:
+### AWS Deployment
+For deploying to Amazon Web Services (AWS), including:
+- EC2 (Elastic Compute Cloud) instance setup
+- VPC
+- IAM User
 
-- `http://localhost:8081/swagger-ui.html` (user-service)
-- `http://localhost:8080/swagger-ui.html` (product-service)
+[View AWS Deployment Guide →](docs/deploy/AWS-DEPLOY.md)
 
----
+### Render Deployment
+For deploying to Render.com, including:
+- Web service setup
+- Database configuration
+- Environment variables management
+- Automatic deployments
 
-## Monorepo Structure
+[View Render Deployment Guide →](docs/deploy/RENDER-DEPLOY.md)
+
+> **Note:** Each deployment guide contains platform-specific instructions, cost considerations, and best practices. Choose the platform that best fits your requirements and budget.
+
+## Project Structure
 
 ```
 mankind-backend/
 ├── user-service/         # Handles user authentication & management
 ├── product-service/      # Handles product catalog functionality
-├── README.md             # Project overview and instructions
+|--...                    # Other services
+├── docs/                 # Documentation
+│   └── deploy/          # Deployment guides
+├── README.md            # Project overview and instructions
 ```
 
-
----
-
-##  Contributing
+## Contributing
 
 Create a branch for the feature you are working on and when done, create a Pull request and share it for review before merging.

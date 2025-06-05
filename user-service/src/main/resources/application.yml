@@ -42,3 +42,19 @@ springdoc:
     tagsSorter: alpha
     tryItOutEnabled: true
   packages-to-scan: com.mankind.mankindmatrixuserservice.controller
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
