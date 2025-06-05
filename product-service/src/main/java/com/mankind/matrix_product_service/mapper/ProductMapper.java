@@ -94,7 +94,7 @@ public interface ProductMapper {
         if (price == null || currency == null) {
             return null;
         }
-        return String.format("%s %.2f", currency, price);
+        return String.format("%s %.2f", currency, price.doubleValue());
     }
 
     default String determineStatus(Inventory inventory) {
