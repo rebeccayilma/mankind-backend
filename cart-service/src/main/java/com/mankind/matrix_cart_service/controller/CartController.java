@@ -12,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/carts")
 @RequiredArgsConstructor
@@ -21,12 +19,6 @@ import java.util.List;
 public class CartController {
 
     private final CartService cartService;
-
-    @GetMapping
-    @Operation(summary = "Get all carts", description = "Retrieves a list of all carts")
-    public ResponseEntity<List<CartResponseDto>> getAllCarts() {
-        return ResponseEntity.ok(cartService.getAllCarts());
-    }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get cart by ID", description = "Retrieves a cart by its ID")
@@ -44,24 +36,6 @@ public class CartController {
     @Operation(summary = "Get active cart by session ID", description = "Retrieves the active cart for a specific session")
     public ResponseEntity<CartResponseDto> getActiveCartBySessionId(@PathVariable String sessionId) {
         return ResponseEntity.ok(cartService.getActiveCartBySessionId(sessionId));
-    }
-
-    @GetMapping("/user/{userId}")
-    @Operation(summary = "Get carts by user ID", description = "Retrieves all carts for a specific user")
-    public ResponseEntity<List<CartResponseDto>> getCartsByUserId(@PathVariable Long userId) {
-        return ResponseEntity.ok(cartService.getCartsByUserId(userId));
-    }
-
-    @GetMapping("/session/{sessionId}")
-    @Operation(summary = "Get carts by session ID", description = "Retrieves all carts for a specific session")
-    public ResponseEntity<List<CartResponseDto>> getCartsBySessionId(@PathVariable String sessionId) {
-        return ResponseEntity.ok(cartService.getCartsBySessionId(sessionId));
-    }
-
-    @GetMapping("/status/{status}")
-    @Operation(summary = "Get carts by status", description = "Retrieves all carts with a specific status")
-    public ResponseEntity<List<CartResponseDto>> getCartsByStatus(@PathVariable CartStatus status) {
-        return ResponseEntity.ok(cartService.getCartsByStatus(status));
     }
 
     @PostMapping
@@ -90,20 +64,6 @@ public class CartController {
     @Operation(summary = "Delete cart", description = "Deletes a cart")
     public ResponseEntity<Void> deleteCart(@PathVariable Long id) {
         cartService.deleteCart(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/user/{userId}")
-    @Operation(summary = "Delete carts by user ID", description = "Deletes all carts for a specific user")
-    public ResponseEntity<Void> deleteCartsByUserId(@PathVariable Long userId) {
-        cartService.deleteCartsByUserId(userId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/session/{sessionId}")
-    @Operation(summary = "Delete carts by session ID", description = "Deletes all carts for a specific session")
-    public ResponseEntity<Void> deleteCartsBySessionId(@PathVariable String sessionId) {
-        cartService.deleteCartsBySessionId(sessionId);
         return ResponseEntity.noContent().build();
     }
 }

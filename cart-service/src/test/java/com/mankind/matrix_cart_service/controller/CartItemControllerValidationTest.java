@@ -12,9 +12,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -41,10 +38,7 @@ public class CartItemControllerValidationTest {
                 .cartId(101L)
                 .productId(201L)
                 .quantity(2)
-                .productName("Test Product")
-                .productImageUrl("http://example.com/image.jpg")
-                .priceAtAddition(new BigDecimal("19.99"))
-                .savedForLater(false)
+                .price(19.99)
                 .build();
     }
 
@@ -55,10 +49,7 @@ public class CartItemControllerValidationTest {
                 .cartId(null) // Invalid: cartId is null
                 .productId(validRequestDto.getProductId())
                 .quantity(validRequestDto.getQuantity())
-                .productName(validRequestDto.getProductName())
-                .productImageUrl(validRequestDto.getProductImageUrl())
-                .priceAtAddition(validRequestDto.getPriceAtAddition())
-                .savedForLater(validRequestDto.getSavedForLater())
+                .price(validRequestDto.getPrice())
                 .build();
         String requestBody = objectMapper.writeValueAsString(invalidDto);
 
@@ -77,10 +68,7 @@ public class CartItemControllerValidationTest {
                 .cartId(validRequestDto.getCartId())
                 .productId(null) // Invalid: productId is null
                 .quantity(validRequestDto.getQuantity())
-                .productName(validRequestDto.getProductName())
-                .productImageUrl(validRequestDto.getProductImageUrl())
-                .priceAtAddition(validRequestDto.getPriceAtAddition())
-                .savedForLater(validRequestDto.getSavedForLater())
+                .price(validRequestDto.getPrice())
                 .build();
         String requestBody = objectMapper.writeValueAsString(invalidDto);
 
@@ -93,38 +81,13 @@ public class CartItemControllerValidationTest {
     }
 
     @Test
-    void shouldReturnBadRequestWhenQuantityIsNull() throws Exception {
-        // Arrange
-        CartItemRequestDto invalidDto = CartItemRequestDto.builder()
-                .cartId(validRequestDto.getCartId())
-                .productId(validRequestDto.getProductId())
-                .quantity(null) // Invalid: quantity is null
-                .productName(validRequestDto.getProductName())
-                .productImageUrl(validRequestDto.getProductImageUrl())
-                .priceAtAddition(validRequestDto.getPriceAtAddition())
-                .savedForLater(validRequestDto.getSavedForLater())
-                .build();
-        String requestBody = objectMapper.writeValueAsString(invalidDto);
-
-        // Act & Assert
-        mockMvc.perform(post("/api/cart-items")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors.quantity").value("Quantity cannot be null"));
-    }
-
-    @Test
     void shouldReturnBadRequestWhenQuantityIsZero() throws Exception {
         // Arrange
         CartItemRequestDto invalidDto = CartItemRequestDto.builder()
                 .cartId(validRequestDto.getCartId())
                 .productId(validRequestDto.getProductId())
                 .quantity(0) // Invalid: quantity is zero
-                .productName(validRequestDto.getProductName())
-                .productImageUrl(validRequestDto.getProductImageUrl())
-                .priceAtAddition(validRequestDto.getPriceAtAddition())
-                .savedForLater(validRequestDto.getSavedForLater())
+                .price(validRequestDto.getPrice())
                 .build();
         String requestBody = objectMapper.writeValueAsString(invalidDto);
 
@@ -143,10 +106,7 @@ public class CartItemControllerValidationTest {
                 .cartId(validRequestDto.getCartId())
                 .productId(validRequestDto.getProductId())
                 .quantity(-1) // Invalid: quantity is negative
-                .productName(validRequestDto.getProductName())
-                .productImageUrl(validRequestDto.getProductImageUrl())
-                .priceAtAddition(validRequestDto.getPriceAtAddition())
-                .savedForLater(validRequestDto.getSavedForLater())
+                .price(validRequestDto.getPrice())
                 .build();
         String requestBody = objectMapper.writeValueAsString(invalidDto);
 
@@ -159,17 +119,13 @@ public class CartItemControllerValidationTest {
     }
 
     @Test
-    void shouldReturnBadRequestWhenProductNameExceedsMaxLength() throws Exception {
+    void shouldReturnBadRequestWhenPriceIsZero() throws Exception {
         // Arrange
-        String longName = "a".repeat(256); // 256 characters, exceeding the 255 limit
         CartItemRequestDto invalidDto = CartItemRequestDto.builder()
                 .cartId(validRequestDto.getCartId())
                 .productId(validRequestDto.getProductId())
                 .quantity(validRequestDto.getQuantity())
-                .productName(longName) // Invalid: productName exceeds max length
-                .productImageUrl(validRequestDto.getProductImageUrl())
-                .priceAtAddition(validRequestDto.getPriceAtAddition())
-                .savedForLater(validRequestDto.getSavedForLater())
+                .price(0) // Using 0 to test price validation
                 .build();
         String requestBody = objectMapper.writeValueAsString(invalidDto);
 
@@ -177,8 +133,7 @@ public class CartItemControllerValidationTest {
         mockMvc.perform(post("/api/cart-items")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors.productName").value("Product name cannot exceed 255 characters"));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -192,13 +147,7 @@ public class CartItemControllerValidationTest {
                 .cartId(validRequestDto.getCartId())
                 .productId(validRequestDto.getProductId())
                 .quantity(validRequestDto.getQuantity())
-                .productName(validRequestDto.getProductName())
-                .productImageUrl(validRequestDto.getProductImageUrl())
-                .priceAtAddition(validRequestDto.getPriceAtAddition())
-                .totalPrice(new BigDecimal("39.98")) // 19.99 * 2
-                .savedForLater(validRequestDto.getSavedForLater())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .price(validRequestDto.getPrice())
                 .build();
 
         when(cartItemService.createCartItem(any(CartItemRequestDto.class))).thenReturn(responseDto);

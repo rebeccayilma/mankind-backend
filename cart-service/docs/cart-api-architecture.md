@@ -18,10 +18,6 @@ This document provides a comprehensive overview of the Cart API architecture in 
   - Maps between DTOs and service layer
   - Handles HTTP status codes and response formatting
 
-- **PriceHistoryController**: Handles HTTP requests and responses for price history operations
-  - Implements RESTful endpoints for retrieving price history
-  - Maps between DTOs and service layer
-  - Handles HTTP status codes and response formatting
 
 ### Business Logic Layer
 - **CartService**: Implements core business logic for cart operations
@@ -35,11 +31,7 @@ This document provides a comprehensive overview of the Cart API architecture in 
   - Orchestrates operations across repositories
   - Handles transactional boundaries
   - Implements business-specific operations like quantity updates
-  - Tracks price changes through PriceHistoryService
 
-- **PriceHistoryService**: Implements core business logic for price history operations
-  - Records price changes for cart items
-  - Retrieves price history for cart items
 
 ### Data Access Layer
 - **CartRepository**: Manages database interactions for carts
@@ -52,32 +44,22 @@ This document provides a comprehensive overview of the Cart API architecture in 
   - Implements custom query methods (findByCart, findByCartId)
   - Handles database-specific operations
 
-- **PriceHistoryRepository**: Manages database interactions for price history
-  - Extends JpaRepository for standard CRUD operations
-  - Implements custom query methods (findByCartItemIdOrderByChangeDateDesc)
-  - Handles database-specific operations
 
 ### Domain Model Layer
 - **Cart**: Parent entity that represents a shopping cart
   - Belongs to a user or a guest session
   - Has a status (ACTIVE, CONVERTED, ABANDONED, REMOVED)
   - Contains multiple cart items
+  - Includes calculated fields (subtotal, tax, total)
   - Implements lifecycle hooks (onCreate, onUpdate)
-  - Provides helper methods for managing cart items
+  - Provides helper methods for managing cart items and calculating totals
 
 - **CartItem**: Child entity that represents a product in a cart
   - Belongs to a cart
-  - References a product
-  - Stores product information (name, image URL)
-  - Tracks price at addition and calculates total price
-  - Supports "save for later" functionality
-  - Implements lifecycle hooks (onCreate, onUpdate)
+  - References a product by productId
+  - Stores quantity and price
+  - Minimal design that relies on product service for product details
 
-- **PriceHistory**: Entity that tracks price changes for cart items
-  - References a cart item
-  - Stores old and new prices
-  - Records the date of the price change
-  - Implements lifecycle hooks (onCreate)
 
 - **CartStatus**: Enum that defines possible cart statuses
   - ACTIVE: Cart is currently in use
@@ -104,9 +86,6 @@ This document provides a comprehensive overview of the Cart API architecture in 
   - Used for client-server communication
   - Contains all cart item fields including timestamps
 
-- **PriceHistoryResponseDto**: External representation for price history output data
-  - Used for client-server communication
-  - Contains all price history fields including timestamps
 
 ### Cross-Cutting Concerns
 - **Exception Handling**: GlobalExceptionHandler for consistent error responses
@@ -122,7 +101,6 @@ This document provides a comprehensive overview of the Cart API architecture in 
 - **Mapping**: Object mapping between entities and DTOs
   - CartMapper for mapping between Cart and CartRequestDto/CartResponseDto
   - CartItemMapper for mapping between CartItem and CartItemRequestDto/CartItemResponseDto
-  - PriceHistoryMapper for mapping between PriceHistory and PriceHistoryResponseDto
 
 - **Security**: Authentication and authorization for API endpoints
   - JWT-based authentication
@@ -145,19 +123,13 @@ This document provides a comprehensive overview of the Cart API architecture in 
 ## API Endpoints
 
 ### Cart Endpoints
-- `GET /api/carts`: Retrieve all carts
 - `GET /api/carts/{id}`: Retrieve a specific cart by ID
 - `GET /api/carts/user/{userId}/active`: Retrieve active cart for a specific user
 - `GET /api/carts/session/{sessionId}/active`: Retrieve active cart for a specific session
-- `GET /api/carts/user/{userId}`: Retrieve all carts for a specific user
-- `GET /api/carts/session/{sessionId}`: Retrieve all carts for a specific session
-- `GET /api/carts/status/{status}`: Retrieve all carts with a specific status
 - `POST /api/carts`: Create a new cart
 - `PUT /api/carts/{id}`: Update an existing cart
 - `PATCH /api/carts/{id}/status/{status}`: Update the status of a cart
 - `DELETE /api/carts/{id}`: Delete a cart
-- `DELETE /api/carts/user/{userId}`: Delete all carts for a specific user
-- `DELETE /api/carts/session/{sessionId}`: Delete all carts for a specific session
 
 ### Cart Item Endpoints
 - `GET /api/cart-items`: Retrieve all cart items
@@ -168,8 +140,6 @@ This document provides a comprehensive overview of the Cart API architecture in 
 - `DELETE /api/cart-items/{id}`: Delete a cart item
 - `DELETE /api/cart-items/cart/{cartId}`: Delete all cart items for a specific cart
 
-### Price History Endpoints
-- `GET /api/price-history/cart-item/{cartItemId}`: Retrieve price history for a specific cart item
 
 ## Error Handling Strategy
 - Use of specific exceptions (ResourceNotFoundException, BadRequestException)
