@@ -72,6 +72,7 @@ public interface ProductMapper {
                 .soldQuantity(BigDecimal.ZERO)
                 .totalQuantity(BigDecimal.ZERO)
                 .status("NO_INVENTORY")
+                .maxQuantityPerPurchase(null)
                 .build();
         }
 
@@ -87,6 +88,7 @@ public interface ProductMapper {
             .soldQuantity(inventory.getSoldQuantity())
             .totalQuantity(totalQuantity)
             .status(determineStatus(inventory))
+            .maxQuantityPerPurchase(inventory.getMaxQuantityPerPurchase())
             .build();
     }
 

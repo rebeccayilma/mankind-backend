@@ -63,12 +63,6 @@ public class InventoryService {
                 .orElseThrow(() -> new ResourceNotFoundException("Inventory not found for product: " + productId));
     }
 
-    public InventoryStatusDTO getInventoryStatus(Long productId) {
-        return inventoryRepository.findByProductId(productId)
-                .map(inventoryMapper::toStatusDTO)
-                .orElseThrow(() -> new ResourceNotFoundException("Inventory not found for product: " + productId));
-    }
-
     @Transactional
     public InventoryResponseDTO updateInventory(Long productId, InventoryDTO inventoryDTO) {
         Inventory inventory = inventoryRepository.findByProductId(productId)

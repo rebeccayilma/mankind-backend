@@ -44,4 +44,7 @@ public class InventoryResponseDTO {
 
     @Schema(description = "Maximum quantity allowed per purchase. If not set, no limit will be applied", example = "5")
     private BigDecimal maxQuantityPerPurchase;
+
+    @Schema(description = "Current inventory status", example = "IN_STOCK", allowableValues = {"NO_INVENTORY", "OUT_OF_STOCK", "IN_STOCK"})
+    private String status;
 } 
