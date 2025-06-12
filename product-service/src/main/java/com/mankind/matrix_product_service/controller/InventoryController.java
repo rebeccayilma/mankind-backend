@@ -36,13 +36,6 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryService.getInventoryByProductId(productId));
     }
 
-    @GetMapping("/{productId}/status")
-    @Operation(summary = "Get inventory status", description = "Retrieves simplified inventory status for a product")
-    public ResponseEntity<InventoryStatusDTO> getInventoryStatus(
-            @PathVariable Long productId) {
-        return ResponseEntity.ok(inventoryService.getInventoryStatus(productId));
-    }
-
     @PutMapping("/{productId}")
     @Operation(summary = "Update inventory", description = "Updates inventory stock and/or price information")
     public ResponseEntity<InventoryResponseDTO> updateInventory(
