@@ -30,13 +30,13 @@ public class ReturnedItemService {
     public ReturnedItemResponseDTO createReturnedItem(ReturnedItemDTO returnedItemDTO) {
         // Validate that the product exists
         validateProductId(returnedItemDTO.getProductId());
-        
+
         // Convert DTO to entity
         ReturnedItem returnedItem = returnedItemMapper.toEntity(returnedItemDTO);
-        
+
         // Save the entity
         ReturnedItem savedReturnedItem = returnedItemRepository.save(returnedItem);
-        
+
         // Convert entity to response DTO
         return returnedItemMapper.toResponseDTO(savedReturnedItem);
     }
@@ -102,16 +102,16 @@ public class ReturnedItemService {
     public ReturnedItemResponseDTO updateReturnedItem(Long id, ReturnedItemDTO returnedItemDTO) {
         // Validate that the product exists
         validateProductId(returnedItemDTO.getProductId());
-        
+
         // Find the returned item
         ReturnedItem returnedItem = findReturnedItemById(id);
-        
+
         // Update the entity
         returnedItemMapper.updateEntity(returnedItem, returnedItemDTO);
-        
+
         // Save the updated entity
         ReturnedItem updatedReturnedItem = returnedItemRepository.save(returnedItem);
-        
+
         // Convert entity to response DTO
         return returnedItemMapper.toResponseDTO(updatedReturnedItem);
     }
@@ -125,7 +125,7 @@ public class ReturnedItemService {
     public void deleteReturnedItem(Long id) {
         // Find the returned item
         ReturnedItem returnedItem = findReturnedItemById(id);
-        
+
         // Delete the entity
         returnedItemRepository.delete(returnedItem);
     }
