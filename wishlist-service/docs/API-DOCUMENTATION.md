@@ -7,7 +7,7 @@ This document provides detailed information about the REST API endpoints exposed
 All API endpoints are relative to the base URL:
 
 ```
-http://localhost:8082/api/wishlist
+http://localhost:8083/api/wishlist
 ```
 
 ## Authentication
@@ -51,7 +51,7 @@ Adds a product to a user's wishlist.
 
 **Example:**
 ```http
-POST http://localhost:8082/api/wishlist?userId=1&productId=100
+POST http://localhost:8083/api/wishlist?userId=1&productId=100
 Accept: application/json
 ```
 
@@ -92,7 +92,7 @@ Retrieves all items in a user's wishlist.
 
 **Example:**
 ```http
-GET http://localhost:8082/api/wishlist/1
+GET http://localhost:8083/api/wishlist/1
 Accept: application/json
 ```
 
@@ -122,7 +122,7 @@ Removes a product from a user's wishlist.
 
 **Example:**
 ```http
-DELETE http://localhost:8082/api/wishlist?userId=1&productId=100
+DELETE http://localhost:8083/api/wishlist?userId=1&productId=100
 Accept: application/json
 ```
 
@@ -152,7 +152,7 @@ Checks if a product is in a user's wishlist.
 
 **Example:**
 ```http
-GET http://localhost:8082/api/wishlist/check?userId=1&productId=100
+GET http://localhost:8083/api/wishlist/check?userId=1&productId=100
 Accept: application/json
 ```
 
@@ -187,7 +187,7 @@ You can test the API using the provided `requests.http` file in the `api` direct
 Alternatively, you can use the Swagger UI interface available at:
 
 ```
-http://localhost:8082/swagger-ui.html
+http://localhost:8083/swagger-ui.html
 ```
 
 This provides an interactive documentation where you can try out the API endpoints directly from your browser.

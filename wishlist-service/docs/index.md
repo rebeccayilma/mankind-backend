@@ -24,7 +24,7 @@ Welcome to the Wishlist Service documentation. This documentation provides compr
 ### Swagger UI
 When the service is running, you can access the interactive API documentation at:
 ```
-http://localhost:8082/swagger-ui.html
+http://localhost:8083/swagger-ui.html
 ```
 
 ### Example Requests
@@ -33,7 +33,7 @@ Example API requests can be found in the [api/requests.http](../api/requests.htt
 ## Service Information
 
 - **Service Name**: matrix-wishlist-service
-- **Port**: 8082
+- **Port**: 8083
 - **Database**: MySQL (wishlistdb)
 - **Java Version**: 17
 - **Spring Boot Version**: 3.2.5

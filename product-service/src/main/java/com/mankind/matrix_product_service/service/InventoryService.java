@@ -225,4 +225,36 @@ public class InventoryService {
                 .map(inventoryLogMapper::toDTO)
                 .toList();
     }
+
+    @Transactional
+    public InventoryResponseDTO markProductOutOfStock(Long productId, String reason) {
+        Inventory inventory = inventoryRepository.findByProductId(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Inventory not found for product: " + productId));
+
+        // Calculate the quantity being marked as sold/out of stock
+        BigDecimal remainingQuantity = inventory.getAvailableQuantity();
+
+        if (remainingQuantity.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalStateException("Product is already out of stock");
+        }
+
+        // Update inventory quantities
+        inventory.setSoldQuantity(inventory.getSoldQuantity().add(remainingQuantity));
+        inventory.setAvailableQuantity(BigDecimal.ZERO);
+        inventory = inventoryRepository.save(inventory);
+
+        // Create inventory log
+        InventoryLog log = InventoryLog.builder()
+            .inventory(inventory)
+            .actionType(InventoryActionType.OUT_OF_STOCK)
+            .quantity(remainingQuantity)
+            .description(reason != null && !reason.isBlank() ? 
+                "Product marked as out of stock: " + reason : 
+                "Product marked as out of stock")
+            .createdBy("SYSTEM")
+            .build();
+        inventoryLogRepository.save(log);
+
+        return inventoryMapper.toResponseDTO(inventory);
+    }
 } 

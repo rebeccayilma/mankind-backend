@@ -4,6 +4,7 @@ import com.mankind.matrix_product_service.dto.inventory.InventoryDTO;
 import com.mankind.matrix_product_service.dto.inventory.InventoryLogDTO;
 import com.mankind.matrix_product_service.dto.inventory.InventoryResponseDTO;
 import com.mankind.matrix_product_service.dto.inventory.InventoryStatusDTO;
+import com.mankind.matrix_product_service.dto.inventory.OutOfStockRequestDTO;
 import com.mankind.matrix_product_service.service.InventoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -56,5 +57,15 @@ public class InventoryController {
     public ResponseEntity<List<InventoryLogDTO>> getInventoryLogs(
             @PathVariable Long productId) {
         return ResponseEntity.ok(inventoryService.getInventoryLogs(productId));
+    }
+
+    @PatchMapping("/{productId}/out-of-stock")
+    @Operation(summary = "Mark product as out of stock", 
+               description = "Marks a product as out of stock by setting available quantity to zero and updating sold quantity")
+    public ResponseEntity<InventoryResponseDTO> markProductOutOfStock(
+            @PathVariable Long productId,
+            @RequestBody(required = false) OutOfStockRequestDTO requestDTO) {
+        String reason = requestDTO != null ? requestDTO.getReason() : null;
+        return ResponseEntity.ok(inventoryService.markProductOutOfStock(productId, reason));
     }
 } 

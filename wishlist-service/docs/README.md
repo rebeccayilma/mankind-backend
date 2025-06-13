@@ -111,7 +111,7 @@ spring:
 ### Server Configuration
 ```yaml
 server:
-  port: 8082
+  port: 8083
 ```
 
 ### Swagger/OpenAPI Configuration
@@ -163,7 +163,7 @@ ENTRYPOINT ["java","-jar","/app.jar"]
 Build and run the Docker container:
 ```bash
 docker build -t wishlist-service .
-docker run -p 8082:8082 wishlist-service
+docker run -p 8083:8083 wishlist-service
 ```
 
 ## Error Handling
@@ -181,7 +181,7 @@ The service uses a global exception handler to manage errors:
 ### Add Item to Wishlist
 **Request:**
 ```http
-POST http://localhost:8082/api/wishlist?userId=1&productId=100
+POST http://localhost:8083/api/wishlist?userId=1&productId=100
 Accept: application/json
 ```
 
@@ -196,7 +196,7 @@ Accept: application/json
 ### Get User's Wishlist
 **Request:**
 ```http
-GET http://localhost:8082/api/wishlist/1
+GET http://localhost:8083/api/wishlist/1
 Accept: application/json
 ```
 
@@ -217,7 +217,7 @@ Accept: application/json
 ### Remove Item from Wishlist
 **Request:**
 ```http
-DELETE http://localhost:8082/api/wishlist?userId=1&productId=100
+DELETE http://localhost:8083/api/wishlist?userId=1&productId=100
 Accept: application/json
 ```
 
@@ -229,7 +229,7 @@ No content
 ### Check if Item is in Wishlist
 **Request:**
 ```http
-GET http://localhost:8082/api/wishlist/check?userId=1&productId=100
+GET http://localhost:8083/api/wishlist/check?userId=1&productId=100
 Accept: application/json
 ```
 
