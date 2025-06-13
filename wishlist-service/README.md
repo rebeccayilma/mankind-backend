@@ -17,7 +17,7 @@ Comprehensive documentation for this service is available in the [docs](./docs) 
 - [Technical Architecture](./docs/TECHNICAL-ARCHITECTURE.md) - Technical design and architecture
 
    ```
-## Access the Swagger UI at: http://localhost:8082/swagger-ui.html
+## Access the Swagger UI at: http://localhost:8083/swagger-ui.html
 
 ## API Endpoints
 - `POST /api/wishlist` - Add item to wishlist

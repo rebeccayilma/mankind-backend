@@ -46,7 +46,8 @@ public class InventoryLog {
         RESERVATION,
         UNRESERVATION,
         PRICE_CHANGE,
-        STOCK_ADJUSTMENT
+        STOCK_ADJUSTMENT,
+        OUT_OF_STOCK
     }
 
     @PrePersist

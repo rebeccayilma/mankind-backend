@@ -23,6 +23,23 @@ public class WishlistItem {
 	    this.brand = brand;
 	    this.price = price;
 	    this.imageUrl = imageUrl;
+	    this.discountedPrice = price; // Default to regular price
+	    this.rating = 0.0f; // Default rating
+	    this.reviewCount = 0; // Default review count
+	}
+
+	public WishlistItem(Long id, Long userId, Long productId, String name, String brand, BigDecimal price, 
+	                    BigDecimal discountedPrice, String imageUrl, Float rating, Integer reviewCount) {
+	    this.id = id;
+	    this.userId = userId;
+	    this.productId = productId;
+	    this.name = name;
+	    this.brand = brand;
+	    this.price = price;
+	    this.discountedPrice = discountedPrice;
+	    this.imageUrl = imageUrl;
+	    this.rating = rating;
+	    this.reviewCount = reviewCount;
 	}
 
 		@Id
@@ -40,7 +57,13 @@ public class WishlistItem {
 
 	    private BigDecimal price;
 
+	    private BigDecimal discountedPrice;
+
 	    private String imageUrl;
+
+	    private Float rating;
+
+	    private Integer reviewCount;
 
 		public Long getId() {
 			return id;
@@ -90,11 +113,35 @@ public class WishlistItem {
 			this.price = price;
 		}
 
-		public String getImageUrl() {
-			return imageUrl;
-		}
+ 	public String getImageUrl() {
+ 		return imageUrl;
+ 	}
 
-		public void setImageUrl(String imageUrl) {
-			this.imageUrl = imageUrl;
-		}
-}
+ 	public void setImageUrl(String imageUrl) {
+ 		this.imageUrl = imageUrl;
+ 	}
+
+ 	public BigDecimal getDiscountedPrice() {
+ 		return discountedPrice;
+ 	}
+
+ 	public void setDiscountedPrice(BigDecimal discountedPrice) {
+ 		this.discountedPrice = discountedPrice;
+ 	}
+
+ 	public Float getRating() {
+ 		return rating;
+ 	}
+
+ 	public void setRating(Float rating) {
+ 		this.rating = rating;
+ 	}
+
+ 	public Integer getReviewCount() {
+ 		return reviewCount;
+ 	}
+
+ 	public void setReviewCount(Integer reviewCount) {
+ 		this.reviewCount = reviewCount;
+ 	}
+ }

@@ -45,6 +45,13 @@
               "    pm.expect(json.id).to.not.be.undefined;",
               "    pm.expect(json.userId).to.equal(Number(pm.environment.get(\"user_id\")));",
               "    pm.expect(json.productId).to.equal(Number(pm.environment.get(\"product_id\")));",
+              "    pm.expect(json.name).to.not.be.undefined;",
+              "    pm.expect(json.brand).to.not.be.undefined;",
+              "    pm.expect(json.price).to.not.be.undefined;",
+              "    pm.expect(json.discountedPrice).to.not.be.undefined;",
+              "    pm.expect(json.imageUrl).to.not.be.undefined;",
+              "    pm.expect(json.rating).to.not.be.undefined;",
+              "    pm.expect(json.reviewCount).to.not.be.undefined;",
               "});"
             ],
             "type": "text/javascript"
@@ -76,7 +83,22 @@
               "let json = pm.response.json();",
               "pm.test(\"Response is an array\", function () {",
               "    pm.expect(json).to.be.an(\"array\");",
-              "});"
+              "});",
+              "",
+              "if (json.length > 0) {",
+              "    pm.test(\"Wishlist items contain all required fields\", function () {",
+              "        const item = json[0];",
+              "        pm.expect(item.userId).to.not.be.undefined;",
+              "        pm.expect(item.productId).to.not.be.undefined;",
+              "        pm.expect(item.name).to.not.be.undefined;",
+              "        pm.expect(item.brand).to.not.be.undefined;",
+              "        pm.expect(item.price).to.not.be.undefined;",
+              "        pm.expect(item.discountedPrice).to.not.be.undefined;",
+              "        pm.expect(item.imageUrl).to.not.be.undefined;",
+              "        pm.expect(item.rating).to.not.be.undefined;",
+              "        pm.expect(item.reviewCount).to.not.be.undefined;",
+              "    });",
+              "}"
             ],
             "type": "text/javascript"
           }

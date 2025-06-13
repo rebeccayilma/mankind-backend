@@ -48,7 +48,7 @@ public class WishlistController {
                     ),
                     @ExampleObject(
                         name = "Full Details",
-                        value = "userId=1&productId=100&name=iPhone 13&brand=Apple&price=999.99&imageUrl=https://example.com/iphone13.jpg",
+                        value = "userId=1&productId=100&name=iPhone 13&brand=Apple&price=999.99&discountedPrice=899.99&imageUrl=https://example.com/iphone13.jpg&rating=4.5&reviewCount=120",
                         description = "Request with all product details"
                     )
                 }
@@ -72,7 +72,10 @@ public class WishlistController {
                                 "name": "iPhone 13",
                                 "brand": "Apple",
                                 "price": 999.99,
-                                "imageUrl": "https://example.com/iphone13.jpg"
+                                "discountedPrice": 899.99,
+                                "imageUrl": "https://example.com/iphone13.jpg",
+                                "rating": 4.5,
+                                "reviewCount": 120
                             }
                             """
                     )
@@ -110,9 +113,16 @@ public class WishlistController {
             @RequestParam(required = false) String brand,
             @Parameter(description = "Price of the product", example = "999.99") 
             @RequestParam(required = false) java.math.BigDecimal price,
+            @Parameter(description = "Discounted price of the product", example = "899.99") 
+            @RequestParam(required = false) java.math.BigDecimal discountedPrice,
             @Parameter(description = "Image URL of the product", example = "https://example.com/iphone13.jpg") 
-            @RequestParam(required = false) String imageUrl) {
-        return service.addItem(userId, productId, name, brand, price, imageUrl);
+            @RequestParam(required = false) String imageUrl,
+            @Parameter(description = "Rating of the product", example = "4.5") 
+            @RequestParam(required = false) Float rating,
+            @Parameter(description = "Number of reviews for the product", example = "120") 
+            @RequestParam(required = false) Integer reviewCount) {
+        // Call the service method with all parameters
+        return service.addItem(userId, productId, name, brand, price, discountedPrice, imageUrl, rating, reviewCount);
     }
 
     @Operation(
@@ -137,7 +147,10 @@ public class WishlistController {
                                     "name": "iPhone 13",
                                     "brand": "Apple",
                                     "price": 999.99,
-                                    "imageUrl": "https://example.com/iphone13.jpg"
+                                    "discountedPrice": 899.99,
+                                    "imageUrl": "https://example.com/iphone13.jpg",
+                                    "rating": 4.5,
+                                    "reviewCount": 120
                                 },
                                 {
                                     "id": 2,
@@ -146,7 +159,10 @@ public class WishlistController {
                                     "name": "MacBook Pro",
                                     "brand": "Apple",
                                     "price": 1299.99,
-                                    "imageUrl": "https://example.com/macbook.jpg"
+                                    "discountedPrice": 1199.99,
+                                    "imageUrl": "https://example.com/macbook.jpg",
+                                    "rating": 4.8,
+                                    "reviewCount": 250
                                 }
                             ]
                             """

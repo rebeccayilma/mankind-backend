@@ -116,6 +116,15 @@ Accept: application/json
 GET {{baseUrl}}/api/v1/inventory/{{id}}/logs
 Accept: application/json
 
+### Mark product as out of stock
+PATCH {{baseUrl}}/api/v1/inventory/{{id}}/out-of-stock
+Content-Type: application/json
+Accept: application/json
+
+{
+  "reason": "Discontinued by manufacturer"
+}
+
 ### Category Management ###
 
 ### Get all categories
