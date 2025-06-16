@@ -2,6 +2,8 @@
 @baseUrl = http://localhost:8080
 @id = 1
 @categoryId = 1
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1wbGVVc2VyIiwiaWF0IjoxNzUwMDQzMjE3LCJleHAiOjE3NTAxMjk2MTd9.9boM4n6QUf7ZimVLRQjjqTEC3xQ3V6YyBR4EtqXHB6Y
+
 
 ### Product Management ###
 
@@ -12,6 +14,11 @@ Accept: application/json
 ### Get product by ID
 GET {{baseUrl}}/api/v1/products/{{id}}
 Accept: application/json
+
+### Get user by ID
+GET {{baseUrl}}/api/test/users
+Accept: application/json
+Authorization: Bearer {{token}}
 
 ### Get products by category (paginated)
 GET {{baseUrl}}/api/v1/products/category/{{categoryId}}?page=0&size=10
