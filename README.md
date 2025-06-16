@@ -269,9 +269,7 @@ Each service has its own detailed documentation. Click on the service name to vi
    ```bash
    # Build and start all services
    docker-compose up --build
-   
-   # OR run in detached mode (background)
-   docker-compose up -d --build
+
    ```
 
 4. **Manage Docker Services**
