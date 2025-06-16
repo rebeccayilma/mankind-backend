@@ -1,4 +1,4 @@
-package com.mankind.mankindmatrixuserservice.model;
+package com.mankind.api.user.enums;
 
 public enum Role {
     ADMIN,
