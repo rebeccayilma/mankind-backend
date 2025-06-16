@@ -1,7 +1,8 @@
 package com.mankind.matrix_product_service.mapper;
 
-import com.mankind.matrix_product_service.dto.category.CategoryDTO;
-import com.mankind.matrix_product_service.dto.category.CategoryResponseDTO;
+
+import com.mankind.api.product.dto.category.CategoryDTO;
+import com.mankind.api.product.dto.category.CategoryResponseDTO;
 import com.mankind.matrix_product_service.model.Category;
 import org.mapstruct.*;
 

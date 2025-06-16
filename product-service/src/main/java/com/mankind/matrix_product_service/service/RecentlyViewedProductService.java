@@ -1,6 +1,6 @@
 package com.mankind.matrix_product_service.service;
 
-import com.mankind.matrix_product_service.dto.recentlyviewed.RecentlyViewedProductResponseDTO;
+import com.mankind.api.product.dto.recentlyviewed.RecentlyViewedProductResponseDTO;
 import com.mankind.matrix_product_service.exception.ResourceNotFoundException;
 import com.mankind.matrix_product_service.exception.InvalidOperationException;
 import com.mankind.matrix_product_service.mapper.RecentlyViewedProductMapper;

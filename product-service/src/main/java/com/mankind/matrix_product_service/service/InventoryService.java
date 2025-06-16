@@ -1,9 +1,9 @@
 package com.mankind.matrix_product_service.service;
 
-import com.mankind.matrix_product_service.dto.inventory.InventoryDTO;
-import com.mankind.matrix_product_service.dto.inventory.InventoryLogDTO;
-import com.mankind.matrix_product_service.dto.inventory.InventoryResponseDTO;
-import com.mankind.matrix_product_service.dto.inventory.InventoryStatusDTO;
+
+import com.mankind.api.product.dto.inventory.InventoryDTO;
+import com.mankind.api.product.dto.inventory.InventoryLogDTO;
+import com.mankind.api.product.dto.inventory.InventoryResponseDTO;
 import com.mankind.matrix_product_service.exception.ResourceNotFoundException;
 import com.mankind.matrix_product_service.mapper.InventoryLogMapper;
 import com.mankind.matrix_product_service.mapper.InventoryMapper;

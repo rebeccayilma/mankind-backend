@@ -1,7 +1,7 @@
 package com.mankind.matrix_product_service.service;
 
-import com.mankind.matrix_product_service.dto.product.ProductDTO;
-import com.mankind.matrix_product_service.dto.product.ProductResponseDTO;
+import com.mankind.api.product.dto.product.ProductDTO;
+import com.mankind.api.product.dto.product.ProductResponseDTO;
 import com.mankind.matrix_product_service.exception.ResourceNotFoundException;
 import com.mankind.matrix_product_service.mapper.ProductMapper;
 import com.mankind.matrix_product_service.model.Product;
@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

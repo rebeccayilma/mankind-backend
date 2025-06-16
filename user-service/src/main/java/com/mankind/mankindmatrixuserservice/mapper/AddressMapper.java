@@ -1,8 +1,8 @@
 package com.mankind.mankindmatrixuserservice.mapper;
 
-import com.mankind.mankindmatrixuserservice.dto.AddressDTO;
-import com.mankind.mankindmatrixuserservice.dto.CreateAddressDTO;
-import com.mankind.mankindmatrixuserservice.dto.UpdateAddressDTO;
+import com.mankind.api.user.dto.AddressDTO;
+import com.mankind.api.user.dto.CreateAddressDTO;
+import com.mankind.api.user.dto.UpdateAddressDTO;
 import com.mankind.mankindmatrixuserservice.model.Address;
 import com.mankind.mankindmatrixuserservice.model.User;
 import org.springframework.stereotype.Component;
