@@ -1,4 +1,4 @@
-package com.mankind.mankindmatrixuserservice.dto;
+package com.mankind.api.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

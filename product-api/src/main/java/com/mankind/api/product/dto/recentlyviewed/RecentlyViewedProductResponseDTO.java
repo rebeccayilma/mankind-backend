@@ -1,6 +1,6 @@
-package com.mankind.matrix_product_service.dto.recentlyviewed;
+package com.mankind.api.product.dto.recentlyviewed;
 
-import com.mankind.matrix_product_service.dto.product.ProductResponseDTO;
+import com.mankind.api.product.dto.product.ProductResponseDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
