@@ -325,7 +325,10 @@ For deploying to Render.com, including:
 mankind-backend/
 ├── user-service/         # Handles user authentication & management
 ├── product-service/      # Handles product catalog functionality
-|--...                    # Other services
+├── cart-service/         # Handles shopping cart functionality
+├── wishlist-service/     # Handles wishlist functionality
+├── user-api/            # Shared DTOs and interfaces for user-service
+├── product-api/         # Shared DTOs and interfaces for product-service
 ├── docs/                 # Documentation
 │   └── deploy/          # Deployment guides
 ├── README.md            # Project overview and instructions
