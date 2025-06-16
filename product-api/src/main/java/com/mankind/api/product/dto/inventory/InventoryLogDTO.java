@@ -1,4 +1,4 @@
-package com.mankind.matrix_product_service.dto.inventory;
+package com.mankind.api.product.dto.inventory;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

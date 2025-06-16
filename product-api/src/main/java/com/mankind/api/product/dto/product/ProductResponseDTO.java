@@ -1,11 +1,10 @@
-package com.mankind.matrix_product_service.dto.product;
+package com.mankind.api.product.dto.product;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import com.mankind.matrix_product_service.dto.inventory.InventoryStatusDTO;
-import com.mankind.matrix_product_service.dto.category.CategoryResponseDTO;
+import com.mankind.api.product.dto.inventory.InventoryStatusDTO;
+import com.mankind.api.product.dto.category.CategoryResponseDTO;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;

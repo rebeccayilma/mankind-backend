@@ -1,7 +1,7 @@
-package com.mankind.mankindmatrixuserservice.dto;
+package com.mankind.api.user.dto;
 
 
-import com.mankind.mankindmatrixuserservice.model.Role;
+import com.mankind.api.user.enums.Role;
 import lombok.Data;
 
 import java.time.LocalDateTime;

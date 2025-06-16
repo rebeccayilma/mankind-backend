@@ -1,11 +1,11 @@
-package com.mankind.mankindmatrixuserservice.dto;
+package com.mankind.api.user.dto;
 
-import com.mankind.mankindmatrixuserservice.model.Address;
+import com.mankind.api.user.enums.AddressType;
 import lombok.Data;
 
 @Data
 public class CreateAddressDTO {
-    private Address.AddressType addressType;
+    private AddressType addressType;
     private Boolean isDefault = false;
     private String streetAddress;
     private String city;

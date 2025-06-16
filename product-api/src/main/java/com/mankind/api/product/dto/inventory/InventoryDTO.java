@@ -1,4 +1,4 @@
-package com.mankind.matrix_product_service.dto.inventory;
+package com.mankind.api.product.dto.inventory;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;

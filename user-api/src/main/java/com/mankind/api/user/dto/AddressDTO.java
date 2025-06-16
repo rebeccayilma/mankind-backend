@@ -1,6 +1,6 @@
-package com.mankind.mankindmatrixuserservice.dto;
+package com.mankind.api.user.dto;
 
-import com.mankind.mankindmatrixuserservice.model.Address;
+import com.mankind.api.user.enums.AddressType;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class AddressDTO {
     private Long id;
     private Long userId;
-    private Address.AddressType addressType;
+    private AddressType addressType;
     private Boolean isDefault;
     private String streetAddress;
     private String city;

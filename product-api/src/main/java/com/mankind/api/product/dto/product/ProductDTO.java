@@ -1,4 +1,4 @@
-package com.mankind.matrix_product_service.dto.product;
+package com.mankind.api.product.dto.product;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
