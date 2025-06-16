@@ -48,3 +48,5 @@ management:
 app:
   recently-viewed:
     max-items: 10
+user-service:
+  url: http://localhost:8081
