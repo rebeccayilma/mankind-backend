@@ -29,6 +29,21 @@ spring:
           auto_commit: true
   profiles:
     active: dev
+
+# Application specific properties
+app:
+  services:
+    user-service:
+      url: ${USER_SERVICE_URL:http://localhost:8081}
+
+# Feign client configuration
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
 management:
   endpoints:
     web:
@@ -45,6 +60,10 @@ management:
     readinessState:
       enabled: true
 
-app:
-  recently-viewed:
-    max-items: 10
+
+user-service:
+  url: http://localhost:8081
+
+#app:
+#  recently-viewed:
+#    max-items: 10

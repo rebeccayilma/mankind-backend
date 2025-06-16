@@ -1,5 +1,6 @@
 package com.mankind.mankindmatrixuserservice.model;
 
+import com.mankind.api.user.enums.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;

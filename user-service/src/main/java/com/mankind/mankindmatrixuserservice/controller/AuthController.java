@@ -1,8 +1,8 @@
 package com.mankind.mankindmatrixuserservice.controller;
 
-import com.mankind.mankindmatrixuserservice.dto.AuthRequest;
-import com.mankind.mankindmatrixuserservice.dto.AuthResponse;
-import com.mankind.mankindmatrixuserservice.dto.UserDTO;
+import com.mankind.api.user.dto.AuthRequest;
+import com.mankind.api.user.dto.AuthResponse;
+import com.mankind.api.user.dto.UserDTO;
 import com.mankind.mankindmatrixuserservice.service.JwtService;
 import com.mankind.mankindmatrixuserservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
