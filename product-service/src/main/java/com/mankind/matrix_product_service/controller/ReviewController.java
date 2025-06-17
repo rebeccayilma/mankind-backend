@@ -1,7 +1,7 @@
 package com.mankind.matrix_product_service.controller;
 
-import com.mankind.matrix_product_service.dto.review.CreateReviewDTO;
-import com.mankind.matrix_product_service.dto.review.ReviewDTO;
+import com.mankind.api.product.dto.review.CreateReviewDTO;
+import com.mankind.api.product.dto.review.ReviewDTO;
 import com.mankind.matrix_product_service.service.ReviewService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

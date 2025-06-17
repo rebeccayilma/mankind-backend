@@ -1,7 +1,7 @@
 package com.mankind.matrix_product_service.service;
 
-import com.mankind.matrix_product_service.dto.review.CreateReviewDTO;
-import com.mankind.matrix_product_service.dto.review.ReviewDTO;
+import com.mankind.api.product.dto.review.CreateReviewDTO;
+import com.mankind.api.product.dto.review.ReviewDTO;
 import com.mankind.matrix_product_service.model.Product;
 import com.mankind.matrix_product_service.model.Review;
 import com.mankind.matrix_product_service.repository.ProductRepository;

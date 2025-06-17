@@ -1,4 +1,4 @@
-package com.mankind.matrix_product_service.dto.review;
+package com.mankind.api.product.dto.review;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
