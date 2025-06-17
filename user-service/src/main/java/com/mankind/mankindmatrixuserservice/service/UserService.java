@@ -1,13 +1,13 @@
 package com.mankind.mankindmatrixuserservice.service;
 
-import com.mankind.mankindmatrixuserservice.dto.AuthRequest;
-import com.mankind.mankindmatrixuserservice.dto.AuthResponse;
-import com.mankind.mankindmatrixuserservice.dto.UpdateUserDTO;
-import com.mankind.mankindmatrixuserservice.dto.UserDTO;
+import com.mankind.api.user.dto.AuthRequest;
+import com.mankind.api.user.dto.AuthResponse;
+import com.mankind.api.user.dto.UpdateUserDTO;
+import com.mankind.api.user.dto.UserDTO;
 import com.mankind.mankindmatrixuserservice.exception.UserNotFoundException;
 import com.mankind.mankindmatrixuserservice.mapper.UserMapper;
 import com.mankind.mankindmatrixuserservice.mapper.UserUpdateMapper;
-import com.mankind.mankindmatrixuserservice.model.Role;
+import com.mankind.api.user.enums.Role;
 import com.mankind.mankindmatrixuserservice.model.User;
 import com.mankind.mankindmatrixuserservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

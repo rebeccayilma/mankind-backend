@@ -1,10 +1,10 @@
 package com.mankind.mankindmatrixuserservice.controller;
 
-import com.mankind.mankindmatrixuserservice.dto.AddressDTO;
-import com.mankind.mankindmatrixuserservice.dto.CreateAddressDTO;
-import com.mankind.mankindmatrixuserservice.dto.UpdateAddressDTO;
-import com.mankind.mankindmatrixuserservice.dto.UpdateUserDTO;
-import com.mankind.mankindmatrixuserservice.dto.UserDTO;
+import com.mankind.api.user.dto.AddressDTO;
+import com.mankind.api.user.dto.CreateAddressDTO;
+import com.mankind.api.user.dto.UpdateAddressDTO;
+import com.mankind.api.user.dto.UpdateUserDTO;
+import com.mankind.api.user.dto.UserDTO;
 import com.mankind.mankindmatrixuserservice.exception.AddressNotFoundException;
 import com.mankind.mankindmatrixuserservice.service.AddressService;
 import com.mankind.mankindmatrixuserservice.service.UserService;

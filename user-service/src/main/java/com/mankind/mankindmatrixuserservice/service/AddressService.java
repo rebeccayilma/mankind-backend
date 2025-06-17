@@ -1,12 +1,13 @@
 package com.mankind.mankindmatrixuserservice.service;
 
-import com.mankind.mankindmatrixuserservice.dto.AddressDTO;
-import com.mankind.mankindmatrixuserservice.dto.CreateAddressDTO;
-import com.mankind.mankindmatrixuserservice.dto.UpdateAddressDTO;
+import com.mankind.api.user.dto.AddressDTO;
+import com.mankind.api.user.dto.CreateAddressDTO;
+import com.mankind.api.user.dto.UpdateAddressDTO;
 import com.mankind.mankindmatrixuserservice.exception.AddressNotFoundException;
 import com.mankind.mankindmatrixuserservice.exception.UserNotFoundException;
 import com.mankind.mankindmatrixuserservice.mapper.AddressMapper;
 import com.mankind.mankindmatrixuserservice.model.Address;
+import com.mankind.api.user.enums.AddressType;
 import com.mankind.mankindmatrixuserservice.model.User;
 import com.mankind.mankindmatrixuserservice.repository.AddressRepository;
 import com.mankind.mankindmatrixuserservice.repository.UserRepository;
@@ -74,7 +75,7 @@ public class AddressService {
 
         // If this is set as default, unset any existing default of the same type
         if (Boolean.TRUE.equals(updateAddressDTO.getIsDefault())) {
-            Address.AddressType addressType = updateAddressDTO.getAddressType() != null 
+            AddressType addressType = updateAddressDTO.getAddressType() != null
                     ? updateAddressDTO.getAddressType() 
                     : address.getAddressType();
 
