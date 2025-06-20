@@ -31,7 +31,7 @@ You can choose your preferred method based on your needs. Docker is recommended 
 ### Prerequisites
    <details>
    <summary><b>Java (JDK 17) </b></summary>
-      
+
       #### macOS
          - Install Homebrew (if not already installed)
          ```bash
@@ -45,12 +45,12 @@ You can choose your preferred method based on your needs. Docker is recommended 
          ```bash
          sudo ln -sfn $(brew --prefix)/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-17.jdk
          ```
-      
+
       #### Windows
       1. Download OpenJDK 17 from [Adoptium](https://adoptium.net/)
       2. Run the installer
       3. Configure environment: Set JAVA_HOME in System Environment Variables
-      
+
       #### Linux (Ubuntu/Debian)
       ```bash
       sudo apt update
@@ -60,18 +60,18 @@ You can choose your preferred method based on your needs. Docker is recommended 
 
    <details>
    <summary><b>MySQL</b></summary>
-   
+
    #### macOS
    ```bash
    brew install mysql
    brew services start mysql
    ```
-   
+
    #### Windows
    1. Download MySQL Installer from [MySQL Website](https://dev.mysql.com/downloads/installer/)
    2. Choose "Server only" or "Custom" installation type
    3. Follow the setup wizard
-   
+
    #### Linux (Ubuntu/Debian)
    ```bash
    sudo apt install mysql-server
@@ -88,7 +88,7 @@ You can choose your preferred method based on your needs. Docker is recommended 
    - For detailed database configuration, see [Database Setup](#database-setup) section
 
 2. **Build the Services**
-   
+
    - Build all services at once, for example:
    ```bash
    mvn clean install
@@ -126,6 +126,7 @@ You can choose your preferred method based on your needs. Docker is recommended 
 - User Service: [http://localhost:8081/swagger-ui/index.html](http://localhost:8081/swagger-ui/index.html)
 - Cart Service: [http://localhost:8082/swagger-ui/index.html](http://localhost:8082/swagger-ui/index.html)
 - Wishlist Service: [http://localhost:8083/swagger-ui/index.html](http://localhost:8083/swagger-ui/index.html)
+- Notification Service: [http://localhost:8085/swagger-ui/index.html](http://localhost:8085/swagger-ui/index.html)
 
 ### Services documentation
 
@@ -136,6 +137,7 @@ Each service has its detailed documentation. Click on the service name to view i
 - [`product-service/`](product-service/README.md)
 - [`cart-service/`](cart-service/README.md)
 - [`wishlist-service/`](wishlist-service/README.md)
+- [`notification-service/`](notification-service/README.md)
 
 ------------
 
@@ -143,47 +145,47 @@ Each service has its detailed documentation. Click on the service name to view i
 ### Prerequisites
    <details>
    <summary><b>Docker and Docker Compose</b></summary>
-   
+
    #### macOS
    1. Install Docker Desktop for Mac
       - Download from [Docker's official website](https://www.docker.com/products/docker-desktop)
       - Docker Desktop includes both Docker Engine and Docker Compose
       - Follow the installation wizard
-   
+
    #### Windows
    1. Install Docker Desktop for Windows
       - Download from [Docker's official website](https://www.docker.com/products/docker-desktop)
       - Ensure WSL 2 is installed (Docker Desktop will prompt if not)
       - Docker Desktop includes both Docker Engine and Docker Compose
       - Follow the installation wizard
-   
+
    #### Linux (Ubuntu/Debian)
    ```bash
    # Update package index
    sudo apt-get update
-   
+
    # Install prerequisites
    sudo apt-get install \
        ca-certificates \
        curl \
        gnupg \
        lsb-release
-   
+
    # Add Docker's official GPG key
    sudo mkdir -p /etc/apt/keyrings
    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-   
+
    # Set up the repository
    echo \
      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
      $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-   
+
    # Install Docker Engine and Docker Compose
    sudo apt-get update
    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
    ```
    </details>
-   
+
 ### Run Service
 
 1. **Verify Docker Installation**
@@ -209,17 +211,17 @@ Each service has its detailed documentation. Click on the service name to view i
    ```bash
    docker-compose ps
    ```
-   
+
    - View logs for all services
    ```bash
    docker-compose logs
     ```
-   
+
    - View logs for a specific service
    ```bash
    docker-compose logs product-service
     ```
-   
+
    - Stop all services
    ```bash
    docker-compose down
@@ -230,6 +232,7 @@ Each service has its detailed documentation. Click on the service name to view i
 - User Service: [http://localhost:8081/swagger-ui/index.html](http://localhost:8081/swagger-ui/index.html)
 - Cart Service: [http://localhost:8082/swagger-ui/index.html](http://localhost:8082/swagger-ui/index.html)
 - Wishlist Service: [http://localhost:8083/swagger-ui/index.html](http://localhost:8083/swagger-ui/index.html)
+- Notification Service: [http://localhost:8085/swagger-ui/index.html](http://localhost:8085/swagger-ui/index.html)
 
 
 ### Services documentation
@@ -241,6 +244,7 @@ Each service has its detailed documentation. Click on the service name to view i
 - [`product-service/`](product-service/README.md)
 - [`cart-service/`](cart-service/README.md)
 - [`wishlist-service/`](wishlist-service/README.md)
+- [`notification-service/`](notification-service/README.md)
 
 ------------------
 
@@ -277,6 +281,7 @@ mankind-backend/
 ├── product-service/      # Handles product catalog functionality
 ├── cart-service/         # Handles shopping cart functionality
 ├── wishlist-service/     # Handles wishlist functionality
+├── notification-service/ # Handles sending notifications to users
 ├── user-api/            # Shared DTOs and interfaces for user-service
 ├── product-api/         # Shared DTOs and interfaces for product-service
 ├── docs/                 # Documentation

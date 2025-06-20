@@ -11,6 +11,7 @@
     <module>product-service</module>
     <module>cart-service</module>
     <module>wishlist-service</module>
+    <module>notification-service</module>
     <!--  api modules -->
     <module>user-api</module>
     <module>product-api</module>
