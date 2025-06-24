@@ -13,39 +13,59 @@ spring:
       globalcors:
         corsConfigurations:
           '[/**]':
-            allowedOrigins: "http://localhost:3000"
-            allowedMethods: GET,POST,PUT,DELETE,OPTIONS
+            allowedOrigins: 
+              - "http://localhost:3000"
+              - "http://localhost:8085"
+              - "http://127.0.0.1:8085"
+              - "http://localhost:8080"
+              - "http://localhost:8081"
+              - "http://localhost:8082"
+              - "http://localhost:8083"
+            allowedMethods: GET,POST,PUT,DELETE,OPTIONS,PATCH
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
 
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin,RETAIN_UNIQUE
         - DedupeResponseHeader=Access-Control-Allow-Credentials,RETAIN_UNIQUE
 
       routes:
+        # API routes
         - id: auth
           uri: http://localhost:8081
           predicates:
             - Path=/api/v1/auth/**
+          filters:
+            - RewritePath=/api/v1/auth/(?<segment>.*), /auth/${segment}
 
         - id: users
           uri: http://localhost:8081
           predicates:
             - Path=/api/v1/users/**
+          filters:
+            - RewritePath=/api/v1/users/(?<segment>.*), /users/${segment}
           
         - id: products
           uri: http://localhost:8080
           predicates:
             - Path=/api/v1/products/**
+          filters:
+            - RewritePath=/api/v1/products/(?<segment>.*), /${segment}
           
         - id: cart
           uri: http://localhost:8082
           predicates:
             - Path=/api/v1/cart/**
+          filters:
+            - RewritePath=/api/v1/cart/(?<segment>.*), /cart/${segment}
           
         - id: wishlist
           uri: http://localhost:8083
           predicates:
             - Path=/api/v1/wishlist/**
-          
+          filters:
+            - RewritePath=/api/v1/wishlist/(?<segment>.*), /wishlist/${segment}
 
   security:
     oauth2:
