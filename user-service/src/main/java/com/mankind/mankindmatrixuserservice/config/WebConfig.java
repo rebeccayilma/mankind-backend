@@ -1,12 +1,6 @@
-package com.mankind.matrix_product_service.config;
+package com.mankind.mankindmatrixuserservice.config;
 
-import feign.RequestInterceptor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
-import org.springframework.util.StringUtils;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -30,18 +24,4 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowCredentials(true)
                 .maxAge(3600);
     }
-
-    @Bean
-    public RequestInterceptor propagateBearerToken() {
-        return template -> {
-            ServletRequestAttributes attrs =
-                    (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            if (attrs != null) {
-                String auth = attrs.getRequest().getHeader(HttpHeaders.AUTHORIZATION);
-                if (StringUtils.hasText(auth)) {
-                    template.header(HttpHeaders.AUTHORIZATION, auth);
-                }
-            }
-        };
-    }
-}
+} 

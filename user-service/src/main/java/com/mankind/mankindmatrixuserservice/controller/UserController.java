@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/users")
 @Tag(name = "User Management", description = "API endpoints for managing users and their addresses")
 public class UserController {
 

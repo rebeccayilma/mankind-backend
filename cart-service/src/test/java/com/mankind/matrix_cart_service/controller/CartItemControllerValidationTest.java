@@ -54,7 +54,7 @@ public class CartItemControllerValidationTest {
         String requestBody = objectMapper.writeValueAsString(invalidDto);
 
         // Act & Assert
-        mockMvc.perform(post("/api/cart-items")
+        mockMvc.perform(post("/cart-items")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isBadRequest())
@@ -73,7 +73,7 @@ public class CartItemControllerValidationTest {
         String requestBody = objectMapper.writeValueAsString(invalidDto);
 
         // Act & Assert
-        mockMvc.perform(post("/api/cart-items")
+        mockMvc.perform(post("/cart-items")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isBadRequest())
@@ -92,7 +92,7 @@ public class CartItemControllerValidationTest {
         String requestBody = objectMapper.writeValueAsString(invalidDto);
 
         // Act & Assert
-        mockMvc.perform(post("/api/cart-items")
+        mockMvc.perform(post("/cart-items")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isBadRequest())
@@ -111,7 +111,7 @@ public class CartItemControllerValidationTest {
         String requestBody = objectMapper.writeValueAsString(invalidDto);
 
         // Act & Assert
-        mockMvc.perform(post("/api/cart-items")
+        mockMvc.perform(post("/cart-items")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isBadRequest())
@@ -130,7 +130,7 @@ public class CartItemControllerValidationTest {
         String requestBody = objectMapper.writeValueAsString(invalidDto);
 
         // Act & Assert
-        mockMvc.perform(post("/api/cart-items")
+        mockMvc.perform(post("/cart-items")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isBadRequest());
@@ -153,7 +153,7 @@ public class CartItemControllerValidationTest {
         when(cartItemService.createCartItem(any(CartItemRequestDto.class))).thenReturn(responseDto);
 
         // Act & Assert
-        mockMvc.perform(post("/api/cart-items")
+        mockMvc.perform(post("/cart-items")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isCreated());
