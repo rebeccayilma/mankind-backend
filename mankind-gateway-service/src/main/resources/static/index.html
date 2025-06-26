@@ -83,6 +83,7 @@
         .cart-icon { background: linear-gradient(45deg, #4834d4, #686de0); }
         .user-icon { background: linear-gradient(45deg, #00d2d3, #54a0ff); }
         .wishlist-icon { background: linear-gradient(45deg, #ff9ff3, #f368e0); }
+        .payment-icon { background: linear-gradient(45deg, #10ac84, #00d2d3); }
 
         .service-title {
             font-size: 1.5rem;
@@ -305,6 +306,41 @@
                     <div class="link-item">
                         <span class="link-label">Base:</span>
                         <a href="/api/v1/wishlist" class="link-url" target="_blank">http://localhost:8085/api/v1/wishlist</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Service -->
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon payment-icon">💳</div>
+                    <h2 class="service-title">Payment Service</h2>
+                </div>
+                <p class="service-description">
+                    Process payments, manage payment methods, handle refunds, and payment history tracking.
+                </p>
+                
+                <div class="links-section">
+                    <h3 class="section-title">Swagger Documentation</h3>
+                    <div class="link-item">
+                        <span class="link-label">Docs:</span>
+                        <a href="http://localhost:8084/swagger-ui/index.html" class="link-url" target="_blank">http://localhost:8084/swagger-ui/index.html</a>
+                    </div>
+                </div>
+
+                <div class="links-section">
+                    <h3 class="section-title">API Access</h3>
+                    <div class="link-item">
+                        <span class="link-label">User:</span>
+                        <a href="/api/v1/payments" class="link-url" target="_blank">http://localhost:8085/api/v1/payments</a>
+                    </div>
+                    <div class="link-item">
+                        <span class="link-label">Admin:</span>
+                        <a href="/api/v1/admin/payments" class="link-url" target="_blank">http://localhost:8085/api/v1/admin/payments</a>
+                    </div>
+                    <div class="link-item">
+                        <span class="link-label">Webhook:</span>
+                        <a href="/api/v1/payments/webhook" class="link-url" target="_blank">http://localhost:8085/api/v1/payments/webhook</a>
                     </div>
                 </div>
             </div>
