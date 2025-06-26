@@ -1,0 +1,101 @@
+spring:
+  application:
+    name: mankind-gateway-service
+
+  cloud:
+    gateway:
+      forwarded:
+        enabled: false
+      discovery:
+        locator:
+          enabled: false
+
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: 
+              - "http://localhost:3000"
+              - "http://localhost:8085"
+              - "http://127.0.0.1:8085"
+              - "http://localhost:8080"
+              - "http://localhost:8081"
+              - "http://localhost:8082"
+              - "http://localhost:8083"
+            allowedMethods: GET,POST,PUT,DELETE,OPTIONS,PATCH
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
+
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin,RETAIN_UNIQUE
+        - DedupeResponseHeader=Access-Control-Allow-Credentials,RETAIN_UNIQUE
+
+      routes:
+        # API routes
+        - id: auth
+          uri: ${USER_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/auth/**
+          filters:
+            - RewritePath=/api/v1/auth/(?<segment>.*), /auth/${segment}
+
+        - id: users
+          uri: ${USER_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/users/**
+          filters:
+            - RewritePath=/api/v1/users/(?<segment>.*), /users/${segment}
+          
+        - id: products
+          uri: ${PRODUCT_SERVICE_URL:http://localhost:8080}
+          predicates:
+            - Path=/api/v1/products/**
+          filters:
+            - RewritePath=/api/v1/products/(?<segment>.*), /${segment}
+          
+        - id: cart
+          uri: ${CART_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/v1/cart/**
+          filters:
+            - RewritePath=/api/v1/cart/(?<segment>.*), /cart/${segment}
+          
+        - id: wishlist
+          uri: ${WISHLIST_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/v1/wishlist/**
+          filters:
+            - RewritePath=/api/v1/wishlist/(?<segment>.*), /wishlist/${segment}
+
+        - id: payments
+          uri: ${PAYMENT_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/v1/payments/**, /api/v1/admin/payments/**
+          filters:
+            - RewritePath=/api/v1/payments/(?<segment>.*), /payments/${segment}
+            - RewritePath=/api/v1/admin/payments/(?<segment>.*), /admin/payments/${segment}
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${USER_SERVICE_URL:http://localhost:8081}/realms/mankind
+
+server:
+  port: 8085
+
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: ${EUREKA_URI:http://localhost:8761}/eureka/
+
+resilience4j:
+  ratelimiter:
+    configs:
+      default:
+        limit-for-period: 100
+        limit-refresh-period: 1m
+        timeout-duration: 0
+    instances:
+      apiGateway:
+        base-config: default

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mankind Matrix AI - API Gateway</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .service-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .service-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .product-icon { background: linear-gradient(45deg, #ff6b6b, #ee5a24); }
+        .cart-icon { background: linear-gradient(45deg, #4834d4, #686de0); }
+        .user-icon { background: linear-gradient(45deg, #00d2d3, #54a0ff); }
+        .wishlist-icon { background: linear-gradient(45deg, #ff9ff3, #f368e0); }
+        .payment-icon { background: linear-gradient(45deg, #10ac84, #00d2d3); }
+
+        .service-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .service-description {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .links-section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title::before {
+            content: "🔗";
+            margin-right: 8px;
+        }
+
+        .link-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .link-item:hover {
+            background: #e9ecef;
+        }
+
+        .link-label {
+            font-weight: 500;
+            margin-right: 10px;
+            min-width: 80px;
+        }
+
+        .link-url {
+            color: #007bff;
+            text-decoration: none;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+
+        .link-url:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 50px;
+            padding: 20px;
+            opacity: 0.8;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #28a745;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .service-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Mankind Matrix</h1>
+            <p>API Gateway - Centralized Access to All Microservices</p>
+            <div style="margin-top: 10px;">
+                <span class="status-indicator"></span>
+                <span>Gateway Status: Online</span>
+            </div>
+        </div>
+
+        <div class="services-grid">
+            <!-- Product Service -->
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon product-icon">📦</div>
+                    <h2 class="service-title">Product Service</h2>
+                </div>
+                <p class="service-description">
+                    Manage product catalog, inventory, categories, and recently viewed products.
+                </p>
+                
+                <div class="links-section">
+                    <h3 class="section-title">Swagger Documentation</h3>
+                    <div class="link-item">
+                        <span class="link-label">Docs:</span>
+                        <a href="http://localhost:8080/swagger-ui/index.html" class="link-url" target="_blank">http://localhost:8080/swagger-ui/index.html</a>
+                    </div>
+                </div>
+
+                <div class="links-section">
+                    <h3 class="section-title">API Access</h3>
+                    <div class="link-item">
+                        <span class="link-label">Base:</span>
+                        <a href="/api/v1/products" class="link-url" target="_blank">http://localhost:8085/api/v1/products</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Service -->
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon cart-icon">🛒</div>
+                    <h2 class="service-title">Cart Service</h2>
+                </div>
+                <p class="service-description">
+                    Handle shopping cart operations, cart items, and cart status management.
+                </p>
+                
+                <div class="links-section">
+                    <h3 class="section-title">Swagger Documentation</h3>
+                    <div class="link-item">
+                        <span class="link-label">Docs:</span>
+                        <a href="http://localhost:8082/swagger-ui/index.html" class="link-url" target="_blank">http://localhost:8082/swagger-ui/index.html</a>
+                    </div>
+                </div>
+
+                <div class="links-section">
+                    <h3 class="section-title">API Access</h3>
+                    <div class="link-item">
+                        <span class="link-label">Base:</span>
+                        <a href="/api/v1/cart" class="link-url" target="_blank">http://localhost:8085/api/v1/cart</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Service -->
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon user-icon">👤</div>
+                    <h2 class="service-title">User Service</h2>
+                </div>
+                <p class="service-description">
+                    User authentication, registration, profile management, and address handling.
+                </p>
+                
+                <div class="links-section">
+                    <h3 class="section-title">Swagger Documentation</h3>
+                    <div class="link-item">
+                        <span class="link-label">Docs:</span>
+                        <a href="http://localhost:8081/swagger-ui/index.html" class="link-url" target="_blank">http://localhost:8081/swagger-ui/index.html</a>
+                    </div>
+                </div>
+
+                <div class="links-section">
+                    <h3 class="section-title">API Access</h3>
+                    <div class="link-item">
+                        <span class="link-label">Auth:</span>
+                        <a href="/api/v1/auth" class="link-url" target="_blank">http://localhost:8085/api/v1/auth</a>
+                    </div>
+                    <div class="link-item">
+                        <span class="link-label">Users:</span>
+                        <a href="/api/v1/users" class="link-url" target="_blank">http://localhost:8085/api/v1/users</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wishlist Service -->
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon wishlist-icon">❤️</div>
+                    <h2 class="service-title">Wishlist Service</h2>
+                </div>
+                <p class="service-description">
+                    Manage user wishlists, add/remove items, and wishlist operations.
+                </p>
+                
+                <div class="links-section">
+                    <h3 class="section-title">Swagger Documentation</h3>
+                    <div class="link-item">
+                        <span class="link-label">Docs:</span>
+                        <a href="http://localhost:8083/swagger-ui/index.html" class="link-url" target="_blank">http://localhost:8083/swagger-ui/index.html</a>
+                    </div>
+                </div>
+
+                <div class="links-section">
+                    <h3 class="section-title">API Access</h3>
+                    <div class="link-item">
+                        <span class="link-label">Base:</span>
+                        <a href="/api/v1/wishlist" class="link-url" target="_blank">http://localhost:8085/api/v1/wishlist</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Service -->
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon payment-icon">💳</div>
+                    <h2 class="service-title">Payment Service</h2>
+                </div>
+                <p class="service-description">
+                    Process payments, manage payment methods, handle refunds, and payment history tracking.
+                </p>
+                
+                <div class="links-section">
+                    <h3 class="section-title">Swagger Documentation</h3>
+                    <div class="link-item">
+                        <span class="link-label">Docs:</span>
+                        <a href="http://localhost:8084/swagger-ui/index.html" class="link-url" target="_blank">http://localhost:8084/swagger-ui/index.html</a>
+                    </div>
+                </div>
+
+                <div class="links-section">
+                    <h3 class="section-title">API Access</h3>
+                    <div class="link-item">
+                        <span class="link-label">User:</span>
+                        <a href="/api/v1/payments" class="link-url" target="_blank">http://localhost:8085/api/v1/payments</a>
+                    </div>
+                    <div class="link-item">
+                        <span class="link-label">Admin:</span>
+                        <a href="/api/v1/admin/payments" class="link-url" target="_blank">http://localhost:8085/api/v1/admin/payments</a>
+                    </div>
+                    <div class="link-item">
+                        <span class="link-label">Webhook:</span>
+                        <a href="/api/v1/payments/webhook" class="link-url" target="_blank">http://localhost:8085/api/v1/payments/webhook</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 Mankind Matrix AI. All rights reserved.</p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">
+                Built with Spring Cloud Gateway | Microservices Architecture
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click tracking for analytics (optional)
+            const links = document.querySelectorAll('.link-url');
+            links.forEach(link => {
+                link.addEventListener('click', function() {
+                    console.log('Link clicked:', this.href);
+                });
+            });
+
+            // Add smooth scrolling for better UX
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

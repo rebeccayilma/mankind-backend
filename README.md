@@ -104,11 +104,22 @@ You can choose your preferred method based on your needs. Docker is recommended 
    cd product-service
    ./mvnw clean install
    ```
+   Build Gateway
+   ```bash
+   cd mankind-gateway-service
+   mvn clean install
+   ```
+   > **Note:** The gateway service uses `mvn clean install` because it does not have a Maven Wrapper (`mvnw`). The other services use `mvn clean install` for consistency and portability.
 
-4. **Run Each Service**
+4. **Run the Services**
 
-   Enter each service folder and run the commands below:
-
+   **Recommended: Use the provided script (easiest method)**
+   ```bash
+   ./scripts/run-all-services.sh
+   ```
+   
+   **Alternative: Manual startup**
+   Enter each service folder and run it. 
    For example, run the user-service:
 
    ```bash
@@ -121,12 +132,20 @@ You can choose your preferred method based on your needs. Docker is recommended 
    ./mvnw spring-boot:run
    ```
 
+   Run Gateway
+   ```bash
+   cd mankind-gateway-service
+   mvn spring-boot:run
+   ```
+   > **Note:** The gateway service uses `mvn spring-boot:run` because it does not have a Maven Wrapper (`mvnw`). The other services use `./mvnw spring-boot:run` for consistency and portability.
+
+   **To stop all services:**
+   ```bash
+   ./scripts/stop-all-services.sh
+   ```
+
 ### Service Swagger documentation links:
-- Product Service: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
-- User Service: [http://localhost:8081/swagger-ui/index.html](http://localhost:8081/swagger-ui/index.html)
-- Cart Service: [http://localhost:8082/swagger-ui/index.html](http://localhost:8082/swagger-ui/index.html)
-- Wishlist Service: [http://localhost:8083/swagger-ui/index.html](http://localhost:8083/swagger-ui/index.html)
-- Notification Service: [http://localhost:8085/swagger-ui/index.html](http://localhost:8085/swagger-ui/index.html)
+- Gateway: [http://localhost:8085](http://localhost:8085)
 
 ### Services documentation
 
@@ -137,7 +156,7 @@ Each service has its detailed documentation. Click on the service name to view i
 - [`product-service/`](product-service/README.md)
 - [`cart-service/`](cart-service/README.md)
 - [`wishlist-service/`](wishlist-service/README.md)
-- [`notification-service/`](notification-service/README.md)
+- [`payment-service/`](payment-service/README.md)
 
 ------------
 
@@ -228,11 +247,7 @@ Each service has its detailed documentation. Click on the service name to view i
    ```
 
 ### Service Swagger documentation links:
-- Product Service: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
-- User Service: [http://localhost:8081/swagger-ui/index.html](http://localhost:8081/swagger-ui/index.html)
-- Cart Service: [http://localhost:8082/swagger-ui/index.html](http://localhost:8082/swagger-ui/index.html)
-- Wishlist Service: [http://localhost:8083/swagger-ui/index.html](http://localhost:8083/swagger-ui/index.html)
-- Notification Service: [http://localhost:8085/swagger-ui/index.html](http://localhost:8085/swagger-ui/index.html)
+- Gateway: [http://localhost:8085](http://localhost:8085)
 
 
 ### Services documentation
@@ -244,7 +259,7 @@ Each service has its detailed documentation. Click on the service name to view i
 - [`product-service/`](product-service/README.md)
 - [`cart-service/`](cart-service/README.md)
 - [`wishlist-service/`](wishlist-service/README.md)
-- [`notification-service/`](notification-service/README.md)
+- [`payment-service/`](payment-service/README.md)
 
 ------------------
 
@@ -281,7 +296,7 @@ mankind-backend/
 ├── product-service/      # Handles product catalog functionality
 ├── cart-service/         # Handles shopping cart functionality
 ├── wishlist-service/     # Handles wishlist functionality
-├── notification-service/ # Handles sending notifications to users
+├── payment-service/      # Handles payment processing functionality
 ├── user-api/            # Shared DTOs and interfaces for user-service
 ├── product-api/         # Shared DTOs and interfaces for product-service
 ├── docs/                 # Documentation

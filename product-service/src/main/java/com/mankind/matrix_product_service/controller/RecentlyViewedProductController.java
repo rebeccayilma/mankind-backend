@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/recently-viewed")
+@RequestMapping("/recently-viewed")
 @RequiredArgsConstructor
 @Tag(name = "Recently Viewed Products", description = "APIs for managing recently viewed products")
 public class RecentlyViewedProductController {
