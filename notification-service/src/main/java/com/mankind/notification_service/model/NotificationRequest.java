@@ -5,9 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 @Data
 @NoArgsConstructor
@@ -32,4 +32,21 @@ public class NotificationRequest {
     @NotBlank(message = "Type is required")
     @Pattern(regexp = "EMAIL|SMS|INAPP", message = "Type must be one of: EMAIL, SMS, INAPP")
     private String type;
+
+    // Manual getters to ensure compilation
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getType() {
+        return type;
+    }
 }

@@ -1,19 +1,21 @@
 package com.mankind.notification_service.service;
 
 import com.mankind.notification_service.model.NotificationRequest;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
 public class NotificationService {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NotificationService.class);
     private final JavaMailSender mailSender;
     private final SmsNotificationService smsNotificationService;
+
+    public NotificationService(JavaMailSender mailSender, SmsNotificationService smsNotificationService) {
+        this.mailSender = mailSender;
+        this.smsNotificationService = smsNotificationService;
+    }
 
     public void sendNotification(NotificationRequest request) {
         if ("EMAIL".equalsIgnoreCase(request.getType())) {

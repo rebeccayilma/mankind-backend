@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 @Data
 @NoArgsConstructor
@@ -22,4 +22,13 @@ public class SmsRequest {
     @Schema(description = "Content of the SMS message", example = "Your verification code is 123456", required = true)
     @NotBlank(message = "Message is required")
     private String message;
+
+    // Manual getters to ensure compilation
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }

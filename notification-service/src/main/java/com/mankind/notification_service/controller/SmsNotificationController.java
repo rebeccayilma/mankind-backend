@@ -9,26 +9,27 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/notifications")
-@RequiredArgsConstructor
-@Slf4j
+@RequestMapping("/notifications")
 @Tag(name = "SMS Notification Controller", description = "API for sending SMS notifications to users")
 public class SmsNotificationController {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SmsNotificationController.class);
     private final SmsNotificationService smsNotificationService;
+
+    public SmsNotificationController(SmsNotificationService smsNotificationService) {
+        this.smsNotificationService = smsNotificationService;
+    }
 
     @Operation(
         summary = "Send SMS notification",

@@ -1,11 +1,13 @@
 package com.mankind.notification_service.service;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-@Slf4j
 public class SmsNotificationService {
+
+    private static final Logger log = LoggerFactory.getLogger(SmsNotificationService.class);
 
     /**
      * Sends an SMS message to the specified phone number.

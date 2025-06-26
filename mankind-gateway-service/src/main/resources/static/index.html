@@ -84,6 +84,7 @@
         .user-icon { background: linear-gradient(45deg, #00d2d3, #54a0ff); }
         .wishlist-icon { background: linear-gradient(45deg, #ff9ff3, #f368e0); }
         .payment-icon { background: linear-gradient(45deg, #10ac84, #00d2d3); }
+        .notification-icon { background: linear-gradient(45deg, #ff9f43, #feca57); }
 
         .service-title {
             font-size: 1.5rem;
@@ -341,6 +342,33 @@
                     <div class="link-item">
                         <span class="link-label">Webhook:</span>
                         <a href="/api/v1/payments/webhook" class="link-url" target="_blank">http://localhost:8085/api/v1/payments/webhook</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notification Service -->
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon notification-icon">🔔</div>
+                    <h2 class="service-title">Notification Service</h2>
+                </div>
+                <p class="service-description">
+                    Send email and SMS notifications, manage notification preferences, and track delivery status.
+                </p>
+                
+                <div class="links-section">
+                    <h3 class="section-title">Swagger Documentation</h3>
+                    <div class="link-item">
+                        <span class="link-label">Docs:</span>
+                        <a href="http://localhost:8086/swagger-ui/index.html" class="link-url" target="_blank">http://localhost:8086/swagger-ui/index.html</a>
+                    </div>
+                </div>
+
+                <div class="links-section">
+                    <h3 class="section-title">API Access</h3>
+                    <div class="link-item">
+                        <span class="link-label">Base:</span>
+                        <a href="/api/v1/notifications" class="link-url" target="_blank">http://localhost:8085/api/v1/notifications</a>
                     </div>
                 </div>
             </div>

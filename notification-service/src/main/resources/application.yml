@@ -1,5 +1,5 @@
 server:
-  port: 8084
+  port: 8086
 
 spring:
   application:
@@ -23,6 +23,16 @@ sms:
     account-sid: ${SMS_ACCOUNT_SID:your-account-sid}
     auth-token: ${SMS_AUTH_TOKEN:your-auth-token}
     phone-number: ${SMS_PHONE_NUMBER:your-twilio-phone-number}
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
 
 logging:
   level:
