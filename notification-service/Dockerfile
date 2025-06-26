@@ -24,7 +24,7 @@ COPY --from=build /build/notification-service/target/*.jar app.jar
 ENV JAVA_OPTS="-Xms512m -Xmx1024m"
 
 # Expose the application port (make sure it matches server.port in application.yml)
-EXPOSE 8084
+EXPOSE 8086
 
 # Run the application
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
