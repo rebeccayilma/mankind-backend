@@ -1,5 +1,5 @@
 server:
-  port: 8086
+  port: 8080
 
 spring:
   application:
@@ -33,11 +33,23 @@ management:
   endpoint:
     health:
       show-details: when-authorized
+      defaults:
+        enabled: true
   health:
+    defaults:
+      enabled: true
+    indicators:
+      mail:
+        enabled: false  # Disable mail health check
+    groups:
+      liveness:
+        include: livenessState
+      readiness:
+        include: readinessState
     mail:
       enabled: false
 
 logging:
   level:
     com.mankind.notification_service: INFO
-    org.springframework.mail: DEBUG
+    org.springframework.security: INFO 
