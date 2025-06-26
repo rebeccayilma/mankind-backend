@@ -1,8 +1,8 @@
 package com.mankind.mankindmatrixuserservice.controller;
 
-import com.mankind.mankindmatrixuserservice.dto.AuthRequest;
-import com.mankind.mankindmatrixuserservice.dto.AuthResponse;
-import com.mankind.mankindmatrixuserservice.dto.UserDTO;
+import com.mankind.api.user.dto.AuthRequest;
+import com.mankind.api.user.dto.AuthResponse;
+import com.mankind.api.user.dto.UserDTO;
 import com.mankind.mankindmatrixuserservice.service.JwtService;
 import com.mankind.mankindmatrixuserservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/auth")
 @Tag(name = "Authentication", description = "API endpoints for user registration and authentication")
 public class AuthController {
 

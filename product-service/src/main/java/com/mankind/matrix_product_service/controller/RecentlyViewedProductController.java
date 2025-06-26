@@ -1,6 +1,6 @@
 package com.mankind.matrix_product_service.controller;
 
-import com.mankind.matrix_product_service.dto.recentlyviewed.RecentlyViewedProductResponseDTO;
+import com.mankind.api.product.dto.recentlyviewed.RecentlyViewedProductResponseDTO;
 import com.mankind.matrix_product_service.service.RecentlyViewedProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,12 +12,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/recently-viewed")
+@RequestMapping("/recently-viewed")
 @RequiredArgsConstructor
 @Tag(name = "Recently Viewed Products", description = "APIs for managing recently viewed products")
 public class RecentlyViewedProductController {

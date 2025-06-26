@@ -1,4 +1,45 @@
 services:
+  gateway-service:
+    build:
+      context: .
+      dockerfile: mankind-gateway-service/Dockerfile
+      args:
+        MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
+    container_name: mankind-gateway-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
+      - USER_SERVICE_URL=http://mankind-user-service:8080
+      - PRODUCT_SERVICE_URL=http://mankind-product-service:8080
+      - CART_SERVICE_URL=http://mankind-cart-service:8080
+      - WISHLIST_SERVICE_URL=http://mankind-wishlist-service:8080
+      - PAYMENT_SERVICE_URL=http://mankind-payment-service:8080
+      - NOTIFICATION_SERVICE_URL=http://mankind-notification-service:8080
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 512M
+    networks:
+      - mankind-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8085/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    depends_on:
+      - product-service
+      - user-service
+      - cart-service
+      - wishlist-service
+      - payment-service
+      - notification-service
+
   product-service:
     build:
       context: .
@@ -100,6 +141,64 @@ services:
       - "8083:8080"
     env_file:
       - wishlist-service/.env
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 512M
+    networks:
+      - mankind-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: payment-service/Dockerfile
+      args:
+        MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
+    container_name: mankind-payment-service
+    ports:
+      - "8084:8080"
+    env_file:
+      - payment-service/.env
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 512M
+    networks:
+      - mankind-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: notification-service/Dockerfile
+      args:
+        MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
+    container_name: mankind-notification-service
+    ports:
+      - "8086:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m

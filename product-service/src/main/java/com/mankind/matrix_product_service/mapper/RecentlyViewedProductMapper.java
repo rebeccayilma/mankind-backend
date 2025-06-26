@@ -1,6 +1,6 @@
 package com.mankind.matrix_product_service.mapper;
 
-import com.mankind.matrix_product_service.dto.recentlyviewed.RecentlyViewedProductResponseDTO;
+import com.mankind.api.product.dto.recentlyviewed.RecentlyViewedProductResponseDTO;
 import com.mankind.matrix_product_service.model.RecentlyViewedProduct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

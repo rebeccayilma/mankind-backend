@@ -5,7 +5,10 @@ WORKDIR /build
 # Copy the entire project
 COPY . .
 
-# Build the application with explicit executable JAR creation
+# First, build and install the API modules to local repository
+RUN mvn clean install -pl user-api,product-api -am -DskipTests
+
+# Then build the cart service
 RUN cd cart-service && \
     mvn clean package spring-boot:repackage -DskipTests && \
     ls -la target/
@@ -24,4 +27,4 @@ ENV JAVA_OPTS="-Xms512m -Xmx1024m"
 EXPOSE 8080
 
 # Run the application
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"] 
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

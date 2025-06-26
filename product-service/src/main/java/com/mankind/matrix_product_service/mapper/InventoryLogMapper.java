@@ -1,6 +1,6 @@
 package com.mankind.matrix_product_service.mapper;
 
-import com.mankind.matrix_product_service.dto.inventory.InventoryLogDTO;
+import com.mankind.api.product.dto.inventory.InventoryLogDTO;
 import com.mankind.matrix_product_service.model.InventoryLog;
 import org.mapstruct.*;
 

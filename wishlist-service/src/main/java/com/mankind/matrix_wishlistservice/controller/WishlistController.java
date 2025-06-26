@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
-@RequestMapping("/api/wishlist")
+@RequestMapping("/wishlist")
 @Tag(name = "Wishlist Management", description = "API endpoints for managing user wishlists")
 @SecurityRequirement(name = "bearerAuth")
 public class WishlistController {

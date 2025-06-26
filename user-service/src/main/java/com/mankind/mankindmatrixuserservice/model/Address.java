@@ -1,5 +1,6 @@
 package com.mankind.mankindmatrixuserservice.model;
 
+import com.mankind.api.user.enums.AddressType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -56,7 +57,4 @@ public class Address {
     @Column()
     private LocalDateTime updatedAt;
 
-    public enum AddressType {
-        billing, shipping
-    }
 }
