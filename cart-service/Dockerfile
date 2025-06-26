@@ -5,7 +5,10 @@ WORKDIR /build
 # Copy the entire project
 COPY . .
 
-# Build the application with explicit executable JAR creation
+# First, build and install the API modules to local repository
+RUN mvn clean install -pl user-api,product-api -am -DskipTests
+
+# Then build the cart service
 RUN cd cart-service && \
     mvn clean package spring-boot:repackage -DskipTests && \
     ls -la target/

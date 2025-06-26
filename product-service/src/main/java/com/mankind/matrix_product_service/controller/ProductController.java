@@ -1,7 +1,8 @@
 package com.mankind.matrix_product_service.controller;
 
-import com.mankind.matrix_product_service.dto.product.ProductDTO;
-import com.mankind.matrix_product_service.dto.product.ProductResponseDTO;
+
+import com.mankind.api.product.dto.product.ProductDTO;
+import com.mankind.api.product.dto.product.ProductResponseDTO;
 import com.mankind.matrix_product_service.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,7 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/products")
+@RequestMapping("/products")
 @RequiredArgsConstructor
 @Tag(name = "Product Management", description = "APIs for managing products")
 public class ProductController {

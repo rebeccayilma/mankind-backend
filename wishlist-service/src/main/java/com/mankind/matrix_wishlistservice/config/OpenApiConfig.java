@@ -5,6 +5,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springdoc.core.models.GroupedOpenApi;
@@ -15,12 +16,13 @@ import java.util.List;
 
 @Configuration
 public class OpenApiConfig {
+    private static final String SECURITY_SCHEME_NAME = "bearerAuth";
 
     @Bean
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
                 .group("wishlist-public")
-                .pathsToMatch("/api/**")
+                .pathsToMatch("/**")
                 .build();
     }
 
@@ -28,17 +30,8 @@ public class OpenApiConfig {
     public OpenAPI wishlistServiceOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Wishlist Service API")
-                        .description("""
-                            API documentation for the Mankind Matrix Wishlist Service.
-                            This service provides endpoints for managing user wishlists, allowing users to:
-                            - Add products to their wishlist
-                            - Remove products from their wishlist
-                            - View their wishlist
-                            - Check if a product is in their wishlist
-                            
-                            All endpoints are prefixed with `/api/wishlist`.
-                            """)
+                        .title("Mankind Matrix Wishlist Service API")
+                        .description("API documentation for the Mankind Matrix Wishlist Service.")
                         .version("1.0.0")
                         .contact(new Contact()
                                 .name("Mankind Matrix Team")
@@ -48,19 +41,20 @@ public class OpenApiConfig {
                                 .name("Apache 2.0")
                                 .url("https://www.apache.org/licenses/LICENSE-2.0")))
                 .servers(List.of(
-                    new Server()
-                        .url("http://localhost:8083")
-                        .description("Local Development Server"),
-                    new Server()
-                        .url("https://api.mankindmatrix.com")
-                        .description("Production Server")
+                        new Server()
+                                .url("http://localhost:8083")
+                                .description("Local Development Server (Direct Access)"),
+                        new Server()
+                                .url("http://localhost:8085/api/v1/wishlist")
+                                .description("Gateway Server (Through Gateway)")
                 ))
+                .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
                 .components(new Components()
-                    .addSecuritySchemes("bearerAuth",
-                        new SecurityScheme()
-                            .type(SecurityScheme.Type.HTTP)
-                            .scheme("bearer")
-                            .bearerFormat("JWT")
-                            .description("JWT token for authentication")));
+                        .addSecuritySchemes(SECURITY_SCHEME_NAME, new SecurityScheme()
+                                .name(SECURITY_SCHEME_NAME)
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")
+                                .description("Enter JWT token with Bearer prefix, e.g. 'Bearer eyJhbGciOiJIUzI1NiJ9...'")));
     }
 }

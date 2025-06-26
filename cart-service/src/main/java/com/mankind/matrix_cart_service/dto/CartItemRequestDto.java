@@ -1,5 +1,6 @@
 package com.mankind.matrix_cart_service.dto;
 
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -23,5 +24,6 @@ public class CartItemRequestDto {
     private int quantity;
 
     @NotNull(message = "Price cannot be null")
+    @DecimalMin(value = "0.01", message = "Price must be greater than zero")
     private double price;
 }

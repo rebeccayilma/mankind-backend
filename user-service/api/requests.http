@@ -1,5 +1,5 @@
 ##replace Token value after each login
-@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1wbGVVc2VyIiwiaWF0IjoxNzQ3MDU4NDY0LCJleHAiOjE3NDcxNDQ4NjR9.5w8X3eDOWTVc_N9kDMCFASjhqwJTrw0C8aCMh0PwG2c
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1wbGVVc2VyIiwiaWF0IjoxNzUwMDQzMjE3LCJleHAiOjE3NTAxMjk2MTd9.9boM4n6QUf7ZimVLRQjjqTEC3xQ3V6YyBR4EtqXHB6Y
 @userId = 1
 ### Create User
 
@@ -32,7 +32,7 @@ Content-Type: application/json
 ###
 
 ### Get User by ID
-GET http://localhost:8081/api/v1/users/1
+GET http://localhost:8081/api/v1/users/2
 Accept: application/json
 Authorization: Bearer {{token}}
 

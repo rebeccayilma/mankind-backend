@@ -1,9 +1,8 @@
 package com.mankind.matrix_product_service.mapper;
 
-import com.mankind.matrix_product_service.dto.product.ProductDTO;
-import com.mankind.matrix_product_service.dto.product.ProductResponseDTO;
-import com.mankind.matrix_product_service.dto.inventory.InventoryStatusDTO;
-import com.mankind.matrix_product_service.dto.category.CategoryResponseDTO;
+import com.mankind.api.product.dto.inventory.InventoryStatusDTO;
+import com.mankind.api.product.dto.product.ProductDTO;
+import com.mankind.api.product.dto.product.ProductResponseDTO;
 import com.mankind.matrix_product_service.model.Inventory;
 import com.mankind.matrix_product_service.model.Product;
 import org.mapstruct.*;
@@ -72,6 +71,7 @@ public interface ProductMapper {
                 .soldQuantity(BigDecimal.ZERO)
                 .totalQuantity(BigDecimal.ZERO)
                 .status("NO_INVENTORY")
+                .maxQuantityPerPurchase(null) // Setting maxQuantityPerPurchase to null to indicate no limit or not applicable
                 .build();
         }
 
@@ -79,12 +79,23 @@ public interface ProductMapper {
         return InventoryStatusDTO.builder()
             .productId(inventory.getProduct().getId())
             .productName(inventory.getProduct().getName())
+            .price(inventory.getPrice())
+            .priceDisplay(formatPriceDisplay(inventory.getPrice(), inventory.getCurrency()))
+            .currency(inventory.getCurrency())
             .availableQuantity(inventory.getAvailableQuantity())
             .reservedQuantity(inventory.getReservedQuantity())
             .soldQuantity(inventory.getSoldQuantity())
             .totalQuantity(totalQuantity)
             .status(determineStatus(inventory))
+            .maxQuantityPerPurchase(inventory.getMaxQuantityPerPurchase())
             .build();
+    }
+
+    default String formatPriceDisplay(BigDecimal price, String currency) {
+        if (price == null || currency == null) {
+            return null;
+        }
+        return String.format("%s %.2f", currency, price.doubleValue());
     }
 
     default String determineStatus(Inventory inventory) {

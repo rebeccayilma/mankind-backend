@@ -1,5 +1,22 @@
 server:
   port: 8080
+
+# Swagger/OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui
+    operationsSorter: method
+    tagsSorter: alpha
+    tryItOutEnabled: true
+  show-actuator: false
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json
+  packages-to-scan: com.mankind.matrix_product_service.controller
+  paths-to-match: /**
+
 spring:
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?connectTimeout=${DB_CONNECT_TIMEOUT}&socketTimeout=${DB_SOCKET_TIMEOUT}&useSSL=${DB_USE_SSL}&allowPublicKeyRetrieval=${DB_ALLOW_PUBLIC_KEY_RETRIEVAL}&serverTimezone=${DB_SERVER_TIMEZONE}&autoReconnect=${DB_AUTO_RECONNECT}&failOverReadOnly=${DB_FAIL_OVER_READ_ONLY}
@@ -29,6 +46,21 @@ spring:
           auto_commit: true
   profiles:
     active: dev
+
+# Application specific properties
+app:
+  services:
+    user-service:
+      url: ${USER_SERVICE_URL:http://localhost:8081}
+
+# Feign client configuration
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
 management:
   endpoints:
     web:
@@ -44,3 +76,11 @@ management:
       enabled: true
     readinessState:
       enabled: true
+
+
+user-service:
+  url: http://localhost:8081
+
+#app:
+#  recently-viewed:
+#    max-items: 10
