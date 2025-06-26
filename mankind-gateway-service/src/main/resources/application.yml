@@ -75,6 +75,13 @@ spring:
             - RewritePath=/api/v1/payments/(?<segment>.*), /payments/${segment}
             - RewritePath=/api/v1/admin/payments/(?<segment>.*), /admin/payments/${segment}
 
+        - id: notifications
+          uri: ${NOTIFICATION_SERVICE_URL:http://localhost:8086}
+          predicates:
+            - Path=/api/v1/notifications/**
+          filters:
+            - RewritePath=/api/v1/notifications/(?<segment>.*), /notifications/${segment}
+
   security:
     oauth2:
       resourceserver:
