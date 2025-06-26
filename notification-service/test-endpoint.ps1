@@ -1,6 +1,6 @@
 # Test script for notification service endpoint
 
-$uri = "http://localhost:8084/api/notifications/send"
+$uri = "http://localhost:8086/notifications/send"
 $headers = @{
     "Content-Type" = "application/json"
 }
