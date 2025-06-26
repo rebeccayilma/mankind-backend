@@ -31,7 +31,9 @@ public class OpenApiConfig {
                             - View payment history
                             - Handle refunds
 
-                            All endpoints are prefixed with `/api/payments`.
+                            All endpoints are prefixed with `/payments`.
+                            
+                            Swagger UI: http://localhost:8084/swagger-ui
                             """)
                         .version("1.0.0")
                         .contact(new Contact()
@@ -43,11 +45,11 @@ public class OpenApiConfig {
                                 .url("https://www.mankindmatrix.com/license")))
                 .servers(List.of(
                         new Server()
-                                .url("http://localhost:8081")
-                                .description("Local Development Server"),
+                                .url("http://localhost:8084")
+                                .description("Local Development Server (Direct Access)"),
                         new Server()
-                                .url("https://api.mankindmatrix.com")
-                                .description("Production Server")
+                                .url("http://localhost:8085/api/v1/payments")
+                                .description("Gateway Server (Through Gateway)")
                 ))
                 .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
                 .components(new Components()

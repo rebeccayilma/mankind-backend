@@ -6,7 +6,7 @@
 echo "🚀 Starting Mankind Matrix AI Backend Services..."
 
 # Ports used by the services
-PORTS=(8080 8081 8082 8083 8085)
+PORTS=(8080 8081 8082 8083 8084 8085)
 
 # Kill any process using the service ports
 echo "🔧 Cleaning up ports..."
@@ -36,6 +36,9 @@ echo "   Starting cart-service on port 8082..."
 echo "   Starting wishlist-service on port 8083..."
 ( cd wishlist-service && ./mvnw spring-boot:run > /dev/null 2>&1 & )
 
+echo "   Starting payment-service on port 8084..."
+( cd payment-service && ./mvnw spring-boot:run > /dev/null 2>&1 & )
+
 echo ""
 echo "⏳ Waiting 15 seconds for services to initialize..."
 sleep 15
@@ -52,6 +55,7 @@ echo "   Product Service: http://localhost:8080/swagger-ui/index.html"
 echo "   User Service:    http://localhost:8081/swagger-ui/index.html"
 echo "   Cart Service:    http://localhost:8082/swagger-ui/index.html"
 echo "   Wishlist Service: http://localhost:8083/swagger-ui/index.html"
+echo "   Payment Service: http://localhost:8084/swagger-ui/index.html"
 echo "   Gateway Service: http://localhost:8085"
 echo ""
 echo "💡 To stop all services, run: ./scripts/stop-all-services.sh" 

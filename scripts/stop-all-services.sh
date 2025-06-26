@@ -6,7 +6,7 @@
 echo "🛑 Stopping Mankind Matrix AI Backend Services..."
 
 # Ports used by the services
-PORTS=(8080 8081 8082 8083 8085)
+PORTS=(8080 8081 8082 8083 8084 8085)
 
 # Kill any process using the service ports
 for port in "${PORTS[@]}"; do

@@ -67,6 +67,14 @@ spring:
           filters:
             - RewritePath=/api/v1/wishlist/(?<segment>.*), /wishlist/${segment}
 
+        - id: payments
+          uri: ${PAYMENT_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/v1/payments/**, /api/v1/admin/payments/**
+          filters:
+            - RewritePath=/api/v1/payments/(?<segment>.*), /payments/${segment}
+            - RewritePath=/api/v1/admin/payments/(?<segment>.*), /admin/payments/${segment}
+
   security:
     oauth2:
       resourceserver:

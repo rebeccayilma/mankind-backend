@@ -156,6 +156,7 @@ Each service has its detailed documentation. Click on the service name to view i
 - [`product-service/`](product-service/README.md)
 - [`cart-service/`](cart-service/README.md)
 - [`wishlist-service/`](wishlist-service/README.md)
+- [`payment-service/`](payment-service/README.md)
 
 ------------
 
@@ -258,6 +259,7 @@ Each service has its detailed documentation. Click on the service name to view i
 - [`product-service/`](product-service/README.md)
 - [`cart-service/`](cart-service/README.md)
 - [`wishlist-service/`](wishlist-service/README.md)
+- [`payment-service/`](payment-service/README.md)
 
 ------------------
 
@@ -294,6 +296,7 @@ mankind-backend/
 ├── product-service/      # Handles product catalog functionality
 ├── cart-service/         # Handles shopping cart functionality
 ├── wishlist-service/     # Handles wishlist functionality
+├── payment-service/      # Handles payment processing functionality
 ├── user-api/            # Shared DTOs and interfaces for user-service
 ├── product-api/         # Shared DTOs and interfaces for product-service
 ├── docs/                 # Documentation

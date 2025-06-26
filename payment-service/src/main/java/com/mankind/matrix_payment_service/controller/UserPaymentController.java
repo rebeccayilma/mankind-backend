@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/payments")
+@RequestMapping("/payments")
 @RequiredArgsConstructor
 @Tag(name = "User Payment API", description = "API for user payment operations")
 @SecurityRequirement(name = "bearerAuth")

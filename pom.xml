@@ -11,6 +11,7 @@
     <module>product-service</module>
     <module>cart-service</module>
     <module>wishlist-service</module>
+    <module>payment-service</module>
     <module>mankind-gateway-service</module>
     <!--  api modules -->
     <module>user-api</module>
@@ -24,6 +25,7 @@
     <lombok.version>1.18.30</lombok.version>
     <springdoc.version>2.8.9</springdoc.version>
     <mapstruct.version>1.5.5.Final</mapstruct.version>
+    <stripe.version>22.21.0</stripe.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -74,6 +76,11 @@
         <artifactId>mapstruct-processor</artifactId>
         <version>${mapstruct.version}</version>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.stripe</groupId>
+        <artifactId>stripe-java</artifactId>
+        <version>${stripe.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
