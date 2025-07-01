@@ -1,7 +1,19 @@
 services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.5
+    volumes:
+      - ./keycloak/mankind-realm.json:/opt/keycloak/data/import/mankind-realm.json
+    command: start-dev --import-realm
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8180:8080"
+    networks:
+      - mankind-network
   product-service:
     build:
-      context: .
+      context: ./product-service
       dockerfile: product-service/Dockerfile
       args:
         MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
@@ -13,6 +25,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
+      - EUREKA_URI=http://eureka-server:8761
     deploy:
       resources:
         limits:
@@ -31,7 +44,7 @@ services:
 
   user-service:
     build:
-      context: .
+      context: ./user-service
       dockerfile: user-service/Dockerfile
       args:
         MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
@@ -43,6 +56,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
+      - EUREKA_URI=http://eureka-server:8761
     deploy:
       resources:
         limits:
@@ -61,7 +75,7 @@ services:
 
   cart-service:
     build:
-      context: .
+      context: ./cart-service
       dockerfile: cart-service/Dockerfile
       args:
         MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
@@ -73,6 +87,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
+      - EUREKA_URI=http://eureka-server:8761
     deploy:
       resources:
         limits:
@@ -91,7 +106,7 @@ services:
 
   wishlist-service:
     build:
-      context: .
+      context: ./wishlist-service
       dockerfile: wishlist-service/Dockerfile
       args:
         MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
@@ -103,6 +118,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
+      - EUREKA_URI=http://eureka-server:8761
     deploy:
       resources:
         limits:
