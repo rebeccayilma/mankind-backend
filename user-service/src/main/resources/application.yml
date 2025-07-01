@@ -8,6 +8,7 @@ keycloak:
   admin-realm: master
   admin-client-id: admin-cli
   client-id: user-service
+  client-secret: ""
 spring:
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?connectTimeout=${DB_CONNECT_TIMEOUT}&socketTimeout=${DB_SOCKET_TIMEOUT}&useSSL=${DB_USE_SSL}&allowPublicKeyRetrieval=${DB_ALLOW_PUBLIC_KEY_RETRIEVAL}&serverTimezone=${DB_SERVER_TIMEZONE}&autoReconnect=${DB_AUTO_RECONNECT}&failOverReadOnly=${DB_FAIL_OVER_READ_ONLY}

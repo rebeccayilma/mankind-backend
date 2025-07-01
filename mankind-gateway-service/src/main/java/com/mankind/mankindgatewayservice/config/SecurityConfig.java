@@ -16,7 +16,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeExchange(ex -> ex
-                        .pathMatchers("/api/v1/auth/**").permitAll()
+                        .pathMatchers("/", "/index.html", "/api/v1/auth/**").permitAll()
                         .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));

@@ -96,27 +96,31 @@ You can choose your preferred method based on your needs. Docker is recommended 
 
 3. **Build the Services**
 
-   - Build all services at once, for example:
+    **Option 1: Use the provided script (easiest method)**
    ```bash
    mvn clean install
     ```
-   - Or build each service individually
-   ```bash
-   cd user-service
-   ./mvnw clean install
-   ```
-   or 
+   
+   <details>
+   <summary><b>Option 2: Manual build (build services individually)</b></summary>
+      
+      ```bash
+      cd user-service
+      ./mvnw clean install
+      ```
+      or 
 
-   ```bash
-   cd product-service
-   ./mvnw clean install
-   ```
-   Build Gateway
-   ```bash
-   cd mankind-gateway-service
-   mvn clean install
-   ```
-   > **Note:** The gateway service uses `mvn clean install` because it does not have a Maven Wrapper (`mvnw`). The other services use `mvn clean install` for consistency and portability.
+      ```bash
+      cd product-service
+      ./mvnw clean install
+      ```
+      Build Gateway
+      ```bash
+      cd mankind-gateway-service
+      mvn clean install
+      ```
+      > **Note:** The gateway service uses `mvn clean install` because it does not have a Maven Wrapper (`mvnw`). The other services use `mvn clean install` for consistency and portability.
+    </details>
 
 4. **Run the Services**
 
