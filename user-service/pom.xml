@@ -140,8 +140,6 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
         </dependency>
-            <version>2.3.0</version>
-        </dependency>
 
         <!-- Spring Boot Actuator -->
         <dependency>

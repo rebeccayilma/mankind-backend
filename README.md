@@ -87,7 +87,14 @@ You can choose your preferred method based on your needs. Docker is recommended 
    - Update the database connection details in each `.env` file
    - For detailed database configuration, see [Database Setup](#database-setup) section
 
-2. **Build the Services**
+2. **Keycloak Setup (Required for Authentication)**
+   #### Setup - Run the command
+      ```bash
+      ./scripts/setup-keycloak.sh
+      ```
+   > **Note:** If for any reason you need to reset realm, there is a script to make it, just run the command : ./scripts/reset-mankind-realm.sh, but only in extreme need.
+
+3. **Build the Services**
 
    - Build all services at once, for example:
    ```bash
@@ -113,32 +120,64 @@ You can choose your preferred method based on your needs. Docker is recommended 
 
 4. **Run the Services**
 
-   **Recommended: Use the provided script (easiest method)**
+   **Option 1: Use the provided script (easiest method)**
    ```bash
    ./scripts/run-all-services.sh
    ```
-   
-   **Alternative: Manual startup**
-   Enter each service folder and run it. 
-   For example, run the user-service:
+   <details>
+   <summary><b>Option 2: Manual startup (run services individually)</b></summary>
 
-   ```bash
-   cd user-service
-   ./mvnw spring-boot:run
-   ```
-   Or run the product service
-   ```bash
-   cd product-service
-   ./mvnw spring-boot:run
-   ```
+      **Start Keycloak (Required First)**
+      ```bash
+      cd keycloak-26.0.5
+      ./bin/kc.sh start-dev
+      ```
 
-   Run Gateway
-   ```bash
-   cd mankind-gateway-service
-   mvn spring-boot:run
-   ```
-   > **Note:** The gateway service uses `mvn spring-boot:run` because it does not have a Maven Wrapper (`mvnw`). The other services use `./mvnw spring-boot:run` for consistency and portability.
-
+      Start each service in separate terminals:
+      
+      **User Service (Port 8081):**
+      ```bash
+      cd user-service
+      ./mvnw spring-boot:run
+      ```
+      
+      **Product Service (Port 8080):**
+      ```bash
+      cd product-service
+      ./mvnw spring-boot:run
+      ```
+      
+      **Cart Service (Port 8082):**
+      ```bash
+      cd cart-service
+      ./mvnw spring-boot:run
+      ```
+      
+      **Wishlist Service (Port 8083):**
+      ```bash
+      cd wishlist-service
+      ./mvnw spring-boot:run
+      ```
+      
+      **Payment Service (Port 8084):**
+      ```bash
+      cd payment-service
+      ./mvnw spring-boot:run
+      ```
+      
+      **Notification Service (Port 8086):**
+      ```bash
+      cd notification-service
+      ./mvnw spring-boot:run
+      ```
+      
+      **Gateway Service (Port 8085):**
+      ```bash
+      cd mankind-gateway-service
+      mvn spring-boot:run
+      ```
+      > **Note:** The gateway service uses `mvn spring-boot:run` because it does not have a Maven Wrapper (`mvnw`). The other services use `./mvnw spring-boot:run` for consistency and portability.
+   </details>
    **To stop all services:**
    ```bash
    ./scripts/stop-all-services.sh

@@ -55,3 +55,7 @@ test-output/
 
 # Keys
 *.pem
+
+# Keycloak installation (large binary files)
+keycloak-26.0.5/
+keycloak.tar.gz

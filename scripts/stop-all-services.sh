@@ -5,8 +5,8 @@
 
 echo "🛑 Stopping Mankind Matrix AI Backend Services..."
 
-# Ports used by the services
-PORTS=(8080 8081 8082 8083 8084 8085 8086)
+# Ports used by the services (including Keycloak)
+PORTS=(8180 8080 8081 8082 8083 8084 8085 8086)
 
 # Kill any process using the service ports
 for port in "${PORTS[@]}"; do
