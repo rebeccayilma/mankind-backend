@@ -178,6 +178,7 @@ You can choose your preferred method based on your needs. Docker is recommended 
       ```
       > **Note:** The gateway service uses `mvn spring-boot:run` because it does not have a Maven Wrapper (`mvnw`). The other services use `./mvnw spring-boot:run` for consistency and portability.
    </details>
+   
    **To stop all services:**
    ```bash
    ./scripts/stop-all-services.sh
