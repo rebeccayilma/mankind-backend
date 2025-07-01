@@ -11,6 +11,21 @@ services:
       - "8180:8080"
     networks:
       - mankind-network
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    image: mankind/api-gateway:1.0.0
+    container_name: api-gateway
+    ports:
+      - "8085:8085"
+    depends_on:
+      - keycloak
+    environment:
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER-URI: http://keycloak:8080/realms/your-realm
+    networks:
+      - mankind-network
+
   product-service:
     build:
       context: ./product-service
