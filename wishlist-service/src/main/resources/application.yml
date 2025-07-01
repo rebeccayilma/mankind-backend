@@ -15,7 +15,11 @@ spring:
       max-lifetime: ${DB_HIKARI_MAX_LIFETIME}
       connection-test-query: SELECT 1
       auto-commit: true
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/mankind
   jpa:
     hibernate:
       ddl-auto: update
