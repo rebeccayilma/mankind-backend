@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Mankind Matrix AI Backend - Automated Keycloak Setup Script
-# This script downloads, sets up, and configures Keycloak automatically
+# Mankind Matrix AI Backend - Comprehensive Keycloak Setup Script
+# This script sets up the database, configures Keycloak, and starts it with MySQL persistence
 
 # Load environment variables from .env
 if [ -f "../../.env" ]; then
@@ -20,36 +20,92 @@ elif [ -f ".env" ]; then
     source .env
     set +a
 else
-    echo "⚠️  .env file not found! Database config will not be set."
+    echo "❌ .env file not found! Please create one with database configuration."
+    exit 1
 fi
 
-# Set Keycloak DB config from .env if available
-if [ ! -z "$DB_HOST" ]; then
-    export KC_DB=mysql
-    export KC_DB_URL="jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&autoReconnect=true"
-    export KC_DB_USERNAME=$DB_USERNAME
-    export KC_DB_PASSWORD=$DB_PASSWORD
-    echo "📊 Using MySQL DB: $DB_HOST/$DB_NAME"
+echo "🔐 Setting up Keycloak for Mankind Matrix AI Backend (Comprehensive Setup)..."
+
+# Check if database configuration is available
+if [ -z "$DB_HOST" ] || [ -z "$DB_NAME" ] || [ -z "$DB_USERNAME" ] || [ -z "$DB_PASSWORD" ]; then
+    echo "❌ Database configuration missing from .env file"
+    echo "   Required: DB_HOST, DB_NAME, DB_USERNAME, DB_PASSWORD"
+    exit 1
 fi
+
+echo "📊 Database Configuration:"
+echo "   Host: $DB_HOST"
+echo "   Port: ${DB_PORT:-3306}"
+echo "   Database: $DB_NAME"
+echo "   Username: $DB_USERNAME"
+
+# Test database connection
+echo "🔍 Testing database connection..."
+if mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USERNAME" -p"$DB_PASSWORD" -e "SELECT 1;" > /dev/null 2>&1; then
+    echo "✅ Database connection successful"
+else
+    echo "❌ Database connection failed"
+    echo "   Please check your database configuration and network connectivity"
+    exit 1
+fi
+
+# Check if database exists
+echo "🔍 Checking if database exists..."
+if mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USERNAME" -p"$DB_PASSWORD" -e "USE $DB_NAME;" > /dev/null 2>&1; then
+    echo "✅ Database '$DB_NAME' exists"
+else
+    echo "⚠️  Database '$DB_NAME' does not exist, creating..."
+    mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USERNAME" -p"$DB_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS \`$DB_NAME\`;"
+    if [ $? -eq 0 ]; then
+        echo "✅ Database '$DB_NAME' created successfully"
+    else
+        echo "❌ Failed to create database"
+        exit 1
+    fi
+fi
+
+# Check if Keycloak tables exist
+echo "🔍 Checking for Keycloak tables..."
+TABLE_COUNT=$(mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USERNAME" -p"$DB_PASSWORD" -D "$DB_NAME" -e "SHOW TABLES LIKE 'USER_ENTITY';" 2>/dev/null | wc -l)
+
+if [ "$TABLE_COUNT" -gt 1 ]; then
+    echo "✅ Keycloak tables already exist"
+else
+    echo "ℹ️  Keycloak tables will be created automatically on first startup"
+fi
+
+# Set Keycloak DB config from .env
+export KC_DB=mysql
+export KC_DB_URL="jdbc:mysql://${DB_HOST}:${DB_PORT:-3306}/${DB_NAME}?useSSL=${DB_USE_SSL:-false}&allowPublicKeyRetrieval=${DB_ALLOW_PUBLIC_KEY_RETRIEVAL:-true}&serverTimezone=${DB_SERVER_TIMEZONE:-UTC}&autoReconnect=${DB_AUTO_RECONNECT:-true}"
+export KC_DB_USERNAME=$DB_USERNAME
+export KC_DB_PASSWORD=$DB_PASSWORD
 
 # Set Keycloak admin credentials from .env if available
 if [ ! -z "$ADMIN_USERNAME" ]; then
-    export KC_BOOTSTRAP_ADMIN_USERNAME=$ADMIN_USERNAME
-    export KC_BOOTSTRAP_ADMIN_PASSWORD=$ADMIN_PASSWORD
+    export KEYCLOAK_ADMIN=$ADMIN_USERNAME
+    export KEYCLOAK_ADMIN_PASSWORD=$ADMIN_PASSWORD
     echo "👤 Using admin credentials: $ADMIN_USERNAME"
 else
     # Fallback to default admin credentials
-    export KC_BOOTSTRAP_ADMIN_USERNAME=admin
-    export KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+    export KEYCLOAK_ADMIN=admin
+    export KEYCLOAK_ADMIN_PASSWORD=admin
     echo "👤 Using default admin credentials: admin/admin"
 fi
 
-echo "🔐 Setting up Keycloak for Mankind Matrix AI Backend (Automated)..."
+# Kill any process using the Keycloak port (default 8180)
+KEYCLOAK_PORT=${KEYCLOAK_HTTP_PORT:-8180}
+PID=$(lsof -ti tcp:$KEYCLOAK_PORT)
+if [ -n "$PID" ]; then
+    echo "🔧 Killing process on port $KEYCLOAK_PORT (PID $PID)"
+    kill -9 $PID 2>/dev/null
+else
+    echo "✅ Port $KEYCLOAK_PORT is free"
+fi
 
 # Check if Keycloak is already installed
 if [ -d "keycloak-26.0.5" ]; then
     echo "✅ Keycloak is already installed in keycloak-26.0.5/"
-    echo "   Starting Keycloak with automated setup..."
+    echo "   Updating configuration and starting..."
 else
     # Download Keycloak
     echo "📥 Downloading Keycloak 26.0.5..."
@@ -59,37 +115,51 @@ else
     echo "📦 Extracting Keycloak..."
     tar -xzf keycloak.tar.gz
 
-    # Create configuration directory
-    mkdir -p keycloak-26.0.5/conf
-
-    # Create configuration file with admin user
-    echo "⚙️ Creating Keycloak configuration..."
-    cat > keycloak-26.0.5/conf/keycloak.conf << EOF
-# Keycloak Configuration
-http-port=${KEYCLOAK_HTTP_PORT:-8180}
-http-enabled=true
-import-realm=true
-admin=${ADMIN_USERNAME:-admin}
-admin-password=${ADMIN_PASSWORD:-admin}
-EOF
-
-    # Copy realm configuration
-    echo "📋 Copying realm configuration..."
-    mkdir -p keycloak-26.0.5/data/import
-    cp keycloak/mankind-realm.json keycloak-26.0.5/data/import/
-
     # Clean up download
     rm keycloak.tar.gz
 fi
 
-# Start Keycloak in the background
-echo "🚀 Starting Keycloak with automated setup..."
+# Create configuration directory
+mkdir -p keycloak-26.0.5/conf
+
+# Create configuration file with database settings
+echo "⚙️ Creating Keycloak configuration..."
+cat > keycloak-26.0.5/conf/keycloak.conf << EOF
+# Keycloak Configuration
+http-port=${KEYCLOAK_HTTP_PORT:-8180}
+http-enabled=true
+import-realm=true
+
+# Database Configuration (MySQL)
+db=mysql
+db-url=jdbc:mysql://${DB_HOST}:${DB_PORT:-3306}/${DB_NAME}?useSSL=${DB_USE_SSL:-false}&allowPublicKeyRetrieval=${DB_ALLOW_PUBLIC_KEY_RETRIEVAL:-true}&serverTimezone=${DB_SERVER_TIMEZONE:-UTC}&autoReconnect=${DB_AUTO_RECONNECT:-true}
+db-username=${DB_USERNAME}
+db-password=${DB_PASSWORD}
+
+# Admin User Configuration
+admin=${ADMIN_USERNAME:-admin}
+admin-password=${ADMIN_PASSWORD:-admin}
+
+# Production Settings
+hostname=localhost
+hostname-port=${KEYCLOAK_HTTP_PORT:-8180}
+EOF
+
+# Copy realm configuration
+echo "📋 Copying realm configuration..."
+mkdir -p keycloak-26.0.5/data/import
+cp keycloak/mankind-realm.json keycloak-26.0.5/data/import/
+
+# Start Keycloak in production mode (not development mode)
+echo "🚀 Starting Keycloak with database configuration..."
 cd keycloak-26.0.5
-./bin/kc.sh start-dev --import-realm
+
+# Use production mode instead of development mode
+./bin/kc.sh start --import-realm
 
 # Wait for Keycloak to be ready
 echo "⏳ Waiting for Keycloak to start..."
-sleep 15
+sleep 20
 
 # Check if Keycloak is ready
 echo "🔍 Checking if Keycloak is ready..."
@@ -99,7 +169,7 @@ for i in {1..30}; do
         break
     fi
     echo "   Waiting... (attempt $i/30)"
-    sleep 2
+    sleep 3
 done
 
 # Verify admin user and realm
@@ -115,9 +185,13 @@ echo "🎉 Keycloak setup complete!"
 echo ""
 echo "📋 Access Information:"
 echo "   Keycloak Admin:   http://localhost:8180/admin"
-echo "   Admin Username:   admin"
-echo "   Admin Password:   admin"
+echo "   Admin Username:   ${ADMIN_USERNAME:-admin}"
+echo "   Admin Password:   ${ADMIN_PASSWORD:-admin}"
 echo "   Realm:            mankind (automatically imported)"
-echo "   Client Secret:    EbdR3is1KVHnCHGvqcN2WJzCJmGSp0m535rdRjBwE6U="
+echo "   Database:         ${DB_HOST}/${DB_NAME}"
+echo "   Persistence:      ✅ MySQL Database (persistent)"
 echo ""
-echo "💡 You can now run: ./scripts/run-all-services.sh" 
+echo "💡 You can now run: ./scripts/run-all-services.sh"
+echo ""
+echo "🔧 Keycloak is now running in production mode with database persistence."
+echo "   Admin credentials will be saved in the database and persist across restarts." 

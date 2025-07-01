@@ -102,7 +102,7 @@ You can choose your preferred method based on your needs. Docker is recommended 
     ```
    
    <details>
-   <summary><b>Option 2: Manual build (build services individually)</b></summary>
+      <summary><b>Option 2: Manual build (build services individually)</b></summary>
       
       ```bash
       cd user-service
