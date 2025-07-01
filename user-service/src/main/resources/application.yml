@@ -51,12 +51,17 @@ jwt:
 springdoc:
   api-docs:
     path: /v3/api-docs
+    enabled: true
   swagger-ui:
-    path: /swagger-ui.html
+    path: /swagger-ui
     operationsSorter: method
     tagsSorter: alpha
     tryItOutEnabled: true
+  show-actuator: false
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json
   packages-to-scan: com.mankind.mankindmatrixuserservice.controller
+  paths-to-match: /**
 
 management:
   endpoints:

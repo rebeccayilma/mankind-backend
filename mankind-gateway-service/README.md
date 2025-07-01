@@ -7,8 +7,8 @@ The Mankind API Gateway Service acts as the single entry point for all client re
 
 * Java 17+
 * Maven 3.6+
-* Spring Boot 3.2.x
-* Spring Cloud Gateway 4.1.x
+* Spring Boot 3.4.x
+* Spring Cloud Gateway 2024.0.x
 * (Optional) Docker & Docker Compose for containerized run
 
 ## Running the Gateway
@@ -95,3 +95,53 @@ To expose a new service endpoint via the gateway:
 3. Ensure the downstream service is registered in your discovery mechanism (e.g., Eureka).
 
 No additional code changes are needed in the gateway for simple routing.
+
+### Adding Swagger Documentation
+
+To enable Swagger documentation access through the gateway for a new service, add these additional routes:
+
+```yaml
+# API Documentation (OpenAPI JSON)
+- id: order-api-docs-root
+  uri: http://localhost:8084
+  predicates:
+    - Path=/order-api-docs
+  filters:
+    - SetPath=/v3/api-docs
+
+- id: order-api-docs
+  uri: http://localhost:8084
+  predicates:
+    - Path=/order-api-docs/**
+  filters:
+    - RewritePath=/order-api-docs/(?<segment>.*), /v3/api-docs/${segment}
+
+# Swagger UI
+- id: order-swagger-ui-root
+  uri: http://localhost:8084
+  predicates:
+    - Path=/docs/orders
+  filters:
+    - SetPath=/swagger-ui/index.html
+
+- id: order-swagger-ui-static
+  uri: http://localhost:8084
+  predicates:
+    - Path=/docs/orders/**
+  filters:
+    - RewritePath=/docs/orders/(?<segment>.*), /swagger-ui/${segment}
+```
+
+### Available Swagger Documentation URLs
+
+#### Swagger UI Access
+- **Product Service:** `http://localhost:8085/docs/products`
+- **Cart Service:** `http://localhost:8085/docs/cart`
+- **User Service:** `http://localhost:8085/docs/users`
+- **Wishlist Service:** `http://localhost:8085/docs/wishlist`
+
+#### API Documentation (OpenAPI JSON)
+- **Product Service:** `http://localhost:8085/product-api-docs`
+- **Cart Service:** `http://localhost:8085/cart-api-docs`
+- **User Service:** `http://localhost:8085/user-api-docs`
+- **Wishlist Service:** `http://localhost:8085/wishlist-api-docs`

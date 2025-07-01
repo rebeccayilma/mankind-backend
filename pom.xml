@@ -11,7 +11,9 @@
     <module>product-service</module>
     <module>cart-service</module>
     <module>wishlist-service</module>
+    <module>payment-service</module>
     <module>mankind-gateway-service</module>
+    <module>notification-service</module>
     <!--  api modules -->
     <module>user-api</module>
     <module>product-api</module>
@@ -22,6 +24,9 @@
     <spring.boot.version>3.4.4</spring.boot.version>
     <springframework.cloud.version>2024.0.1</springframework.cloud.version>
     <lombok.version>1.18.30</lombok.version>
+    <springdoc.version>2.8.9</springdoc.version>
+    <mapstruct.version>1.5.5.Final</mapstruct.version>
+    <stripe.version>22.21.0</stripe.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -54,6 +59,29 @@
         <artifactId>lombok</artifactId>
         <version>${lombok.version}</version>
         <scope>provided</scope>
+      </dependency>
+      <!-- SpringDoc OpenAPI Dependencies -->
+      <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>${springdoc.version}</version>
+      </dependency>
+      <!-- MapStruct Dependencies -->
+      <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct</artifactId>
+        <version>${mapstruct.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct-processor</artifactId>
+        <version>${mapstruct.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.stripe</groupId>
+        <artifactId>stripe-java</artifactId>
+        <version>${stripe.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
