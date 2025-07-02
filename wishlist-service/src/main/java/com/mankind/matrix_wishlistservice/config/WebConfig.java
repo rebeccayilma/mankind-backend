@@ -34,14 +34,16 @@ public class WebConfig implements WebMvcConfigurer {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
             .authorizeHttpRequests(authz -> authz
-                // Permit Swagger UI and OpenAPI docs
+                // Permit Swagger UI, OpenAPI docs, and actuator health/info
                 .requestMatchers(
                     "/swagger-ui/**",
                     "/swagger-ui.html",
                     "/v3/api-docs/**",
                     "/v2/api-docs/**",
                     "/swagger-resources/**",
-                    "/webjars/**"
+                    "/webjars/**",
+                    "/actuator/health",
+                    "/actuator/info"
                 ).permitAll()
                 // Require authentication for all other endpoints
                 .anyRequest().authenticated()

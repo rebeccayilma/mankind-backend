@@ -19,6 +19,7 @@ public class SecurityConfig {
                 .authorizeExchange(ex -> ex
                         // Public endpoints (no authentication required)
                         .pathMatchers("/", "/index.html").permitAll()
+                        .pathMatchers("/actuator/**").permitAll()  // Allow public access to actuator endpoints
                         .pathMatchers("/api/v1/auth/**").permitAll()
                         
                         // Product service - public read access, protected write access

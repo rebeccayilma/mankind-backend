@@ -19,7 +19,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8180/realms/mankind
+          issuer-uri: ${KEYCLOAK_URL:http://localhost:8180}/realms/mankind
+          jwk-set-uri: ${KEYCLOAK_URL:http://localhost:8180}/realms/mankind/protocol/openid-connect/certs
   jpa:
     hibernate:
       ddl-auto: update

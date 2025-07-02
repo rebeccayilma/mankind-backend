@@ -1,4 +1,31 @@
 services:
+  # Keycloak Service
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.5
+    container_name: mankind-keycloak
+    ports:
+      - "8180:8080"
+    environment:
+      KEYCLOAK_ADMIN: ${ADMIN_USERNAME:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
+      KC_DB: mysql
+      KC_DB_URL: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=${DB_USE_SSL:-false}&allowPublicKeyRetrieval=${DB_ALLOW_PUBLIC_KEY_RETRIEVAL:-true}&serverTimezone=${DB_SERVER_TIMEZONE:-UTC}&autoReconnect=${DB_AUTO_RECONNECT:-true}
+      KC_DB_USERNAME: ${DB_USERNAME}
+      KC_DB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./keycloak/mankind-realm.json:/opt/keycloak/data/import/mankind-realm.json
+    command: start-dev --import-realm
+    networks:
+      - mankind-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  # Gateway Service
   gateway-service:
     build:
       context: .
@@ -17,6 +44,12 @@ services:
       - WISHLIST_SERVICE_URL=http://mankind-wishlist-service:8080
       - PAYMENT_SERVICE_URL=http://mankind-payment-service:8080
       - NOTIFICATION_SERVICE_URL=http://mankind-notification-service:8080
+      - KEYCLOAK_URL=http://mankind-keycloak:8080
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
     deploy:
       resources:
         limits:
@@ -33,6 +66,7 @@ services:
       start_period: 40s
     restart: unless-stopped
     depends_on:
+      - keycloak
       - product-service
       - user-service
       - cart-service
@@ -40,36 +74,10 @@ services:
       - payment-service
       - notification-service
 
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.0.5
-    volumes:
-      - ./keycloak/mankind-realm.json:/opt/keycloak/data/import/mankind-realm.json
-    command: start-dev --import-realm
-    environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-    ports:
-      - "8180:8080"
-    networks:
-      - mankind-network
-
-  api-gateway:
-    build:
-      context: ./api-gateway
-    image: mankind/api-gateway:1.0.0
-    container_name: api-gateway
-    ports:
-      - "8085:8085"
-    depends_on:
-      - keycloak
-    environment:
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER-URI: http://keycloak:8080/realms/your-realm
-    networks:
-      - mankind-network
-
+  # Product Service
   product-service:
     build:
-      context: ./product-service
+      context: .
       dockerfile: product-service/Dockerfile
       args:
         MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
@@ -81,7 +89,24 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
-      - EUREKA_URI=http://eureka-server:8761
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_CONNECT_TIMEOUT=${DB_CONNECT_TIMEOUT}
+      - DB_SOCKET_TIMEOUT=${DB_SOCKET_TIMEOUT}
+      - DB_USE_SSL=${DB_USE_SSL}
+      - DB_ALLOW_PUBLIC_KEY_RETRIEVAL=${DB_ALLOW_PUBLIC_KEY_RETRIEVAL}
+      - DB_SERVER_TIMEZONE=${DB_SERVER_TIMEZONE}
+      - DB_AUTO_RECONNECT=${DB_AUTO_RECONNECT}
+      - DB_FAIL_OVER_READ_ONLY=${DB_FAIL_OVER_READ_ONLY}
+      - DB_HIKARI_MAX_POOL_SIZE=${DB_HIKARI_MAX_POOL_SIZE}
+      - DB_HIKARI_MIN_IDLE=${DB_HIKARI_MIN_IDLE}
+      - DB_HIKARI_CONNECTION_TIMEOUT=${DB_HIKARI_CONNECTION_TIMEOUT}
+      - DB_HIKARI_IDLE_TIMEOUT=${DB_HIKARI_IDLE_TIMEOUT}
+      - DB_HIKARI_MAX_LIFETIME=${DB_HIKARI_MAX_LIFETIME}
+      - KEYCLOAK_URL=http://mankind-keycloak:8080
     deploy:
       resources:
         limits:
@@ -95,12 +120,15 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 60s
     restart: unless-stopped
+    depends_on:
+      - keycloak
 
+  # User Service
   user-service:
     build:
-      context: ./user-service
+      context: .
       dockerfile: user-service/Dockerfile
       args:
         MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
@@ -112,7 +140,24 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
-      - EUREKA_URI=http://eureka-server:8761
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_CONNECT_TIMEOUT=${DB_CONNECT_TIMEOUT}
+      - DB_SOCKET_TIMEOUT=${DB_SOCKET_TIMEOUT}
+      - DB_USE_SSL=${DB_USE_SSL}
+      - DB_ALLOW_PUBLIC_KEY_RETRIEVAL=${DB_ALLOW_PUBLIC_KEY_RETRIEVAL}
+      - DB_SERVER_TIMEZONE=${DB_SERVER_TIMEZONE}
+      - DB_AUTO_RECONNECT=${DB_AUTO_RECONNECT}
+      - DB_FAIL_OVER_READ_ONLY=${DB_FAIL_OVER_READ_ONLY}
+      - DB_HIKARI_MAX_POOL_SIZE=${DB_HIKARI_MAX_POOL_SIZE}
+      - DB_HIKARI_MIN_IDLE=${DB_HIKARI_MIN_IDLE}
+      - DB_HIKARI_CONNECTION_TIMEOUT=${DB_HIKARI_CONNECTION_TIMEOUT}
+      - DB_HIKARI_IDLE_TIMEOUT=${DB_HIKARI_IDLE_TIMEOUT}
+      - DB_HIKARI_MAX_LIFETIME=${DB_HIKARI_MAX_LIFETIME}
+      - KEYCLOAK_URL=http://mankind-keycloak:8080
     deploy:
       resources:
         limits:
@@ -128,10 +173,13 @@ services:
       retries: 3
       start_period: 40s
     restart: unless-stopped
+    depends_on:
+      - keycloak
 
+  # Cart Service
   cart-service:
     build:
-      context: ./cart-service
+      context: .
       dockerfile: cart-service/Dockerfile
       args:
         MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
@@ -143,7 +191,24 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
-      - EUREKA_URI=http://eureka-server:8761
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_CONNECT_TIMEOUT=${DB_CONNECT_TIMEOUT}
+      - DB_SOCKET_TIMEOUT=${DB_SOCKET_TIMEOUT}
+      - DB_USE_SSL=${DB_USE_SSL}
+      - DB_ALLOW_PUBLIC_KEY_RETRIEVAL=${DB_ALLOW_PUBLIC_KEY_RETRIEVAL}
+      - DB_SERVER_TIMEZONE=${DB_SERVER_TIMEZONE}
+      - DB_AUTO_RECONNECT=${DB_AUTO_RECONNECT}
+      - DB_FAIL_OVER_READ_ONLY=${DB_FAIL_OVER_READ_ONLY}
+      - DB_HIKARI_MAX_POOL_SIZE=${DB_HIKARI_MAX_POOL_SIZE}
+      - DB_HIKARI_MIN_IDLE=${DB_HIKARI_MIN_IDLE}
+      - DB_HIKARI_CONNECTION_TIMEOUT=${DB_HIKARI_CONNECTION_TIMEOUT}
+      - DB_HIKARI_IDLE_TIMEOUT=${DB_HIKARI_IDLE_TIMEOUT}
+      - DB_HIKARI_MAX_LIFETIME=${DB_HIKARI_MAX_LIFETIME}
+      - KEYCLOAK_URL=http://mankind-keycloak:8080
     deploy:
       resources:
         limits:
@@ -159,10 +224,13 @@ services:
       retries: 3
       start_period: 40s
     restart: unless-stopped
+    depends_on:
+      - keycloak
 
+  # Wishlist Service
   wishlist-service:
     build:
-      context: ./wishlist-service
+      context: .
       dockerfile: wishlist-service/Dockerfile
       args:
         MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
@@ -174,7 +242,24 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
-      - EUREKA_URI=http://eureka-server:8761
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_CONNECT_TIMEOUT=${DB_CONNECT_TIMEOUT}
+      - DB_SOCKET_TIMEOUT=${DB_SOCKET_TIMEOUT}
+      - DB_USE_SSL=${DB_USE_SSL}
+      - DB_ALLOW_PUBLIC_KEY_RETRIEVAL=${DB_ALLOW_PUBLIC_KEY_RETRIEVAL}
+      - DB_SERVER_TIMEZONE=${DB_SERVER_TIMEZONE}
+      - DB_AUTO_RECONNECT=${DB_AUTO_RECONNECT}
+      - DB_FAIL_OVER_READ_ONLY=${DB_FAIL_OVER_READ_ONLY}
+      - DB_HIKARI_MAX_POOL_SIZE=${DB_HIKARI_MAX_POOL_SIZE}
+      - DB_HIKARI_MIN_IDLE=${DB_HIKARI_MIN_IDLE}
+      - DB_HIKARI_CONNECTION_TIMEOUT=${DB_HIKARI_CONNECTION_TIMEOUT}
+      - DB_HIKARI_IDLE_TIMEOUT=${DB_HIKARI_IDLE_TIMEOUT}
+      - DB_HIKARI_MAX_LIFETIME=${DB_HIKARI_MAX_LIFETIME}
+      - KEYCLOAK_URL=http://mankind-keycloak:8080
     deploy:
       resources:
         limits:
@@ -190,7 +275,10 @@ services:
       retries: 3
       start_period: 40s
     restart: unless-stopped
+    depends_on:
+      - keycloak
 
+  # Payment Service
   payment-service:
     build:
       context: .
@@ -205,6 +293,27 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_CONNECT_TIMEOUT=${DB_CONNECT_TIMEOUT}
+      - DB_SOCKET_TIMEOUT=${DB_SOCKET_TIMEOUT}
+      - DB_USE_SSL=${DB_USE_SSL}
+      - DB_ALLOW_PUBLIC_KEY_RETRIEVAL=${DB_ALLOW_PUBLIC_KEY_RETRIEVAL}
+      - DB_SERVER_TIMEZONE=${DB_SERVER_TIMEZONE}
+      - DB_AUTO_RECONNECT=${DB_AUTO_RECONNECT}
+      - DB_FAIL_OVER_READ_ONLY=${DB_FAIL_OVER_READ_ONLY}
+      - DB_HIKARI_MAX_POOL_SIZE=${DB_HIKARI_MAX_POOL_SIZE}
+      - DB_HIKARI_MIN_IDLE=${DB_HIKARI_MIN_IDLE}
+      - DB_HIKARI_CONNECTION_TIMEOUT=${DB_HIKARI_CONNECTION_TIMEOUT}
+      - DB_HIKARI_IDLE_TIMEOUT=${DB_HIKARI_IDLE_TIMEOUT}
+      - DB_HIKARI_MAX_LIFETIME=${DB_HIKARI_MAX_LIFETIME}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - STRIPE_CURRENCY=${STRIPE_CURRENCY}
+      - KEYCLOAK_URL=http://mankind-keycloak:8080
     deploy:
       resources:
         limits:
@@ -220,7 +329,10 @@ services:
       retries: 3
       start_period: 40s
     restart: unless-stopped
+    depends_on:
+      - keycloak
 
+  # Notification Service
   notification-service:
     build:
       context: .
@@ -233,7 +345,26 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
-      - EUREKA_URI=http://eureka-server:8761
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_CONNECT_TIMEOUT=${DB_CONNECT_TIMEOUT}
+      - DB_SOCKET_TIMEOUT=${DB_SOCKET_TIMEOUT}
+      - DB_USE_SSL=${DB_USE_SSL}
+      - DB_ALLOW_PUBLIC_KEY_RETRIEVAL=${DB_ALLOW_PUBLIC_KEY_RETRIEVAL}
+      - DB_SERVER_TIMEZONE=${DB_SERVER_TIMEZONE}
+      - DB_AUTO_RECONNECT=${DB_AUTO_RECONNECT}
+      - DB_FAIL_OVER_READ_ONLY=${DB_FAIL_OVER_READ_ONLY}
+      - DB_HIKARI_MAX_POOL_SIZE=${DB_HIKARI_MAX_POOL_SIZE}
+      - DB_HIKARI_MIN_IDLE=${DB_HIKARI_MIN_IDLE}
+      - DB_HIKARI_CONNECTION_TIMEOUT=${DB_HIKARI_CONNECTION_TIMEOUT}
+      - DB_HIKARI_IDLE_TIMEOUT=${DB_HIKARI_IDLE_TIMEOUT}
+      - DB_HIKARI_MAX_LIFETIME=${DB_HIKARI_MAX_LIFETIME}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - KEYCLOAK_URL=http://mankind-keycloak:8080
     deploy:
       resources:
         limits:
@@ -249,238 +380,8 @@ services:
       retries: 3
       start_period: 40s
     restart: unless-stopped
-
-  payment-service:
-    build:
-      context: .
-      dockerfile: payment-service/Dockerfile
-      args:
-        MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
-    container_name: mankind-payment-service
-    ports:
-      - "8084:8080"
-    env_file:
-      - payment-service/.env
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
-    deploy:
-      resources:
-        limits:
-          memory: 768M
-        reservations:
-          memory: 512M
-    networks:
-      - mankind-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    restart: unless-stopped
-
-  notification-service:
-    build:
-      context: .
-      dockerfile: notification-service/Dockerfile
-      args:
-        MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
-    container_name: mankind-notification-service
-    ports:
-      - "8086:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
-    deploy:
-      resources:
-        limits:
-          memory: 768M
-        reservations:
-          memory: 512M
-    networks:
-      - mankind-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    restart: unless-stopped
-
-  payment-service:
-    build:
-      context: .
-      dockerfile: payment-service/Dockerfile
-      args:
-        MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
-    container_name: mankind-payment-service
-    ports:
-      - "8084:8080"
-    env_file:
-      - payment-service/.env
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
-    deploy:
-      resources:
-        limits:
-          memory: 768M
-        reservations:
-          memory: 512M
-    networks:
-      - mankind-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    restart: unless-stopped
-
-  notification-service:
-    build:
-      context: .
-      dockerfile: notification-service/Dockerfile
-      args:
-        MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
-    container_name: mankind-notification-service
-    ports:
-      - "8086:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
-    deploy:
-      resources:
-        limits:
-          memory: 768M
-        reservations:
-          memory: 512M
-    networks:
-      - mankind-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    restart: unless-stopped
-
-  payment-service:
-    build:
-      context: .
-      dockerfile: payment-service/Dockerfile
-      args:
-        MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
-    container_name: mankind-payment-service
-    ports:
-      - "8084:8080"
-    env_file:
-      - payment-service/.env
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
-    deploy:
-      resources:
-        limits:
-          memory: 768M
-        reservations:
-          memory: 512M
-    networks:
-      - mankind-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    restart: unless-stopped
-
-  notification-service:
-    build:
-      context: .
-      dockerfile: notification-service/Dockerfile
-      args:
-        MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
-    container_name: mankind-notification-service
-    ports:
-      - "8086:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
-    deploy:
-      resources:
-        limits:
-          memory: 768M
-        reservations:
-          memory: 512M
-    networks:
-      - mankind-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    restart: unless-stopped
-
-  payment-service:
-    build:
-      context: .
-      dockerfile: payment-service/Dockerfile
-      args:
-        MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
-    container_name: mankind-payment-service
-    ports:
-      - "8084:8080"
-    env_file:
-      - payment-service/.env
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
-    deploy:
-      resources:
-        limits:
-          memory: 768M
-        reservations:
-          memory: 512M
-    networks:
-      - mankind-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    restart: unless-stopped
-
-  notification-service:
-    build:
-      context: .
-      dockerfile: notification-service/Dockerfile
-      args:
-        MAVEN_OPTS: "-Xmx512m -XX:MaxMetaspaceSize=256m"
-    container_name: mankind-notification-service
-    ports:
-      - "8086:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - JAVA_OPTS=-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m
-    deploy:
-      resources:
-        limits:
-          memory: 768M
-        reservations:
-          memory: 512M
-    networks:
-      - mankind-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    restart: unless-stopped
+    depends_on:
+      - keycloak
 
 networks:
   mankind-network:

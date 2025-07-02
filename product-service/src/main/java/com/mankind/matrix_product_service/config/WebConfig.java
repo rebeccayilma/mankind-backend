@@ -58,7 +58,9 @@ public class WebConfig implements WebMvcConfigurer {
                     "/swagger-ui.html",
                     "/v3/api-docs/**",
                     "/swagger-resources/**",
-                    "/webjars/**"
+                    "/webjars/**",
+                    "/actuator/health",
+                    "/actuator/info"
                 ).permitAll()
                 // Product service - public read access, protected write access
                 .requestMatchers(HttpMethod.GET, "/**").permitAll()  // All GET requests are public

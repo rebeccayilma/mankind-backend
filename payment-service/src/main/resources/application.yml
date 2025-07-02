@@ -60,6 +60,12 @@ management:
       enabled: true
     readinessState:
       enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_URL:http://localhost:8180}/realms/mankind
+          jwk-set-uri: ${KEYCLOAK_URL:http://localhost:8180}/realms/mankind/protocol/openid-connect/certs
 
 # Stripe Configuration
 stripe:
