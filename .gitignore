@@ -48,9 +48,9 @@ surefire-reports/
 test-output/
 
 ### Environment Variables ###
-.env
-.env.*
-!.env.example
+# .env
+# .env.*
+# !.env.example
 
 
 # Keys
