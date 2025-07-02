@@ -2,9 +2,7 @@ services:
   # Keycloak Service
   keycloak:
     image: quay.io/keycloak/keycloak:26.0.5
-    container_name: mankind-keycloak
-    ports:
-      - "8180:8080"
+    command: start-dev --import-realm
     environment:
       KEYCLOAK_ADMIN: ${ADMIN_USERNAME:-admin}
       KEYCLOAK_ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
@@ -12,9 +10,10 @@ services:
       KC_DB_URL: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=${DB_USE_SSL:-false}&allowPublicKeyRetrieval=${DB_ALLOW_PUBLIC_KEY_RETRIEVAL:-true}&serverTimezone=${DB_SERVER_TIMEZONE:-UTC}&autoReconnect=${DB_AUTO_RECONNECT:-true}
       KC_DB_USERNAME: ${DB_USERNAME}
       KC_DB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "8180:8080"
     volumes:
       - ./keycloak/mankind-realm.json:/opt/keycloak/data/import/mankind-realm.json
-    command: start-dev --import-realm
     networks:
       - mankind-network
     healthcheck:
