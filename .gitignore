@@ -48,10 +48,14 @@ surefire-reports/
 test-output/
 
 ### Environment Variables ###
-.env
-.env.*
-!.env.example
+# .env
+# .env.*
+# !.env.example
 
 
 # Keys
 *.pem
+
+# Keycloak installation (large binary files)
+keycloak-26.0.5/
+keycloak.tar.gz

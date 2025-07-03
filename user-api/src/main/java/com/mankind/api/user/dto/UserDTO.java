@@ -5,6 +5,8 @@ import com.mankind.api.user.enums.Role;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 public class UserDTO {
@@ -15,6 +17,7 @@ public class UserDTO {
     private String lastName;
     private String email;
     private String password;
+    private Map<String,String> customAttributes = new HashMap<>();
     private boolean active;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

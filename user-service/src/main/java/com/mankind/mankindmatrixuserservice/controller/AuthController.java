@@ -2,8 +2,8 @@ package com.mankind.mankindmatrixuserservice.controller;
 
 import com.mankind.api.user.dto.AuthRequest;
 import com.mankind.api.user.dto.AuthResponse;
+import com.mankind.api.user.dto.LogoutRequest;
 import com.mankind.api.user.dto.UserDTO;
-import com.mankind.mankindmatrixuserservice.service.JwtService;
 import com.mankind.mankindmatrixuserservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,12 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final UserService userService;
-    private final JwtService jwtService;
 
-    public AuthController(UserService userService, JwtService jwtService) {
+    public AuthController(UserService userService) {
         this.userService = userService;
-        this.jwtService = jwtService;
     }
+
 
     @Operation(summary = "Register a new user", description = "Creates a new user account")
     @ApiResponses(value = {
@@ -64,24 +62,12 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping("/logout")
-    public ResponseEntity<Object> logout(HttpServletRequest request) {
-        String token = jwtService.extractTokenFromRequest(request);
-
-        if (token == null) {
-            return ResponseEntity.badRequest().body("No token provided");
+    public ResponseEntity<Void> logout(@RequestBody LogoutRequest req) {
+        if (req.getRefreshToken() == null || req.getRefreshToken().isBlank()) {
+            return ResponseEntity.badRequest().build();
         }
-
-        // Check if token is already revoked
-        if (jwtService.isTokenRevoked(token)) {
-            return ResponseEntity.badRequest().body("Token already invalidated");
-        }
-
-        boolean logoutSuccessful = userService.logout(token);
-
-        if (logoutSuccessful) {
-            return ResponseEntity.ok().body("Logout successful");
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Logout failed");
-        }
+        userService.logout(req.getRefreshToken());
+        return ResponseEntity.ok().build();
     }
+
 }
