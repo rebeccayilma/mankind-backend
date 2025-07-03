@@ -48,4 +48,4 @@ public class OpenApiConfig {
                                 .bearerFormat("JWT")
                                 .description("Enter JWT token with Bearer prefix, e.g. 'Bearer eyJhbGciOiJIUzI1NiJ9...'")));
     }
-} 
+}
