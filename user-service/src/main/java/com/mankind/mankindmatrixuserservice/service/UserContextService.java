@@ -26,10 +26,9 @@ public class UserContextService {
         
         if (authentication != null && authentication.getPrincipal() instanceof Jwt) {
             Jwt jwt = (Jwt) authentication.getPrincipal();
-            String username = jwt.getSubject();
-            
-            if (username != null) {
-                return userRepository.findByUsername(username);
+            String keycloakId = jwt.getSubject(); // sub claim
+            if (keycloakId != null) {
+                return userRepository.findByKeycloakId(keycloakId);
             }
         }
         

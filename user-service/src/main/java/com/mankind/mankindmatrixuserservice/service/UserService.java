@@ -110,27 +110,48 @@ public class UserService {
     /**
      * Update user with UpdateUserDTO (used by API)
      */
+    @Transactional
     public UpdateUserDTO updateUser(Long id, UpdateUserDTO updateUserDTO) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with ID " + id + " not found"));
 
+        boolean updateKeycloak = false;
+        String newFirstName = existingUser.getFirstName();
+        String newLastName = existingUser.getLastName();
+        String newEmail = existingUser.getEmail();
+
         // Update fields that are allowed to be updated via API
         if (updateUserDTO.getFirstName() != null) {
             existingUser.setFirstName(updateUserDTO.getFirstName());
+            newFirstName = updateUserDTO.getFirstName();
+            updateKeycloak = true;
         }
         if (updateUserDTO.getLastName() != null) {
             existingUser.setLastName(updateUserDTO.getLastName());
+            newLastName = updateUserDTO.getLastName();
+            updateKeycloak = true;
         }
         if (updateUserDTO.getEmail() != null && !updateUserDTO.getEmail().equals(existingUser.getEmail())) {
             if (userRepository.existsByEmail(updateUserDTO.getEmail())) {
                 throw new DataIntegrityViolationException("Email already in use");
             }
             existingUser.setEmail(updateUserDTO.getEmail());
+            newEmail = updateUserDTO.getEmail();
+            updateKeycloak = true;
         }
 
-        existingUser.setProfilePictureUrl(updateUserDTO.getProfilePictureUrl());
+        // Only update profilePictureUrl if present in the DTO
+        if (updateUserDTO.getProfilePictureUrl() != null) {
+            existingUser.setProfilePictureUrl(updateUserDTO.getProfilePictureUrl());
+        }
 
-        // Save and return updated user
-        return userUpdateMapper.toDto(userRepository.save(existingUser));
+        User savedUser = userRepository.save(existingUser);
+
+        // Update Keycloak if needed
+        if (updateKeycloak) {
+            kcAdmin.updateUserProfile(existingUser.getKeycloakId(), newFirstName, newLastName, newEmail);
+        }
+
+        return userUpdateMapper.toDto(savedUser);
     }
 }

@@ -32,6 +32,13 @@ spring:
 
       routes:
         # API routes
+        - id: user-profile-root
+          uri: ${USER_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/users/me
+          filters:
+            - RewritePath=/api/v1/users/me, /users/me
+
         - id: auth
           uri: ${USER_SERVICE_URL:http://localhost:8081}
           predicates:
