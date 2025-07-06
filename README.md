@@ -269,6 +269,11 @@ Each service has its detailed documentation. Click on the service name to view i
    docker-compose up --build
    ```
 
+   - Build and start a especific service (product-service for example)
+   ```bash
+   docker-compose up --build product-service
+   ```
+
 4. **Manage Docker Services**
    - Check running containers
    ```bash

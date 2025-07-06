@@ -56,9 +56,6 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
-    private String password;
-
     @ElementCollection
     @CollectionTable(
             name = "user_custom_attributes",

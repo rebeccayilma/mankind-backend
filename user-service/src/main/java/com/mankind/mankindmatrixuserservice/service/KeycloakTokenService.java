@@ -33,16 +33,21 @@ public class KeycloakTokenService {
             + "/realms/" + realm
             + "/protocol/openid-connect/token";
 
+        var formData = BodyInserters
+            .fromFormData("grant_type", "password")
+            .with("client_id", clientId)
+            .with("username", username)
+            .with("password", password);
+
+        // Only add client_secret if it's not empty (for confidential clients)
+        if (clientSecret != null && !clientSecret.trim().isEmpty()) {
+            formData = formData.with("client_secret", clientSecret);
+        }
+
         return webClient.post()
             .uri(tokenEndpoint)
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .body(BodyInserters
-                .fromFormData("grant_type", "password")
-                .with("client_id", clientId)
-                .with("client_secret", clientSecret)
-                .with("username", username)
-                .with("password", password)
-            )
+            .body(formData)
             .retrieve()
             .bodyToMono(TokenResponse.class)
             .block();
@@ -53,13 +58,18 @@ public class KeycloakTokenService {
             + "/realms/" + realm
             + "/protocol/openid-connect/revoke";
 
+        var formData = BodyInserters
+            .fromFormData("token", refreshToken)
+            .with("client_id", clientId);
+
+        // Only add client_secret if it's not empty (for confidential clients)
+        if (clientSecret != null && !clientSecret.trim().isEmpty()) {
+            formData = formData.with("client_secret", clientSecret);
+        }
+
         webClient.post()
             .uri(revokeEndpoint)
-            .body(BodyInserters
-                .fromFormData("token", refreshToken)
-                .with("client_id", clientId)
-                .with("client_secret", clientSecret)
-            )
+            .body(formData)
             .retrieve()
             .toBodilessEntity()
             .block();

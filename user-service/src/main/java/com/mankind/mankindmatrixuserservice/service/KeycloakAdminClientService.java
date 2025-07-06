@@ -28,7 +28,7 @@ public class KeycloakAdminClientService {
         this.realm = realm;
     }
 
-    public String createUser(String username, String email, String password, Map<String, String> customAttributes) {
+    public String createUser(String username, String email, String password, String firstName, String lastName, Map<String, String> customAttributes) {
 
         UsersResource usersResource = keycloak.realm(realm).users();
 
@@ -40,6 +40,8 @@ public class KeycloakAdminClientService {
         UserRepresentation user = new UserRepresentation();
         user.setUsername(username);
         user.setEmail(email);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
         user.setEnabled(true);
         user.setEmailVerified(true);
 
@@ -70,7 +72,7 @@ public class KeycloakAdminClientService {
                         resp.getStatusInfo().getReasonPhrase());
             }
 
-            log.debug("Keycloak user '{}'", username);
+            log.debug("Keycloak user '{}' created", username);
             return CreatedResponseUtil.getCreatedId(resp);
         }
     }

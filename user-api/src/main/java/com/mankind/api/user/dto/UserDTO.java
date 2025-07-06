@@ -16,9 +16,9 @@ public class UserDTO {
     private String firstName;
     private String lastName;
     private String email;
-    private String password;
     private Map<String,String> customAttributes = new HashMap<>();
     private boolean active;
+    private String profilePictureUrl;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

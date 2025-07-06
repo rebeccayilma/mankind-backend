@@ -45,8 +45,6 @@ spring:
 logging:
   level:
     org.springframework.security: DEBUG
-jwt:
-  secret: a-sample-long-secret-key-that-is-over-32-characters
 
 # Swagger/OpenAPI Configuration
 springdoc:

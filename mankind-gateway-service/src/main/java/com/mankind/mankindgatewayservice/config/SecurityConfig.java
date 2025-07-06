@@ -22,6 +22,9 @@ public class SecurityConfig {
                         .pathMatchers("/actuator/**").permitAll()  // Allow public access to actuator endpoints
                         .pathMatchers("/api/v1/auth/**").permitAll()
                         
+                        // User profile endpoints (require authentication)
+                        .pathMatchers("/api/v1/users/me/**").authenticated()
+                        
                         // Product service - public read access, protected write access
                         .pathMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()  // All GET requests to products
                         
@@ -32,7 +35,7 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.PATCH, "/api/v1/products/**").authenticated()
                         
                         // Protected endpoints (authentication required)
-                        .pathMatchers("/api/v1/users/**").authenticated()
+                        .pathMatchers("/api/v1/users/**").authenticated()  // Admin endpoints
                         .pathMatchers("/api/v1/cart/**").authenticated()
                         .pathMatchers("/api/v1/wishlist/**").authenticated()
                         .pathMatchers("/api/v1/payments/**").authenticated()
