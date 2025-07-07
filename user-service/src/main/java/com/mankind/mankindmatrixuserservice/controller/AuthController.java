@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/auth")
@@ -235,9 +236,10 @@ public class AuthController {
             )
     })
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(
+    public Mono<ResponseEntity<AuthResponse>> login(
             @Parameter(description = "Login credentials") @RequestBody AuthRequest request) {
-        return ResponseEntity.ok(userService.authenticate(request));
+        return userService.authenticate(request)
+            .map(ResponseEntity::ok);
     }
 
     @Operation(
@@ -328,11 +330,11 @@ public class AuthController {
             )
     })
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@RequestBody LogoutRequest req) {
+    public Mono<ResponseEntity<Void>> logout(@RequestBody LogoutRequest req) {
         if (req.getRefreshToken() == null || req.getRefreshToken().isBlank()) {
-            return ResponseEntity.badRequest().build();
+            return Mono.just(ResponseEntity.badRequest().build());
         }
-        userService.logout(req.getRefreshToken());
-        return ResponseEntity.ok().build();
+        return userService.logout(req.getRefreshToken())
+            .thenReturn(ResponseEntity.ok().build());
     }
 }

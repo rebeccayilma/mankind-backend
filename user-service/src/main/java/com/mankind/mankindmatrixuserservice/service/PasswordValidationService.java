@@ -79,7 +79,7 @@ public class PasswordValidationService {
         
         String lowerPassword = password.toLowerCase();
         
-        // List of common weak passwords
+        // List of common weak passwords (deduplicated)
         String[] commonPasswords = {
             "password", "123456", "123456789", "qwerty", "abc123", "password123",
             "admin", "letmein", "welcome", "monkey", "dragon", "master", "hello",
@@ -95,9 +95,7 @@ public class PasswordValidationService {
             "spanky", "bigdaddy", "johnson", "chester", "london", "midnight",
             "blue", "fishing", "000000", "hacker", "slayer", "dolphin",
             "marlin", "stingray", "cowboy", "bruins", "panther", "marvin",
-            "dennis", "frank", "tiger", "horney", "pussy", "badboy",
-            "blowjob", "spanky", "bigdaddy", "johnson", "chester", "london",
-            "midnight", "blue", "fishing", "000000", "hacker", "slayer"
+            "dennis", "frank", "horney", "pussy", "badboy", "blowjob"
         };
 
         for (String common : commonPasswords) {

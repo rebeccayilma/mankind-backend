@@ -18,6 +18,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -76,23 +77,25 @@ public class UserService {
         return userMapper.toDto(userRepository.save(user));
     }
 
-    public AuthResponse authenticate(AuthRequest creds) {
-        var tokenResponse = tokenService.getToken(creds.getUsername(), creds.getPassword());
-        if (tokenResponse == null || tokenResponse.getAccessToken() == null) {
-            throw new IllegalArgumentException("Invalid credentials");
-        }
-        return new AuthResponse(
-                tokenResponse.getAccessToken(),
-                tokenResponse.getRefreshToken(),
-                tokenResponse.getExpiresIn()
-        );
+    public Mono<AuthResponse> authenticate(AuthRequest creds) {
+        return tokenService.getToken(creds.getUsername(), creds.getPassword())
+            .map(tokenResponse -> {
+                if (tokenResponse == null || tokenResponse.getAccessToken() == null) {
+                    throw new IllegalArgumentException("Invalid credentials");
+                }
+                return new AuthResponse(
+                    tokenResponse.getAccessToken(),
+                    tokenResponse.getRefreshToken(),
+                    tokenResponse.getExpiresIn()
+                );
+            });
     }
 
     /**
      * Revoke the refresh token at Keycloak (logout)
      */
-    public void logout(String refreshToken) {
-        tokenService.revokeRefreshToken(refreshToken);
+    public Mono<Void> logout(String refreshToken) {
+        return tokenService.revokeRefreshToken(refreshToken);
     }
 
     public UserDTO getUserById(Long id) {

@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Service
 public class KeycloakTokenService {
@@ -28,7 +29,7 @@ public class KeycloakTokenService {
         this.webClient = webClientBuilder.build();
     }
 
-    public TokenResponse getToken(String username, String password) {
+    public Mono<TokenResponse> getToken(String username, String password) {
         String tokenEndpoint = serverUrl
             + "/realms/" + realm
             + "/protocol/openid-connect/token";
@@ -49,11 +50,10 @@ public class KeycloakTokenService {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .body(formData)
             .retrieve()
-            .bodyToMono(TokenResponse.class)
-            .block();
+            .bodyToMono(TokenResponse.class);
     }
 
-    public void revokeRefreshToken(String refreshToken) {
+    public Mono<Void> revokeRefreshToken(String refreshToken) {
         String revokeEndpoint = serverUrl
             + "/realms/" + realm
             + "/protocol/openid-connect/revoke";
@@ -67,11 +67,11 @@ public class KeycloakTokenService {
             formData = formData.with("client_secret", clientSecret);
         }
 
-        webClient.post()
+        return webClient.post()
             .uri(revokeEndpoint)
             .body(formData)
             .retrieve()
             .toBodilessEntity()
-            .block();
+            .then();
     }
 }

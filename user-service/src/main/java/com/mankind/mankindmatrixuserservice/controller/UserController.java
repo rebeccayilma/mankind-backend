@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -130,11 +130,9 @@ public class UserController {
             )
     })
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDTO> getUser(
             @Parameter(description = "ID of the user to retrieve") @PathVariable Long id) {
-        if (!userContextService.isAdmin()) {
-            throw new AccessDeniedException("Admin access required");
-        }
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
@@ -205,10 +203,8 @@ public class UserController {
             )
     })
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
-        if (!userContextService.isAdmin()) {
-            throw new AccessDeniedException("Admin access required");
-        }
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
@@ -314,12 +310,10 @@ public class UserController {
             )
     })
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UpdateUserDTO> updateUser(
             @Parameter(description = "ID of the user to update") @PathVariable Long id,
             @Parameter(description = "Updated user information") @RequestBody UpdateUserDTO updateUserDTO) {
-        if (!userContextService.isAdmin()) {
-            throw new AccessDeniedException("Admin access required");
-        }
         return ResponseEntity.ok(userService.updateUser(id, updateUserDTO));
     }
 
@@ -398,11 +392,9 @@ public class UserController {
             )
     })
     @GetMapping("/{userId}/addresses")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<AddressDTO>> getUserAddresses(
             @Parameter(description = "ID of the user whose addresses to retrieve") @PathVariable Long userId) {
-        if (!userContextService.isAdmin()) {
-            throw new AccessDeniedException("Admin access required");
-        }
         return ResponseEntity.ok(addressService.getAddressesByUserId(userId));
     }
 
@@ -462,12 +454,10 @@ public class UserController {
             )
     })
     @GetMapping("/{userId}/addresses/{addressId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AddressDTO> getUserAddress(
             @Parameter(description = "ID of the user") @PathVariable Long userId,
             @Parameter(description = "ID of the address to retrieve") @PathVariable Long addressId) {
-        if (!userContextService.isAdmin()) {
-            throw new AccessDeniedException("Admin access required");
-        }
         AddressDTO addressDTO = addressService.getAddressById(addressId);
         // Verify that the address belongs to the specified user
         if (!addressDTO.getUserId().equals(userId)) {
@@ -573,14 +563,11 @@ public class UserController {
             )
     })
     @PostMapping("/{userId}/addresses")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AddressDTO> createAddress(
             @Parameter(description = "ID of the user") @PathVariable Long userId,
             @Parameter(description = "Address details") @RequestBody CreateAddressDTO createAddressDTO) {
-        if (!userContextService.isAdmin()) {
-            throw new AccessDeniedException("Admin access required");
-        }
-        AddressDTO createdAddress = addressService.createAddress(userId, createAddressDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdAddress);
+        return ResponseEntity.status(HttpStatus.CREATED).body(addressService.createAddress(userId, createAddressDTO));
     }
 
     @Operation(
@@ -676,13 +663,11 @@ public class UserController {
             )
     })
     @PutMapping("/{userId}/addresses/{addressId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AddressDTO> updateAddress(
             @Parameter(description = "ID of the user") @PathVariable Long userId,
             @Parameter(description = "ID of the address to update") @PathVariable Long addressId,
             @Parameter(description = "Updated address details") @RequestBody UpdateAddressDTO updateAddressDTO) {
-        if (!userContextService.isAdmin()) {
-            throw new AccessDeniedException("Admin access required");
-        }
         // First check if the address exists and belongs to the user
         AddressDTO existingAddress = addressService.getAddressById(addressId);
         if (!existingAddress.getUserId().equals(userId)) {
@@ -738,12 +723,10 @@ public class UserController {
             )
     })
     @DeleteMapping("/{userId}/addresses/{addressId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteAddress(
             @Parameter(description = "ID of the user") @PathVariable Long userId,
             @Parameter(description = "ID of the address to delete") @PathVariable Long addressId) {
-        if (!userContextService.isAdmin()) {
-            throw new AccessDeniedException("Admin access required");
-        }
         // First check if the address exists and belongs to the user
         AddressDTO existingAddress = addressService.getAddressById(addressId);
         if (!existingAddress.getUserId().equals(userId)) {
