@@ -15,7 +15,12 @@ spring:
       max-lifetime: ${DB_HIKARI_MAX_LIFETIME}
       connection-test-query: SELECT 1
       auto-commit: true
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_URL:http://localhost:8180}/realms/mankind
+          jwk-set-uri: ${KEYCLOAK_URL:http://localhost:8180}/realms/mankind/protocol/openid-connect/certs
   jpa:
     hibernate:
       ddl-auto: update
@@ -39,16 +44,15 @@ springdoc:
     path: /v3/api-docs
     enabled: true
   swagger-ui:
-    path: /swagger-ui.html
+    path: /swagger-ui
     operationsSorter: method
     tagsSorter: alpha
     tryItOutEnabled: true
-    disable-swagger-default-url: true
-  packages-to-scan: com.mankind.matrix_wishlistservice.controller
-  paths-to-match: /api/**
   show-actuator: false
   default-produces-media-type: application/json
   default-consumes-media-type: application/json
+  packages-to-scan: com.mankind.matrix_wishlistservice.controller
+  paths-to-match: /**
 
 management:
   endpoints:
@@ -65,3 +69,5 @@ management:
       enabled: true
     readinessState:
       enabled: true
+product-service:
+  url: http://localhost:8080

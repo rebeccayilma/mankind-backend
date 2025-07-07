@@ -1,7 +1,7 @@
 package com.mankind.mankindmatrixuserservice.mapper;
 
 
-import com.mankind.mankindmatrixuserservice.dto.UpdateUserDTO;
+import com.mankind.api.user.dto.UpdateUserDTO;
 import com.mankind.mankindmatrixuserservice.model.User;
 import org.mapstruct.Mapper;
 

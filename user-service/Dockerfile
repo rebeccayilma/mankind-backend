@@ -5,7 +5,10 @@ WORKDIR /build
 # Copy the entire project
 COPY . .
 
-# Build the application with explicit executable JAR creation
+# First, build and install the API modules to local repository
+RUN mvn clean install -pl user-api,product-api -am -DskipTests
+
+# Then build the user service
 RUN cd user-service && \
     mvn clean package spring-boot:repackage -DskipTests && \
     ls -la target/

@@ -1,9 +1,8 @@
 package com.mankind.matrix_product_service.controller;
 
-import com.mankind.matrix_product_service.dto.inventory.InventoryDTO;
-import com.mankind.matrix_product_service.dto.inventory.InventoryLogDTO;
-import com.mankind.matrix_product_service.dto.inventory.InventoryResponseDTO;
-import com.mankind.matrix_product_service.dto.inventory.InventoryStatusDTO;
+import com.mankind.api.product.dto.inventory.InventoryDTO;
+import com.mankind.api.product.dto.inventory.InventoryLogDTO;
+import com.mankind.api.product.dto.inventory.InventoryResponseDTO;
 import com.mankind.matrix_product_service.service.InventoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/inventory")
+@RequestMapping("/inventory")
 @RequiredArgsConstructor
 @Tag(name = "Inventory", description = "Inventory management APIs")
 public class InventoryController {
@@ -34,13 +33,6 @@ public class InventoryController {
     public ResponseEntity<InventoryResponseDTO> getInventory(
             @PathVariable Long productId) {
         return ResponseEntity.ok(inventoryService.getInventoryByProductId(productId));
-    }
-
-    @GetMapping("/{productId}/status")
-    @Operation(summary = "Get inventory status", description = "Retrieves simplified inventory status for a product")
-    public ResponseEntity<InventoryStatusDTO> getInventoryStatus(
-            @PathVariable Long productId) {
-        return ResponseEntity.ok(inventoryService.getInventoryStatus(productId));
     }
 
     @PutMapping("/{productId}")
