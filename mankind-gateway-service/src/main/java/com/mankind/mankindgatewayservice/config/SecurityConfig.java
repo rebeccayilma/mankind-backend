@@ -55,7 +55,7 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.PATCH, "/api/v1/products/**").authenticated()
                         
                         // Protected endpoints (authentication required)
-                        .pathMatchers("/api/v1/users/**").authenticated()  // Admin endpoints
+                        .pathMatchers("/api/v1/users/**").hasRole("ADMIN")  // Admin endpoints
                         .pathMatchers("/api/v1/cart/**").authenticated()
                         .pathMatchers("/api/v1/wishlist/**").authenticated()
                         .pathMatchers("/api/v1/payments/**").authenticated()
