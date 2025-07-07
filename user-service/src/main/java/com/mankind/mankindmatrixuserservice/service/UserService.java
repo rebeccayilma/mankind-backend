@@ -81,7 +81,7 @@ public class UserService {
         return tokenService.getToken(creds.getUsername(), creds.getPassword())
             .map(tokenResponse -> {
                 if (tokenResponse == null || tokenResponse.getAccessToken() == null) {
-                    throw new IllegalArgumentException("Invalid credentials");
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
                 }
                 return new AuthResponse(
                     tokenResponse.getAccessToken(),
