@@ -1,3 +1,7 @@
+# Spring Dotenv Configuration - Look for .env in parent directory
+dotenv:
+  path: ../.env
+
 spring:
   application:
     name: matrix-wishlist-service
@@ -21,8 +25,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_URL:http://localhost:8180}/realms/mankind
-          jwk-set-uri: ${KEYCLOAK_URL:http://localhost:8180}/realms/mankind/protocol/openid-connect/certs
+          issuer-uri: ${KEYCLOAK_URL}/realms/mankind
+          jwk-set-uri: ${KEYCLOAK_URL}/realms/mankind/protocol/openid-connect/certs
   jpa:
     hibernate:
       ddl-auto: update
@@ -72,4 +76,4 @@ management:
     readinessState:
       enabled: true
 product-service:
-  url: http://localhost:8080
+      url: ${PRODUCT_SERVICE_URL}

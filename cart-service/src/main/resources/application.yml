@@ -1,5 +1,10 @@
 server:
   port: 8082
+
+# Spring Dotenv Configuration - Look for .env in parent directory
+dotenv:
+  path: ../.env
+
 springdoc:
   api-docs:
     path: /v3/api-docs
@@ -34,8 +39,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_URL:http://localhost:8180}/realms/mankind
-          jwk-set-uri: ${KEYCLOAK_URL:http://localhost:8180}/realms/mankind/protocol/openid-connect/certs
+          issuer-uri: ${KEYCLOAK_URL}/realms/mankind
+          jwk-set-uri: ${KEYCLOAK_URL}/realms/mankind/protocol/openid-connect/certs
   jpa:
     hibernate:
       ddl-auto: update

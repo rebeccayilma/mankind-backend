@@ -17,56 +17,56 @@ spring:
       routes:
         # API routes
         - id: user-profile-root
-          uri: ${USER_SERVICE_URL:http://localhost:8081}
+          uri: ${USER_SERVICE_URL}
           predicates:
             - Path=/api/v1/users/me
           filters:
             - RewritePath=/api/v1/users/me, /users/me
 
         - id: auth
-          uri: ${USER_SERVICE_URL:http://localhost:8081}
+          uri: ${USER_SERVICE_URL}
           predicates:
             - Path=/api/v1/auth/**
           filters:
             - RewritePath=/api/v1/auth/(?<segment>.*), /auth/${segment}
 
         - id: user-profile
-          uri: ${USER_SERVICE_URL:http://localhost:8081}
+          uri: ${USER_SERVICE_URL}
           predicates:
             - Path=/api/v1/users/me/**
           filters:
             - RewritePath=/api/v1/users/me/(?<segment>.*), /users/me/${segment}
 
         - id: users-admin
-          uri: ${USER_SERVICE_URL:http://localhost:8081}
+          uri: ${USER_SERVICE_URL}
           predicates:
             - Path=/api/v1/users/**
           filters:
             - RewritePath=/api/v1/users/(?<segment>.*), /users/${segment}
           
         - id: products
-          uri: ${PRODUCT_SERVICE_URL:http://localhost:8080}
+          uri: ${PRODUCT_SERVICE_URL}
           predicates:
             - Path=/api/v1/products/**
           filters:
             - RewritePath=/api/v1/products/(?<segment>.*), /${segment}
           
         - id: cart
-          uri: ${CART_SERVICE_URL:http://localhost:8082}
+          uri: ${CART_SERVICE_URL}
           predicates:
             - Path=/api/v1/cart/**
           filters:
             - RewritePath=/api/v1/cart/(?<segment>.*), /cart/${segment}
           
         - id: wishlist
-          uri: ${WISHLIST_SERVICE_URL:http://localhost:8083}
+          uri: ${WISHLIST_SERVICE_URL}
           predicates:
             - Path=/api/v1/wishlist/**
           filters:
             - RewritePath=/api/v1/wishlist/(?<segment>.*), /wishlist/${segment}
 
         - id: payments
-          uri: ${PAYMENT_SERVICE_URL:http://localhost:8084}
+          uri: ${PAYMENT_SERVICE_URL}
           predicates:
             - Path=/api/v1/payments/**, /api/v1/admin/payments/**
           filters:
@@ -74,7 +74,7 @@ spring:
             - RewritePath=/api/v1/admin/payments/(?<segment>.*), /admin/payments/${segment}
 
         - id: notifications
-          uri: ${NOTIFICATION_SERVICE_URL:http://localhost:8086}
+          uri: ${NOTIFICATION_SERVICE_URL}
           predicates:
             - Path=/api/v1/notifications/**
           filters:
@@ -84,8 +84,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_URL:http://localhost:8180}/realms/mankind
-          jwk-set-uri: ${KEYCLOAK_URL:http://localhost:8180}/realms/mankind/protocol/openid-connect/certs
+          issuer-uri: ${KEYCLOAK_URL}/realms/mankind
+          jwk-set-uri: ${KEYCLOAK_URL}/realms/mankind/protocol/openid-connect/certs
 
 server:
   port: 8085

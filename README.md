@@ -81,10 +81,11 @@ You can choose your preferred method based on your needs. Docker is recommended 
 ### Run Service
 
 1. **Configure Environment**
-   - Copy `.env.example` on the folder root
-   - Paste that file in each microservice directory
+   - Copy `.env.example` to the project root directory
    - Rename the file to `.env`
-   - Update the database connection details in each `.env` file
+   - Update the database connection details in the `.env` file
+   - **Note**: All services are configured to read from the root `.env` file for both local and Docker development
+   - **Service URLs**: The `.env` file includes all service URLs for inter-service communication
    - For detailed database configuration, see [Database Setup](#database-setup) section
 
 2. **Keycloak Setup (Required for Authentication)**
@@ -257,10 +258,11 @@ Each service has its detailed documentation. Click on the service name to view i
    docker info
    ```
 2. **Configure Environment**
-   - Copy `.env.example` to the folder root
-   - Paste that file in each microservice directory
+   - Copy `.env.example` to the project root directory
    - Rename the file to `.env`
-   - Update the database connection details in each `.env` file
+   - Update the database connection details in the `.env` file
+   - **Note**: All services are configured to read from the root `.env` file for both local and Docker development
+   - **Service URLs**: The `.env` file includes all service URLs for inter-service communication
    - For detailed database configuration, see [Database Setup](#database-setup) section
 
 3. **Run All Services**
@@ -350,6 +352,8 @@ mankind-backend/
 ├── product-api/         # Shared DTOs and interfaces for product-service
 ├── docs/                 # Documentation
 │   └── deploy/          # Deployment guides
+├── .env                 # Centralized environment configuration
+├── .env.example         # Environment configuration template
 ├── README.md            # Project overview and instructions
 ```
 
@@ -435,4 +439,4 @@ If you see high connection counts:
 1. Check if all services are using optimized settings
 2. Restart services to reset connection pools
 3. Monitor with `--processes` flag to identify active queries
-4. Consider reducing `DB_HIKARI_MAX_POOL_SIZE` in `.env` files
+4. Consider reducing `DB_HIKARI_MAX_POOL_SIZE` in the root `.env` file

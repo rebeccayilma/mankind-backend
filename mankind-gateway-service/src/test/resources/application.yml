@@ -1,0 +1,64 @@
+# Test Configuration - Load .env from parent directory
+dotenv:
+  path: ../.env
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: ${USER_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - StripPrefix=1
+        - id: product-service
+          uri: ${PRODUCT_SERVICE_URL:http://localhost:8080}
+          predicates:
+            - Path=/api/products/**
+          filters:
+            - StripPrefix=1
+        - id: cart-service
+          uri: ${CART_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/cart/**
+          filters:
+            - StripPrefix=1
+        - id: wishlist-service
+          uri: ${WISHLIST_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/wishlist/**
+          filters:
+            - StripPrefix=1
+        - id: payment-service
+          uri: ${PAYMENT_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/payments/**
+          filters:
+            - StripPrefix=1
+        - id: notification-service
+          uri: ${NOTIFICATION_SERVICE_URL:http://localhost:8086}
+          predicates:
+            - Path=/api/notifications/**
+          filters:
+            - StripPrefix=1
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_URL:http://localhost:8180}/realms/mankind
+          jwk-set-uri: ${KEYCLOAK_URL:http://localhost:8180}/realms/mankind/protocol/openid-connect/certs
+  profiles:
+    active: test
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+server:
+  port: 8085 
