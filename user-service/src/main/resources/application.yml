@@ -1,7 +1,7 @@
 server:
   port: 8081
 keycloak:
-  auth-server-url: ${KEYCLOAK_SERVER_URL:http://localhost:8180}
+  auth-server-url: ${KEYCLOAK_URL:http://localhost:8180}
   realm: mankind
   admin-user: ${ADMIN_USERNAME}
   admin-password: ${ADMIN_PASSWORD}
@@ -45,8 +45,6 @@ spring:
 logging:
   level:
     org.springframework.security: DEBUG
-jwt:
-  secret: a-sample-long-secret-key-that-is-over-32-characters
 
 # Swagger/OpenAPI Configuration
 springdoc:

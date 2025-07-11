@@ -28,7 +28,7 @@ public class KeycloakAdminClientService {
         this.realm = realm;
     }
 
-    public String createUser(String username, String email, String password, Map<String, String> customAttributes) {
+    public String createUser(String username, String email, String password, String firstName, String lastName, Map<String, String> customAttributes) {
 
         UsersResource usersResource = keycloak.realm(realm).users();
 
@@ -40,6 +40,8 @@ public class KeycloakAdminClientService {
         UserRepresentation user = new UserRepresentation();
         user.setUsername(username);
         user.setEmail(email);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
         user.setEnabled(true);
         user.setEmailVerified(true);
 
@@ -70,8 +72,33 @@ public class KeycloakAdminClientService {
                         resp.getStatusInfo().getReasonPhrase());
             }
 
-            log.debug("Keycloak user '{}'", username);
+            log.debug("Keycloak user '{}' created", username);
             return CreatedResponseUtil.getCreatedId(resp);
+        }
+    }
+
+    /**
+     * Update user profile fields (firstName, lastName, email) in Keycloak
+     */
+    public void updateUserProfile(String keycloakId, String firstName, String lastName, String email) {
+        UsersResource usersResource = keycloak.realm(realm).users();
+        UserRepresentation user = usersResource.get(keycloakId).toRepresentation();
+        boolean changed = false;
+        if (firstName != null && !firstName.equals(user.getFirstName())) {
+            user.setFirstName(firstName);
+            changed = true;
+        }
+        if (lastName != null && !lastName.equals(user.getLastName())) {
+            user.setLastName(lastName);
+            changed = true;
+        }
+        if (email != null && !email.equals(user.getEmail())) {
+            user.setEmail(email);
+            changed = true;
+        }
+        if (changed) {
+            usersResource.get(keycloakId).update(user);
+            log.debug("Updated Keycloak user '{}' profile fields", keycloakId);
         }
     }
 }

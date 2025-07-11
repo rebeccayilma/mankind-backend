@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Service
 public class KeycloakTokenService {
@@ -28,40 +29,49 @@ public class KeycloakTokenService {
         this.webClient = webClientBuilder.build();
     }
 
-    public TokenResponse getToken(String username, String password) {
+    public Mono<TokenResponse> getToken(String username, String password) {
         String tokenEndpoint = serverUrl
             + "/realms/" + realm
             + "/protocol/openid-connect/token";
 
+        var formData = BodyInserters
+            .fromFormData("grant_type", "password")
+            .with("client_id", clientId)
+            .with("username", username)
+            .with("password", password);
+
+        // Only add client_secret if it's not empty (for confidential clients)
+        if (clientSecret != null && !clientSecret.trim().isEmpty()) {
+            formData = formData.with("client_secret", clientSecret);
+        }
+
         return webClient.post()
             .uri(tokenEndpoint)
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .body(BodyInserters
-                .fromFormData("grant_type", "password")
-                .with("client_id", clientId)
-                .with("client_secret", clientSecret)
-                .with("username", username)
-                .with("password", password)
-            )
+            .body(formData)
             .retrieve()
-            .bodyToMono(TokenResponse.class)
-            .block();
+            .bodyToMono(TokenResponse.class);
     }
 
-    public void revokeRefreshToken(String refreshToken) {
+    public Mono<Void> revokeRefreshToken(String refreshToken) {
         String revokeEndpoint = serverUrl
             + "/realms/" + realm
             + "/protocol/openid-connect/revoke";
 
-        webClient.post()
+        var formData = BodyInserters
+            .fromFormData("token", refreshToken)
+            .with("client_id", clientId);
+
+        // Only add client_secret if it's not empty (for confidential clients)
+        if (clientSecret != null && !clientSecret.trim().isEmpty()) {
+            formData = formData.with("client_secret", clientSecret);
+        }
+
+        return webClient.post()
             .uri(revokeEndpoint)
-            .body(BodyInserters
-                .fromFormData("token", refreshToken)
-                .with("client_id", clientId)
-                .with("client_secret", clientSecret)
-            )
+            .body(formData)
             .retrieve()
             .toBodilessEntity()
-            .block();
+            .then();
     }
 }

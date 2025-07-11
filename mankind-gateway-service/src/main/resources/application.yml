@@ -10,28 +10,19 @@ spring:
         locator:
           enabled: false
 
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins: 
-              - "http://localhost:3000"
-              - "http://localhost:8085"
-              - "http://127.0.0.1:8085"
-              - "http://localhost:8080"
-              - "http://localhost:8081"
-              - "http://localhost:8082"
-              - "http://localhost:8083"
-            allowedMethods: GET,POST,PUT,DELETE,OPTIONS,PATCH
-            allowedHeaders: "*"
-            allowCredentials: true
-            maxAge: 3600
-
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin,RETAIN_UNIQUE
         - DedupeResponseHeader=Access-Control-Allow-Credentials,RETAIN_UNIQUE
 
       routes:
         # API routes
+        - id: user-profile-root
+          uri: ${USER_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/users/me
+          filters:
+            - RewritePath=/api/v1/users/me, /users/me
+
         - id: auth
           uri: ${USER_SERVICE_URL:http://localhost:8081}
           predicates:
@@ -39,7 +30,14 @@ spring:
           filters:
             - RewritePath=/api/v1/auth/(?<segment>.*), /auth/${segment}
 
-        - id: users
+        - id: user-profile
+          uri: ${USER_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/users/me/**
+          filters:
+            - RewritePath=/api/v1/users/me/(?<segment>.*), /users/me/${segment}
+
+        - id: users-admin
           uri: ${USER_SERVICE_URL:http://localhost:8081}
           predicates:
             - Path=/api/v1/users/**

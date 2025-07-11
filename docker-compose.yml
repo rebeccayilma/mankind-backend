@@ -2,7 +2,7 @@ services:
   # Keycloak Service
   keycloak:
     image: quay.io/keycloak/keycloak:26.0.5
-    command: start-dev --import-realm
+    command: start-dev --import-realm --http-enabled=true --hostname-strict=false
     environment:
       KEYCLOAK_ADMIN: ${ADMIN_USERNAME:-admin}
       KEYCLOAK_ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
@@ -10,6 +10,9 @@ services:
       KC_DB_URL: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=${DB_USE_SSL:-false}&allowPublicKeyRetrieval=${DB_ALLOW_PUBLIC_KEY_RETRIEVAL:-true}&serverTimezone=${DB_SERVER_TIMEZONE:-UTC}&autoReconnect=${DB_AUTO_RECONNECT:-true}
       KC_DB_USERNAME: ${DB_USERNAME}
       KC_DB_PASSWORD: ${DB_PASSWORD}
+      KC_HOSTNAME_STRICT: false
+      KC_HTTP_ENABLED: true
+      KC_HTTPS_ENABLED: false
     ports:
       - "8180:8080"
     volumes:
@@ -43,7 +46,7 @@ services:
       - WISHLIST_SERVICE_URL=http://mankind-wishlist-service:8080
       - PAYMENT_SERVICE_URL=http://mankind-payment-service:8080
       - NOTIFICATION_SERVICE_URL=http://mankind-notification-service:8080
-      - KEYCLOAK_URL=http://mankind-keycloak:8080
+      - KEYCLOAK_URL=http://keycloak:8080
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_NAME=${DB_NAME}
@@ -105,7 +108,7 @@ services:
       - DB_HIKARI_CONNECTION_TIMEOUT=${DB_HIKARI_CONNECTION_TIMEOUT}
       - DB_HIKARI_IDLE_TIMEOUT=${DB_HIKARI_IDLE_TIMEOUT}
       - DB_HIKARI_MAX_LIFETIME=${DB_HIKARI_MAX_LIFETIME}
-      - KEYCLOAK_URL=http://mankind-keycloak:8080
+      - KEYCLOAK_URL=http://keycloak:8080
     deploy:
       resources:
         limits:
@@ -156,7 +159,7 @@ services:
       - DB_HIKARI_CONNECTION_TIMEOUT=${DB_HIKARI_CONNECTION_TIMEOUT}
       - DB_HIKARI_IDLE_TIMEOUT=${DB_HIKARI_IDLE_TIMEOUT}
       - DB_HIKARI_MAX_LIFETIME=${DB_HIKARI_MAX_LIFETIME}
-      - KEYCLOAK_URL=http://mankind-keycloak:8080
+      - KEYCLOAK_URL=http://keycloak:8080
     deploy:
       resources:
         limits:
@@ -207,7 +210,7 @@ services:
       - DB_HIKARI_CONNECTION_TIMEOUT=${DB_HIKARI_CONNECTION_TIMEOUT}
       - DB_HIKARI_IDLE_TIMEOUT=${DB_HIKARI_IDLE_TIMEOUT}
       - DB_HIKARI_MAX_LIFETIME=${DB_HIKARI_MAX_LIFETIME}
-      - KEYCLOAK_URL=http://mankind-keycloak:8080
+      - KEYCLOAK_URL=http://keycloak:8080
     deploy:
       resources:
         limits:
@@ -258,7 +261,7 @@ services:
       - DB_HIKARI_CONNECTION_TIMEOUT=${DB_HIKARI_CONNECTION_TIMEOUT}
       - DB_HIKARI_IDLE_TIMEOUT=${DB_HIKARI_IDLE_TIMEOUT}
       - DB_HIKARI_MAX_LIFETIME=${DB_HIKARI_MAX_LIFETIME}
-      - KEYCLOAK_URL=http://mankind-keycloak:8080
+      - KEYCLOAK_URL=http://keycloak:8080
     deploy:
       resources:
         limits:
@@ -312,7 +315,7 @@ services:
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
       - STRIPE_CURRENCY=${STRIPE_CURRENCY}
-      - KEYCLOAK_URL=http://mankind-keycloak:8080
+      - KEYCLOAK_URL=http://keycloak:8080
     deploy:
       resources:
         limits:
@@ -363,7 +366,7 @@ services:
       - DB_HIKARI_MAX_LIFETIME=${DB_HIKARI_MAX_LIFETIME}
       - MAIL_USERNAME=${MAIL_USERNAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
-      - KEYCLOAK_URL=http://mankind-keycloak:8080
+      - KEYCLOAK_URL=http://keycloak:8080
     deploy:
       resources:
         limits:

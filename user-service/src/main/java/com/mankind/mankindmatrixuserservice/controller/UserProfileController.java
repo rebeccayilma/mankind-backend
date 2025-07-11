@@ -21,40 +21,39 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
-@Tag(name = "🔧 User Management (Admin)", description = "Admin API endpoints for managing all users and their addresses. Requires ADMIN role.")
+@RequestMapping("/users/me")
+@Tag(name = "👤 User Profile", description = "Self-service API endpoints for users to manage their own profile and addresses. Requires authentication.")
 @SecurityRequirement(name = "bearerAuth")
-public class UserController {
+public class UserProfileController {
 
     private final UserService userService;
     private final AddressService addressService;
     private final UserContextService userContextService;
 
-    public UserController(UserService userService, AddressService addressService, UserContextService userContextService) {
+    public UserProfileController(UserService userService, AddressService addressService, UserContextService userContextService) {
         this.userService = userService;
         this.addressService = addressService;
         this.userContextService = userContextService;
     }
 
     @Operation(
-        summary = "Get a user by ID (Admin only)", 
+        summary = "Get current user profile", 
         description = """
-            Returns a user based on the ID provided. This endpoint is restricted to users with ADMIN role.
+            Returns the current authenticated user's profile information.
             
             ## Security:
             - Requires valid JWT token
-            - Requires ADMIN role
-            - Can access any user's data
+            - Users can only access their own profile
+            - Token must be included in Authorization header
             
             ## Returns:
-            - Complete user information including ID, username, email
-            - Personal details (first name, last name)
+            - User ID, username, email
+            - First name, last name
             - Role and active status
             - Profile picture URL
             - Creation and update timestamps
@@ -62,7 +61,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(
                 responseCode = "200", 
-                description = "User found",
+                description = "User profile retrieved successfully",
                 content = @Content(
                     schema = @Schema(implementation = UserDTO.class),
                     examples = {
@@ -88,21 +87,17 @@ public class UserController {
             ),
             @ApiResponse(
                 responseCode = "401", 
-                description = "Unauthorized - Invalid or missing JWT token"
-            ),
-            @ApiResponse(
-                responseCode = "403", 
-                description = "Forbidden - Admin access required",
+                description = "Unauthorized - Invalid or missing JWT token",
                 content = @Content(
                     examples = {
                         @ExampleObject(
-                            name = "Forbidden",
+                            name = "Unauthorized",
                             value = """
                                 {
                                     "timestamp": "2024-01-15T10:30:00",
-                                    "status": 403,
-                                    "error": "Forbidden",
-                                    "message": "Admin access required"
+                                    "status": 401,
+                                    "error": "Unauthorized",
+                                    "message": "Invalid JWT token"
                                 }
                                 """
                         )
@@ -121,7 +116,7 @@ public class UserController {
                                     "timestamp": "2024-01-15T10:30:00",
                                     "status": 404,
                                     "error": "Not Found",
-                                    "message": "User with ID 999 not found"
+                                    "message": "Current user not found"
                                 }
                                 """
                         )
@@ -129,94 +124,22 @@ public class UserController {
                 )
             )
     })
-    @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserDTO> getUser(
-            @Parameter(description = "ID of the user to retrieve") @PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUserById(id));
-    }
-
-    @Operation(
-        summary = "Get all users (Admin only)", 
-        description = """
-            Returns a list of all users in the system. This endpoint is restricted to users with ADMIN role.
-            
-            ## Security:
-            - Requires valid JWT token
-            - Requires ADMIN role
-            - Can access all users' data
-            
-            ## Returns:
-            - List of all users with their basic information
-            - Includes active and inactive users
-            - Sorted by creation time (newest first)
-            
-            ## Pagination:
-            - Currently returns all users
-            - Consider implementing pagination for large datasets
-            """)
-    @ApiResponses(value = {
-            @ApiResponse(
-                responseCode = "200", 
-                description = "List of users retrieved successfully",
-                content = @Content(
-                    examples = {
-                        @ExampleObject(
-                            name = "Success Response",
-                            value = """
-                                [
-                                    {
-                                        "id": 1,
-                                        "username": "john.doe",
-                                        "email": "john.doe@example.com",
-                                        "firstName": "John",
-                                        "lastName": "Doe",
-                                        "role": "USER",
-                                        "active": true,
-                                        "createTime": "2024-01-15T10:30:00",
-                                        "updateTime": "2024-01-15T10:30:00"
-                                    },
-                                    {
-                                        "id": 2,
-                                        "username": "admin.user",
-                                        "email": "admin@example.com",
-                                        "firstName": "Admin",
-                                        "lastName": "User",
-                                        "role": "ADMIN",
-                                        "active": true,
-                                        "createTime": "2024-01-14T09:00:00",
-                                        "updateTime": "2024-01-14T09:00:00"
-                                    }
-                                ]
-                                """
-                        )
-                    }
-                )
-            ),
-            @ApiResponse(
-                responseCode = "401", 
-                description = "Unauthorized - Invalid or missing JWT token"
-            ),
-            @ApiResponse(
-                responseCode = "403", 
-                description = "Forbidden - Admin access required"
-            )
-    })
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public ResponseEntity<UserDTO> getCurrentUserProfile() {
+        return userContextService.getCurrentUserId()
+                .map(userId -> ResponseEntity.ok(userService.getUserById(userId)))
+                .orElseThrow(() -> new UserNotFoundException("Current user not found"));
     }
 
     @Operation(
-        summary = "Update a user (Admin only)", 
+        summary = "Update current user profile", 
         description = """
-            Updates a user's information based on the ID provided. This endpoint is restricted to users with ADMIN role.
+            Updates the current authenticated user's profile information.
             
             ## Security:
             - Requires valid JWT token
-            - Requires ADMIN role
-            - Can update any user's data
+            - Users can only update their own profile
+            - Email changes are validated for uniqueness
             
             ## Updateable Fields:
             - First name
@@ -228,10 +151,6 @@ public class UserController {
             - Email format validation
             - Email uniqueness check
             - Required field validation
-            
-            ## Note:
-            - Admin can update any user's profile
-            - Email changes are validated for uniqueness across all users
             """,
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Updated user information",
@@ -240,9 +159,9 @@ public class UserController {
                 schema = @Schema(implementation = UpdateUserDTO.class),
                 examples = {
                     @ExampleObject(
-                        name = "Update User",
-                        summary = "Update user information",
-                        description = "Update user profile as admin",
+                        name = "Update Profile",
+                        summary = "Update user profile",
+                        description = "Update user profile information",
                         value = """
                             {
                                 "firstName": "John Updated",
@@ -259,7 +178,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(
                 responseCode = "200", 
-                description = "User updated successfully",
+                description = "User profile updated successfully",
                 content = @Content(
                     schema = @Schema(implementation = UpdateUserDTO.class),
                     examples = {
@@ -280,10 +199,6 @@ public class UserController {
             @ApiResponse(
                 responseCode = "401", 
                 description = "Unauthorized - Invalid or missing JWT token"
-            ),
-            @ApiResponse(
-                responseCode = "403", 
-                description = "Forbidden - Admin access required"
             ),
             @ApiResponse(
                 responseCode = "404", 
@@ -309,24 +224,19 @@ public class UserController {
                 )
             )
     })
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UpdateUserDTO> updateUser(
-            @Parameter(description = "ID of the user to update") @PathVariable Long id,
+    @PutMapping
+    public ResponseEntity<UpdateUserDTO> updateCurrentUserProfile(
             @Parameter(description = "Updated user information") @RequestBody UpdateUserDTO updateUserDTO) {
-        return ResponseEntity.ok(userService.updateUser(id, updateUserDTO));
+        return userContextService.getCurrentUserId()
+                .map(userId -> ResponseEntity.ok(userService.updateUser(userId, updateUserDTO)))
+                .orElseThrow(() -> new UserNotFoundException("Current user not found"));
     }
 
-    // Address endpoints (Admin only)
+    // Address endpoints for current user
     @Operation(
-        summary = "Get all addresses for a user (Admin only)", 
+        summary = "Get current user's addresses", 
         description = """
-            Returns a list of all addresses associated with the specified user. This endpoint is restricted to users with ADMIN role.
-            
-            ## Security:
-            - Requires valid JWT token
-            - Requires ADMIN role
-            - Can access any user's addresses
+            Returns all addresses associated with the current authenticated user.
             
             ## Address Types:
             - **billing**: Address for billing purposes
@@ -335,6 +245,10 @@ public class UserController {
             ## Default Addresses:
             - Users can have one default address per type
             - Default addresses are marked with `isDefault: true`
+            
+            ## Security:
+            - Requires valid JWT token
+            - Users can only access their own addresses
             """)
     @ApiResponses(value = {
             @ApiResponse(
@@ -383,34 +297,30 @@ public class UserController {
                 description = "Unauthorized - Invalid or missing JWT token"
             ),
             @ApiResponse(
-                responseCode = "403", 
-                description = "Forbidden - Admin access required"
-            ),
-            @ApiResponse(
                 responseCode = "404", 
                 description = "User not found"
             )
     })
-    @GetMapping("/{userId}/addresses")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<AddressDTO>> getUserAddresses(
-            @Parameter(description = "ID of the user whose addresses to retrieve") @PathVariable Long userId) {
-        return ResponseEntity.ok(addressService.getAddressesByUserId(userId));
+    @GetMapping("/addresses")
+    public ResponseEntity<List<AddressDTO>> getCurrentUserAddresses() {
+        return userContextService.getCurrentUserId()
+                .map(userId -> ResponseEntity.ok(addressService.getAddressesByUserId(userId)))
+                .orElseThrow(() -> new UserNotFoundException("Current user not found"));
     }
 
     @Operation(
-        summary = "Get a specific address (Admin only)", 
+        summary = "Get a specific address for current user", 
         description = """
-            Returns a specific address for the specified user. This endpoint is restricted to users with ADMIN role.
+            Returns a specific address for the current authenticated user.
             
             ## Security:
             - Requires valid JWT token
-            - Requires ADMIN role
-            - Can access any user's address
+            - Users can only access their own addresses
+            - Address must belong to the current user
             
             ## Validation:
             - Address ID must exist
-            - Address must belong to the specified user
+            - Address must belong to the current user
             """)
     @ApiResponses(value = {
             @ApiResponse(
@@ -445,36 +355,43 @@ public class UserController {
                 description = "Unauthorized - Invalid or missing JWT token"
             ),
             @ApiResponse(
-                responseCode = "403", 
-                description = "Forbidden - Admin access required"
-            ),
-            @ApiResponse(
                 responseCode = "404", 
-                description = "Address not found or doesn't belong to the user"
+                description = "Address not found or doesn't belong to the user",
+                content = @Content(
+                    examples = {
+                        @ExampleObject(
+                            name = "Not Found",
+                            value = """
+                                {
+                                    "timestamp": "2024-01-15T10:30:00",
+                                    "status": 404,
+                                    "error": "Not Found",
+                                    "message": "Address with ID 999 not found for current user"
+                                }
+                                """
+                        )
+                    }
+                )
             )
     })
-    @GetMapping("/{userId}/addresses/{addressId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AddressDTO> getUserAddress(
-            @Parameter(description = "ID of the user") @PathVariable Long userId,
+    @GetMapping("/addresses/{addressId}")
+    public ResponseEntity<AddressDTO> getCurrentUserAddress(
             @Parameter(description = "ID of the address to retrieve") @PathVariable Long addressId) {
-        AddressDTO addressDTO = addressService.getAddressById(addressId);
-        // Verify that the address belongs to the specified user
-        if (!addressDTO.getUserId().equals(userId)) {
-            throw new AddressNotFoundException("Address with ID " + addressId + " not found for user with ID " + userId);
-        }
-        return ResponseEntity.ok(addressDTO);
+        return userContextService.getCurrentUserId()
+                .map(userId -> {
+                    AddressDTO addressDTO = addressService.getAddressById(addressId);
+                    if (!addressDTO.getUserId().equals(userId)) {
+                        throw new AddressNotFoundException("Address with ID " + addressId + " not found for current user");
+                    }
+                    return ResponseEntity.ok(addressDTO);
+                })
+                .orElseThrow(() -> new UserNotFoundException("Current user not found"));
     }
 
     @Operation(
-        summary = "Create a new address for a user (Admin only)", 
+        summary = "Create a new address for current user", 
         description = """
-            Creates a new address for the specified user. This endpoint is restricted to users with ADMIN role.
-            
-            ## Security:
-            - Requires valid JWT token
-            - Requires ADMIN role
-            - Can create addresses for any user
+            Creates a new address for the current authenticated user.
             
             ## Address Types:
             - **billing**: Address for billing purposes
@@ -504,7 +421,7 @@ public class UserController {
                     @ExampleObject(
                         name = "Shipping Address",
                         summary = "Create shipping address",
-                        description = "Create a new shipping address for user",
+                        description = "Create a new shipping address",
                         value = """
                             {
                                 "addressType": "shipping",
@@ -513,6 +430,22 @@ public class UserController {
                                 "city": "New York",
                                 "state": "NY",
                                 "postalCode": "10001",
+                                "country": "USA"
+                            }
+                            """
+                    ),
+                    @ExampleObject(
+                        name = "Billing Address",
+                        summary = "Create billing address",
+                        description = "Create a new billing address",
+                        value = """
+                            {
+                                "addressType": "billing",
+                                "isDefault": false,
+                                "streetAddress": "456 Business Ave",
+                                "city": "New York",
+                                "state": "NY",
+                                "postalCode": "10002",
                                 "country": "USA"
                             }
                             """
@@ -554,31 +487,30 @@ public class UserController {
                 description = "Unauthorized - Invalid or missing JWT token"
             ),
             @ApiResponse(
-                responseCode = "403", 
-                description = "Forbidden - Admin access required"
-            ),
-            @ApiResponse(
                 responseCode = "404", 
                 description = "User not found"
             )
     })
-    @PostMapping("/{userId}/addresses")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AddressDTO> createAddress(
-            @Parameter(description = "ID of the user") @PathVariable Long userId,
+    @PostMapping("/addresses")
+    public ResponseEntity<AddressDTO> createAddressForCurrentUser(
             @Parameter(description = "Address details") @RequestBody CreateAddressDTO createAddressDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(addressService.createAddress(userId, createAddressDTO));
+        return userContextService.getCurrentUserId()
+                .map(userId -> {
+                    AddressDTO createdAddress = addressService.createAddress(userId, createAddressDTO);
+                    return ResponseEntity.status(HttpStatus.CREATED).body(createdAddress);
+                })
+                .orElseThrow(() -> new UserNotFoundException("Current user not found"));
     }
 
     @Operation(
-        summary = "Update an address for a user (Admin only)", 
+        summary = "Update an address for current user", 
         description = """
-            Updates an existing address for the specified user. This endpoint is restricted to users with ADMIN role.
+            Updates an existing address for the current authenticated user.
             
             ## Security:
             - Requires valid JWT token
-            - Requires ADMIN role
-            - Can update any user's address
+            - Users can only update their own addresses
+            - Address must belong to the current user
             
             ## Updateable Fields:
             - `addressType`: billing or shipping
@@ -591,10 +523,6 @@ public class UserController {
             
             ## Default Address Logic:
             - If `isDefault` is set to `true`, any existing default address of the same type will be set to `false`
-            
-            ## Validation:
-            - Address ID must exist
-            - Address must belong to the specified user
             """,
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Updated address details",
@@ -605,7 +533,7 @@ public class UserController {
                     @ExampleObject(
                         name = "Update Address",
                         summary = "Update address",
-                        description = "Update an existing address for user",
+                        description = "Update an existing address",
                         value = """
                             {
                                 "streetAddress": "789 Updated St",
@@ -654,43 +582,40 @@ public class UserController {
                 description = "Unauthorized - Invalid or missing JWT token"
             ),
             @ApiResponse(
-                responseCode = "403", 
-                description = "Forbidden - Admin access required"
-            ),
-            @ApiResponse(
                 responseCode = "404", 
                 description = "Address not found or doesn't belong to the user"
             )
     })
-    @PutMapping("/{userId}/addresses/{addressId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AddressDTO> updateAddress(
-            @Parameter(description = "ID of the user") @PathVariable Long userId,
+    @PutMapping("/addresses/{addressId}")
+    public ResponseEntity<AddressDTO> updateAddressForCurrentUser(
             @Parameter(description = "ID of the address to update") @PathVariable Long addressId,
             @Parameter(description = "Updated address details") @RequestBody UpdateAddressDTO updateAddressDTO) {
-        // First check if the address exists and belongs to the user
-        AddressDTO existingAddress = addressService.getAddressById(addressId);
-        if (!existingAddress.getUserId().equals(userId)) {
-            throw new AddressNotFoundException("Address with ID " + addressId + " not found for user with ID " + userId);
-        }
-
-        AddressDTO updatedAddress = addressService.updateAddress(addressId, updateAddressDTO);
-        return ResponseEntity.ok(updatedAddress);
+        return userContextService.getCurrentUserId()
+                .map(userId -> {
+                    // Verify that the address belongs to the current user
+                    AddressDTO existingAddress = addressService.getAddressById(addressId);
+                    if (!existingAddress.getUserId().equals(userId)) {
+                        throw new AddressNotFoundException("Address with ID " + addressId + " not found for current user");
+                    }
+                    AddressDTO updatedAddress = addressService.updateAddress(addressId, updateAddressDTO);
+                    return ResponseEntity.ok(updatedAddress);
+                })
+                .orElseThrow(() -> new UserNotFoundException("Current user not found"));
     }
 
     @Operation(
-        summary = "Delete an address for a user (Admin only)", 
+        summary = "Delete an address for current user", 
         description = """
-            Deletes an address for the specified user. This endpoint is restricted to users with ADMIN role.
+            Deletes an address for the current authenticated user.
             
             ## Security:
             - Requires valid JWT token
-            - Requires ADMIN role
-            - Can delete any user's address
+            - Users can only delete their own addresses
+            - Address must belong to the current user
             
             ## Validation:
             - Address ID must exist
-            - Address must belong to the specified user
+            - Address must belong to the current user
             
             ## Note:
             - This operation is irreversible
@@ -714,26 +639,38 @@ public class UserController {
                 description = "Unauthorized - Invalid or missing JWT token"
             ),
             @ApiResponse(
-                responseCode = "403", 
-                description = "Forbidden - Admin access required"
-            ),
-            @ApiResponse(
                 responseCode = "404", 
-                description = "Address not found or doesn't belong to the user"
+                description = "Address not found or doesn't belong to the user",
+                content = @Content(
+                    examples = {
+                        @ExampleObject(
+                            name = "Not Found",
+                            value = """
+                                {
+                                    "timestamp": "2024-01-15T10:30:00",
+                                    "status": 404,
+                                    "error": "Not Found",
+                                    "message": "Address with ID 999 not found for current user"
+                                }
+                                """
+                        )
+                    }
+                )
             )
     })
-    @DeleteMapping("/{userId}/addresses/{addressId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteAddress(
-            @Parameter(description = "ID of the user") @PathVariable Long userId,
+    @DeleteMapping("/addresses/{addressId}")
+    public ResponseEntity<Void> deleteAddressForCurrentUser(
             @Parameter(description = "ID of the address to delete") @PathVariable Long addressId) {
-        // First check if the address exists and belongs to the user
-        AddressDTO existingAddress = addressService.getAddressById(addressId);
-        if (!existingAddress.getUserId().equals(userId)) {
-            throw new AddressNotFoundException("Address with ID " + addressId + " not found for user with ID " + userId);
-        }
-
-        addressService.deleteAddress(addressId);
-        return ResponseEntity.noContent().build();
+        return userContextService.getCurrentUserId()
+                .map(userId -> {
+                    // Verify that the address belongs to the current user
+                    AddressDTO existingAddress = addressService.getAddressById(addressId);
+                    if (!existingAddress.getUserId().equals(userId)) {
+                        throw new AddressNotFoundException("Address with ID " + addressId + " not found for current user");
+                    }
+                    addressService.deleteAddress(addressId);
+                    return ResponseEntity.noContent().<Void>build();
+                })
+                .orElseThrow(() -> new UserNotFoundException("Current user not found"));
     }
-}
+} 
