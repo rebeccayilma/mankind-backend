@@ -48,6 +48,9 @@ public class ProductResponseDTO {
     @Schema(description = "Current inventory status")
     private InventoryStatusDTO inventoryStatus;
 
+    @Schema(description = "Average rating of the product (null if no reviews)", example = "4.5")
+    private Double averageRating;
+
     @Schema(description = "Timestamp when the product was created")
     private LocalDateTime createdAt;
 

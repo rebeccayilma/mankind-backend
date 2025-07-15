@@ -35,6 +35,7 @@ public interface ProductMapper {
     @Mapping(target = "images", source = "images", qualifiedByName = "filterImages")
     @Mapping(target = "specifications", source = "specifications", qualifiedByName = "filterSpecifications")
     @Mapping(target = "category", source = "category")
+    @Mapping(target = "averageRating", source = "averageRating")
     ProductResponseDTO toResponseDTO(Product product);
 
     @Named("filterImages")

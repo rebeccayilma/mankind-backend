@@ -25,7 +25,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @Operation(summary = "Create a new review", description = "Creates a new review for a product")
+    @Operation(summary = "Create a new review", description = "Creates a new review for a product.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Review successfully created",
                     content = @Content(schema = @Schema(implementation = ReviewDTO.class))),
@@ -65,7 +65,7 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.getReviewsByUserId(userId));
     }
 
-    @Operation(summary = "Update review", description = "Updates an existing review")
+    @Operation(summary = "Update review", description = "Updates an existing review.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Review successfully updated",
                     content = @Content(schema = @Schema(implementation = ReviewDTO.class))),
