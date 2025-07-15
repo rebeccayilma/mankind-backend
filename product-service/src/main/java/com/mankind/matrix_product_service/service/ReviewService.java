@@ -6,6 +6,7 @@ import com.mankind.matrix_product_service.model.Product;
 import com.mankind.matrix_product_service.model.Review;
 import com.mankind.matrix_product_service.repository.ProductRepository;
 import com.mankind.matrix_product_service.repository.ReviewRepository;
+import com.mankind.matrix_product_service.client.UserClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
