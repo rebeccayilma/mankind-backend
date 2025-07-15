@@ -7,10 +7,13 @@ import com.mankind.matrix_product_service.mapper.ProductMapper;
 import com.mankind.matrix_product_service.model.Product;
 import com.mankind.matrix_product_service.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,12 +22,23 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final RoleVerificationService roleVerificationService;
+
+    /**
+     * Verify if the current user has ADMIN or SUPER_ADMIN role
+     * @throws ResponseStatusException if user doesn't have required role
+     */
+
 
     @Transactional
     public ProductResponseDTO createProduct(ProductDTO productDTO) {
+        // Verify admin role for product creation
+        roleVerificationService.verifyAdminOrSuperAdminRole();
+        
         if (productRepository.existsByNameAndCategoryId(productDTO.getName(), productDTO.getCategoryId())) {
             throw new IllegalStateException("Product name already exists in this category");
         }
@@ -60,6 +74,9 @@ public class ProductService {
 
     @Transactional
     public ProductResponseDTO updateProduct(Long id, ProductDTO productDTO) {
+        // Verify admin role for product updates
+        roleVerificationService.verifyAdminOrSuperAdminRole();
+        
         // Validate input
         if (productDTO == null) {
             throw new IllegalArgumentException("Update data cannot be null");
@@ -144,6 +161,9 @@ public class ProductService {
 
     @Transactional
     public ProductResponseDTO toggleFeaturedStatus(Long id) {
+        // Verify admin role for featured status changes
+        roleVerificationService.verifyAdminOrSuperAdminRole();
+        
         Product product = productRepository.findByIdAndIsActiveTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
         
@@ -222,6 +242,9 @@ public class ProductService {
 
     @Transactional
     public void deleteProduct(Long id) {
+        // Verify admin role for product deletion
+        roleVerificationService.verifyAdminOrSuperAdminRole();
+        
         Product product = productRepository.findByIdAndIsActiveTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
 

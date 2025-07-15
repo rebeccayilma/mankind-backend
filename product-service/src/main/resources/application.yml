@@ -85,10 +85,3 @@ management:
     readinessState:
       enabled: true
 
-
-user-service:
-  url: http://localhost:8081
-
-#app:
-#  recently-viewed:
-#    max-items: 10
