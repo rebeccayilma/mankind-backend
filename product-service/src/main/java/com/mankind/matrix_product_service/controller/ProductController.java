@@ -4,6 +4,8 @@ package com.mankind.matrix_product_service.controller;
 import com.mankind.api.product.dto.product.ProductDTO;
 import com.mankind.api.product.dto.product.ProductResponseDTO;
 import com.mankind.matrix_product_service.service.ProductService;
+import com.mankind.matrix_product_service.client.UserClient;
+import com.mankind.api.user.dto.UserDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,6 +15,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,7 +28,9 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "Product Management", description = "APIs for managing products")
 public class ProductController {
+    private static final Logger log = LoggerFactory.getLogger(ProductController.class);
     private final ProductService productService;
+    private final UserClient userClient;
 
     @Operation(summary = "Create a new product", description = "Creates a new product in the system")
     @ApiResponses(value = {
@@ -144,4 +150,6 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
+
+
 }

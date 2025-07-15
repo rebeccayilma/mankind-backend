@@ -28,9 +28,13 @@ public class InventoryService {
     private final ProductRepository productRepository;
     private final InventoryMapper inventoryMapper;
     private final InventoryLogMapper inventoryLogMapper;
+    private final RoleVerificationService roleVerificationService;
 
     @Transactional
     public InventoryResponseDTO createInventory(Long productId, InventoryDTO inventoryDTO) {
+        // Verify admin role for inventory creation
+        roleVerificationService.verifyAdminOrSuperAdminRole();
+        
         if (!productRepository.existsById(productId)) {
             throw new ResourceNotFoundException("Product not found with id: " + productId);
         }
@@ -65,6 +69,9 @@ public class InventoryService {
 
     @Transactional
     public InventoryResponseDTO updateInventory(Long productId, InventoryDTO inventoryDTO) {
+        // Verify admin role for inventory updates
+        roleVerificationService.verifyAdminOrSuperAdminRole();
+        
         Inventory inventory = inventoryRepository.findByProductId(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Inventory not found for product: " + productId));
 
@@ -113,6 +120,8 @@ public class InventoryService {
 
     @Transactional
     public void deleteInventory(Long productId) {
+        // Verify admin role for inventory deletion
+        roleVerificationService.verifyAdminOrSuperAdminRole();
         Inventory inventory = inventoryRepository.findByProductId(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Inventory not found for product: " + productId));
 
@@ -122,6 +131,8 @@ public class InventoryService {
 
     @Transactional
     public InventoryResponseDTO addStock(Long productId, BigDecimal quantity) {
+        // Verify admin role for adding stock
+        roleVerificationService.verifyAdminOrSuperAdminRole();
         Inventory inventory = inventoryRepository.findByProductId(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Inventory not found for product: " + productId));
 

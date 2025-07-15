@@ -20,8 +20,12 @@ import java.util.List;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private final RoleVerificationService roleVerificationService;
 
     public CategoryResponseDTO createCategory(CategoryDTO categoryDTO) {
+        // Verify admin role for category creation
+        roleVerificationService.verifyAdminOrSuperAdminRole();
+        
         // Validate parent category if provided
         Category parentCategory = null;
         if (categoryDTO.getParentId() != null) {
@@ -63,6 +67,9 @@ public class CategoryService {
     }
 
     public CategoryResponseDTO updateCategory(Long id, CategoryDTO categoryDTO) {
+        // Verify admin role for category updates
+        roleVerificationService.verifyAdminOrSuperAdminRole();
+        
         Category existingCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", id));
 
@@ -95,6 +102,9 @@ public class CategoryService {
     }
 
     public void deleteCategory(Long id) {
+        // Verify admin role for category deletion
+        roleVerificationService.verifyAdminOrSuperAdminRole();
+        
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", id));
 

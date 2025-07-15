@@ -1,15 +1,10 @@
 package com.mankind.matrix_product_service.config;
 
-import feign.RequestInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.util.StringUtils;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -35,20 +30,6 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public RequestInterceptor propagateBearerToken() {
-        return template -> {
-            ServletRequestAttributes attrs =
-                    (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            if (attrs != null) {
-                String auth = attrs.getRequest().getHeader(HttpHeaders.AUTHORIZATION);
-                if (StringUtils.hasText(auth)) {
-                    template.header(HttpHeaders.AUTHORIZATION, auth);
-                }
-            }
-        };
-    }
-
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
             .authorizeHttpRequests(authz -> authz
@@ -62,13 +43,8 @@ public class WebConfig implements WebMvcConfigurer {
                     "/actuator/health",
                     "/actuator/info"
                 ).permitAll()
-                // Product service - public read access, protected write access
-                .requestMatchers(HttpMethod.GET, "/**").permitAll()  // All GET requests are public
-                // Protected write operations (require authentication)
-                .requestMatchers(HttpMethod.POST, "/**").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/**").authenticated()
-                .requestMatchers(HttpMethod.DELETE, "/**").authenticated()
-                .requestMatchers(HttpMethod.PATCH, "/**").authenticated()
+                // All endpoints are public since gateway handles authentication
+                .anyRequest().permitAll()
             );
         return http.build();
     }
