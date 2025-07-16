@@ -2,7 +2,7 @@ services:
   # Keycloak Service
   keycloak:
     image: quay.io/keycloak/keycloak:26.0.5
-    command: start-dev --import-realm --http-enabled=true --hostname-strict=false --db-pool-initial-size=0 --db-pool-max-size=3 --db-pool-min-size=0
+    command: start-dev --import-realm --http-enabled=true --hostname-strict=false
     environment:
       KEYCLOAK_ADMIN: ${ADMIN_USERNAME:-admin}
       KEYCLOAK_ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
@@ -108,6 +108,7 @@ services:
       - DB_HIKARI_CONNECTION_TIMEOUT=${DB_HIKARI_CONNECTION_TIMEOUT}
       - DB_HIKARI_IDLE_TIMEOUT=${DB_HIKARI_IDLE_TIMEOUT}
       - DB_HIKARI_MAX_LIFETIME=${DB_HIKARI_MAX_LIFETIME}
+      - USER_SERVICE_URL=http://mankind-user-service:8080
       - KEYCLOAK_URL=http://keycloak:8080
     deploy:
       resources:
