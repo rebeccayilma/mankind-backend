@@ -736,4 +736,30 @@ public class UserController {
         addressService.deleteAddress(addressId);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * INTERNAL USE ONLY: Batch user lookup for service-to-service calls. This endpoint is authenticated for performance reasons.
+     */
+    @Operation(
+        summary = "Get users by IDs (batch)",
+        description = "Returns a list of users for the given list of user IDs. INTERNAL USE ONLY for service-to-service calls. This endpoint is authenticated for performance reasons.",
+        parameters = {
+            @Parameter(name = "ids", description = "Comma-separated list of user IDs", example = "1,2,3", required = true)
+        },
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "List of users found",
+                content = @Content(
+                    schema = @Schema(implementation = UserDTO.class)
+                )
+            ),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Admin access required")
+        }
+    )
+    @GetMapping("/batch")
+    public ResponseEntity<List<UserDTO>> getUsersByIds(@RequestParam("ids") List<Long> userIds) {
+        return ResponseEntity.ok(userService.getUsersByIds(userIds));
+    }
 }
