@@ -2,6 +2,7 @@ package com.mankind.matrix_product_service.controller;
 
 import com.mankind.api.product.dto.review.CreateReviewDTO;
 import com.mankind.api.product.dto.review.ReviewDTO;
+import com.mankind.api.product.dto.review.ReviewReturnDTO;
 import com.mankind.matrix_product_service.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -39,30 +40,30 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.createReview(createReviewDTO));
     }
 
-    @Operation(summary = "Get reviews by product ID", description = "Retrieves all reviews for a specific product")
+    @Operation(summary = "Get reviews by product ID", description = "Retrieves all reviews for a specific product, including user info (userId, username)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully retrieved reviews",
-                    content = @Content(schema = @Schema(implementation = ReviewDTO.class))),
+                    content = @Content(schema = @Schema(implementation = ReviewReturnDTO.class))),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/product/{productId}")
-    public ResponseEntity<List<ReviewDTO>> getReviewsByProductId(
+    public ResponseEntity<List<ReviewReturnDTO>> getReviewsByProductId(
             @Parameter(description = "ID of the product", required = true)
             @PathVariable Long productId) {
-        return ResponseEntity.ok(reviewService.getReviewsByProductId(productId));
+        return ResponseEntity.ok(reviewService.getReviewsReturnByProductId(productId));
     }
 
-    @Operation(summary = "Get reviews by user ID", description = "Retrieves all reviews by a specific user")
+    @Operation(summary = "Get reviews by user ID", description = "Retrieves all reviews by a specific user, including user info (userId, username)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully retrieved reviews",
-                    content = @Content(schema = @Schema(implementation = ReviewDTO.class))),
+                    content = @Content(schema = @Schema(implementation = ReviewReturnDTO.class))),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<ReviewDTO>> getReviewsByUserId(
+    public ResponseEntity<List<ReviewReturnDTO>> getReviewsByUserId(
             @Parameter(description = "ID of the user", required = true)
             @PathVariable Long userId) {
-        return ResponseEntity.ok(reviewService.getReviewsByUserId(userId));
+        return ResponseEntity.ok(reviewService.getReviewsReturnByUserId(userId));
     }
 
     @Operation(summary = "Update review", description = "Updates an existing review.")

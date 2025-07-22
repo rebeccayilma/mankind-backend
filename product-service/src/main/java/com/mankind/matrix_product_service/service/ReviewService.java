@@ -2,6 +2,8 @@ package com.mankind.matrix_product_service.service;
 
 import com.mankind.api.product.dto.review.CreateReviewDTO;
 import com.mankind.api.product.dto.review.ReviewDTO;
+import com.mankind.api.user.dto.UserDTO;
+import com.mankind.api.product.dto.review.ReviewReturnDTO;
 import com.mankind.matrix_product_service.model.Product;
 import com.mankind.matrix_product_service.model.Review;
 import com.mankind.matrix_product_service.repository.ProductRepository;
@@ -13,6 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
+import feign.FeignException;
+import com.mankind.matrix_product_service.exception.ResourceNotFoundException;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 @Service
 public class ReviewService {
@@ -45,24 +52,52 @@ public class ReviewService {
         return convertToDTO(savedReview);
     }
 
-    public List<ReviewDTO> getReviewsByProductId(Long productId) {
-        return reviewRepository.findByProductId(productId)
-                .stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    public List<ReviewReturnDTO> getReviewsReturnByProductId(Long productId) {
+        List<Review> reviews = reviewRepository.findByProductId(productId);
+        List<Long> userIds = reviews.stream().map(Review::getUserId).distinct().toList();
+        List<UserDTO> users = userClient.getUsersByIds(userIds);
+        Map<Long, UserDTO> userMap = users.stream().collect(Collectors.toMap(UserDTO::getId, u -> u));
+        return reviews.stream().map(review -> {
+            UserDTO user = userMap.get(review.getUserId());
+            String username = user != null ? user.getUsername() : null;
+            return new ReviewReturnDTO(
+                review.getId(),
+                review.getUserId(),
+                username,
+                review.getProduct().getId(),
+                review.getRating(),
+                review.getComment(),
+                review.getCreatedAt(),
+                review.getUpdatedAt()
+            );
+        }).toList();
     }
 
-    public List<ReviewDTO> getReviewsByUserId(Long userId) {
-        // Verify user exists
+    public List<ReviewReturnDTO> getReviewsReturnByUserId(Long userId) {
+        List<UserDTO> users;
         try {
-            userClient.getUserById(userId);
+            users = userClient.getUsersByIds(List.of(userId));
+        } catch (FeignException.Forbidden e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to access user with id: " + userId);
         } catch (Exception e) {
-            throw new RuntimeException("User not found with id: " + userId);
+            throw new RuntimeException("Unexpected error: " + e.getMessage());
         }
-        return reviewRepository.findByUserId(userId)
-                .stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        if (users == null || users.isEmpty()) {
+            throw new ResourceNotFoundException("User not found with id: " + userId);
+        }
+        UserDTO user = users.get(0);
+        String username = user != null ? user.getUsername() : null;
+        List<Review> reviews = reviewRepository.findByUserId(userId);
+        return reviews.stream().map(review -> new ReviewReturnDTO(
+            review.getId(),
+            review.getUserId(),
+            username,
+            review.getProduct().getId(),
+            review.getRating(),
+            review.getComment(),
+            review.getCreatedAt(),
+            review.getUpdatedAt()
+        )).toList();
     }
 
     @Transactional
