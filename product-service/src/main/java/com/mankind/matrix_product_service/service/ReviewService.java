@@ -20,6 +20,8 @@ import feign.FeignException;
 import com.mankind.matrix_product_service.exception.ResourceNotFoundException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class ReviewService {
@@ -52,17 +54,24 @@ public class ReviewService {
         return convertToDTO(savedReview);
     }
 
-    public List<ReviewReturnDTO> getReviewsReturnByProductId(Long productId) {
-        List<Review> reviews = reviewRepository.findByProductId(productId);
+    public Page<ReviewReturnDTO> getReviewsReturnByProductId(Long productId, Pageable pageable) {
+        Page<Review> reviews = reviewRepository.findByProductId(productId, pageable);
         List<Long> userIds = reviews.stream().map(Review::getUserId).distinct().toList();
-        List<UserDTO> users = userClient.getUsersByIds(userIds);
-        Map<Long, UserDTO> userMap = users.stream().collect(Collectors.toMap(UserDTO::getId, u -> u));
-        return reviews.stream().map(review -> {
-            UserDTO user = userMap.get(review.getUserId());
-            String username = user != null ? user.getUsername() : null;
+        boolean userInfoAvailableTmp = true;
+        List<UserDTO> users = List.of();
+        try {
+            users = userClient.getUsersByIds(userIds);
+        } catch (FeignException.Unauthorized | FeignException.Forbidden | org.springframework.web.server.ResponseStatusException e) {
+            userInfoAvailableTmp = false;
+        }
+        final boolean userInfoAvailable = userInfoAvailableTmp;
+        final Map<Long, UserDTO> userMap = users.stream().collect(Collectors.toMap(UserDTO::getId, u -> u));
+        return reviews.map(review -> {
+            String username = userInfoAvailable && userMap.containsKey(review.getUserId()) ? userMap.get(review.getUserId()).getUsername() : null;
+            Long userId = userInfoAvailable && userMap.containsKey(review.getUserId()) ? review.getUserId() : null;
             return new ReviewReturnDTO(
                 review.getId(),
-                review.getUserId(),
+                userId,
                 username,
                 review.getProduct().getId(),
                 review.getRating(),
@@ -70,10 +79,10 @@ public class ReviewService {
                 review.getCreatedAt(),
                 review.getUpdatedAt()
             );
-        }).toList();
+        });
     }
 
-    public List<ReviewReturnDTO> getReviewsReturnByUserId(Long userId) {
+    public Page<ReviewReturnDTO> getReviewsReturnByUserId(Long userId, Pageable pageable) {
         List<UserDTO> users;
         try {
             users = userClient.getUsersByIds(List.of(userId));
@@ -87,8 +96,8 @@ public class ReviewService {
         }
         UserDTO user = users.get(0);
         String username = user != null ? user.getUsername() : null;
-        List<Review> reviews = reviewRepository.findByUserId(userId);
-        return reviews.stream().map(review -> new ReviewReturnDTO(
+        Page<Review> reviews = reviewRepository.findByUserId(userId, pageable);
+        return reviews.map(review -> new ReviewReturnDTO(
             review.getId(),
             review.getUserId(),
             username,
@@ -97,7 +106,7 @@ public class ReviewService {
             review.getComment(),
             review.getCreatedAt(),
             review.getUpdatedAt()
-        )).toList();
+        ));
     }
 
     @Transactional

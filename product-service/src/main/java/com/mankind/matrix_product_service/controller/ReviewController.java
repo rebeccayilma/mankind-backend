@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,10 +49,11 @@ public class ReviewController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/product/{productId}")
-    public ResponseEntity<List<ReviewReturnDTO>> getReviewsByProductId(
+    public ResponseEntity<Page<ReviewReturnDTO>> getReviewsByProductId(
             @Parameter(description = "ID of the product", required = true)
-            @PathVariable Long productId) {
-        return ResponseEntity.ok(reviewService.getReviewsReturnByProductId(productId));
+            @PathVariable Long productId,
+            Pageable pageable) {
+        return ResponseEntity.ok(reviewService.getReviewsReturnByProductId(productId, pageable));
     }
 
     @Operation(summary = "Get reviews by user ID", description = "Retrieves all reviews by a specific user, including user info (userId, username)")
@@ -60,10 +63,11 @@ public class ReviewController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<ReviewReturnDTO>> getReviewsByUserId(
+    public ResponseEntity<Page<ReviewReturnDTO>> getReviewsByUserId(
             @Parameter(description = "ID of the user", required = true)
-            @PathVariable Long userId) {
-        return ResponseEntity.ok(reviewService.getReviewsReturnByUserId(userId));
+            @PathVariable Long userId,
+            Pageable pageable) {
+        return ResponseEntity.ok(reviewService.getReviewsReturnByUserId(userId, pageable));
     }
 
     @Operation(summary = "Update review", description = "Updates an existing review.")

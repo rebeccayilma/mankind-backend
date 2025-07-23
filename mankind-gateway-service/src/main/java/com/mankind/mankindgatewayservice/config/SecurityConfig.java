@@ -47,6 +47,8 @@ public class SecurityConfig {
                         
                         // Product service - public read access, protected write access
                         .pathMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()  // All GET requests to products
+                        // Review by product - public
+                        .pathMatchers(HttpMethod.GET, "/api/v1/products/reviews/product/**").permitAll()
                         
                         // Protected product endpoints (require authentication for write operations)
                         .pathMatchers(HttpMethod.POST, "/api/v1/products/**").authenticated()
