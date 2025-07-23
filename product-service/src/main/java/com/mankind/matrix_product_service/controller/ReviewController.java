@@ -2,6 +2,7 @@ package com.mankind.matrix_product_service.controller;
 
 import com.mankind.api.product.dto.review.CreateReviewDTO;
 import com.mankind.api.product.dto.review.ReviewDTO;
+import com.mankind.api.product.dto.review.ReviewReturnDTO;
 import com.mankind.matrix_product_service.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,6 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +28,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @Operation(summary = "Create a new review", description = "Creates a new review for a product")
+    @Operation(summary = "Create a new review", description = "Creates a new review for a product.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Review successfully created",
                     content = @Content(schema = @Schema(implementation = ReviewDTO.class))),
@@ -39,33 +42,35 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.createReview(createReviewDTO));
     }
 
-    @Operation(summary = "Get reviews by product ID", description = "Retrieves all reviews for a specific product")
+    @Operation(summary = "Get reviews by product ID", description = "Retrieves all reviews for a specific product, including user info (userId, username)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully retrieved reviews",
-                    content = @Content(schema = @Schema(implementation = ReviewDTO.class))),
+                    content = @Content(schema = @Schema(implementation = ReviewReturnDTO.class))),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/product/{productId}")
-    public ResponseEntity<List<ReviewDTO>> getReviewsByProductId(
+    public ResponseEntity<Page<ReviewReturnDTO>> getReviewsByProductId(
             @Parameter(description = "ID of the product", required = true)
-            @PathVariable Long productId) {
-        return ResponseEntity.ok(reviewService.getReviewsByProductId(productId));
+            @PathVariable Long productId,
+            Pageable pageable) {
+        return ResponseEntity.ok(reviewService.getReviewsReturnByProductId(productId, pageable));
     }
 
-    @Operation(summary = "Get reviews by user ID", description = "Retrieves all reviews by a specific user")
+    @Operation(summary = "Get reviews by user ID", description = "Retrieves all reviews by a specific user, including user info (userId, username)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully retrieved reviews",
-                    content = @Content(schema = @Schema(implementation = ReviewDTO.class))),
+                    content = @Content(schema = @Schema(implementation = ReviewReturnDTO.class))),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<ReviewDTO>> getReviewsByUserId(
+    public ResponseEntity<Page<ReviewReturnDTO>> getReviewsByUserId(
             @Parameter(description = "ID of the user", required = true)
-            @PathVariable Long userId) {
-        return ResponseEntity.ok(reviewService.getReviewsByUserId(userId));
+            @PathVariable Long userId,
+            Pageable pageable) {
+        return ResponseEntity.ok(reviewService.getReviewsReturnByUserId(userId, pageable));
     }
 
-    @Operation(summary = "Update review", description = "Updates an existing review")
+    @Operation(summary = "Update review", description = "Updates an existing review.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Review successfully updated",
                     content = @Content(schema = @Schema(implementation = ReviewDTO.class))),

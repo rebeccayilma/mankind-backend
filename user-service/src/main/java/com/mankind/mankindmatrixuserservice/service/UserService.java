@@ -112,6 +112,12 @@ public class UserService {
                 .toList();
     }
 
+    public List<UserDTO> getUsersByIds(List<Long> userIds) {
+        return userRepository.findAllById(userIds).stream()
+                .map(userMapper::toDto)
+                .toList();
+    }
+
     /**
      * Update user with UpdateUserDTO (used by API)
      */

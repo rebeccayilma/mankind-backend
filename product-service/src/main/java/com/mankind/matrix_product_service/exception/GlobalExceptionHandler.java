@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @RestControllerAdvice
@@ -65,6 +66,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(
             ErrorResponse.of(HttpStatus.BAD_REQUEST.value(), ex.getMessage()),
             HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex) {
+        log.error("ResponseStatusException: {}", ex.getMessage());
+        return new ResponseEntity<>(
+            ErrorResponse.of(ex.getStatusCode().value(), ex.getReason()),
+            ex.getStatusCode()
         );
     }
 

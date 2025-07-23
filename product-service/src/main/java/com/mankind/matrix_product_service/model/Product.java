@@ -46,6 +46,9 @@ public class Product {
     @Column(length = 50)
     private String model;
 
+    @Column(name = "average_rating", nullable = true)
+    private Double averageRating;
+
     @ElementCollection
     @CollectionTable(name = "product_specifications", 
         joinColumns = @JoinColumn(name = "product_id"))
