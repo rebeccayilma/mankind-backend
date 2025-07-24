@@ -55,6 +55,11 @@ public class GlobalExceptionHandler {
                 "An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<Object> handleThrowable(Throwable ex, WebRequest request) {
+        return createErrorResponse("A fatal error occurred", HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+
     private ResponseEntity<Object> createErrorResponse(
             String message, HttpStatus status, WebRequest request) {
         Map<String, Object> body = new HashMap<>();

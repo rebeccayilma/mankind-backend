@@ -1,53 +1,48 @@
 package com.mankind.matrix_cart_service.mapper;
 
-import com.mankind.matrix_cart_service.dto.CartRequestDto;
-import com.mankind.matrix_cart_service.dto.CartResponseDto;
+import com.mankind.matrix_cart_service.dto.CartDTO;
+import com.mankind.matrix_cart_service.dto.CartResponseDTO;
 import com.mankind.matrix_cart_service.model.Cart;
+import com.mankind.matrix_cart_service.model.CartStatus;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mappings;
+import org.mapstruct.Named;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.AfterMapping;
-
-import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {CartItemMapper.class})
 public interface CartMapper {
+    @Mappings({
+        @Mapping(target = "id", source = "id"),
+        @Mapping(target = "userId", source = "userId"),
+        @Mapping(target = "sessionId", source = "sessionId"),
+        @Mapping(target = "status", source = "status", qualifiedByName = "stringToCartStatus"),
+        @Mapping(target = "cartItems", source = "items"),
+        @Mapping(target = "subtotal", source = "subtotal"),
+        @Mapping(target = "total", source = "total")
+    })
+    Cart toEntity(CartResponseDTO dto);
 
-    /**
-     * Convert Cart entity to CartResponseDto
-     */
-    @Mapping(target = "totalItems", ignore = true)
-    @Mapping(target = "subtotal", ignore = true)
-    CartResponseDto toDto(Cart cart);
+    @Mappings({
+        @Mapping(target = "id", source = "id"),
+        @Mapping(target = "userId", source = "userId"),
+        @Mapping(target = "sessionId", source = "sessionId"),
+        @Mapping(target = "status", source = "status", qualifiedByName = "cartStatusToString"),
+        @Mapping(target = "items", source = "cartItems"),
+        @Mapping(target = "subtotal", source = "subtotal"),
+        @Mapping(target = "total", source = "total")
+    })
+    CartResponseDTO toResponseDTO(Cart entity);
 
-    /**
-     * Convert list of Cart entities to list of CartResponseDto
-     */
-    List<CartResponseDto> toDtoList(List<Cart> carts);
+    void updateEntityFromDTO(CartResponseDTO dto, @MappingTarget Cart entity);
 
-    /**
-     * Convert CartRequestDto to Cart entity
-     */
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "cartItems", ignore = true)
-    Cart toEntity(CartRequestDto cartRequestDto);
-
-    /**
-     * Update Cart entity from CartRequestDto
-     */
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "cartItems", ignore = true)
-    void updateEntityFromDto(CartRequestDto cartRequestDto, @MappingTarget Cart cart);
-
-    /**
-     * After mapping, calculate the totals
-     */
-    @AfterMapping
-    default void calculateTotals(Cart cart, @MappingTarget CartResponseDto dto) {
-        dto.calculateTotals();
+    @Named("stringToCartStatus")
+    default CartStatus stringToCartStatus(String status) {
+        return status == null ? null : CartStatus.valueOf(status);
     }
-}
+
+    @Named("cartStatusToString")
+    default String cartStatusToString(CartStatus status) {
+        return status == null ? null : status.name();
+    }
+} 

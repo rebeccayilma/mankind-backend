@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartItemResponseDTO {
-    private Long id;
-    private Long productId;
-    private Integer quantity;
-    private double price;
+public class CartDTO {
+    private Long userId;
+    private String sessionId;
 } 

@@ -43,8 +43,7 @@ public class WebConfig implements WebMvcConfigurer {
                     "/actuator/health",
                     "/actuator/info"
                 ).permitAll()
-                // Require authentication for all other endpoints
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             );
         return http.build();
     }
