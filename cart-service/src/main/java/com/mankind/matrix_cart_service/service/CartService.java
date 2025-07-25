@@ -41,34 +41,71 @@ public class CartService {
         return cartOpt.map(cartMapper::toResponseDTO).orElse(null);
     }
 
+    // --- Helper methods for product and inventory validation ---
+    private ProductResponseDTO validateProductActive(Long productId) {
+        ResponseEntity<ProductResponseDTO> productResponse = productClient.getProductById(productId);
+        if (!productResponse.getStatusCode().is2xxSuccessful() || productResponse.getBody() == null) {
+            throw new EntityNotFoundException("Product not found");
+        }
+        ProductResponseDTO product = productResponse.getBody();
+        if (!product.isActive()) {
+            throw new IllegalStateException("Product is not active");
+        }
+        return product;
+    }
+
+    private com.mankind.api.product.dto.inventory.InventoryResponseDTO validateInventoryAndStock(Long productId, int requestedQuantity) {
+        ResponseEntity<com.mankind.api.product.dto.inventory.InventoryResponseDTO> inventoryResponse = productClient.getInventoryByProductId(productId);
+        if (!inventoryResponse.getStatusCode().is2xxSuccessful() || inventoryResponse.getBody() == null) {
+            throw new EntityNotFoundException("Product inventory not found");
+        }
+        var inventory = inventoryResponse.getBody();
+        if (inventory.getAvailableQuantity() == null || requestedQuantity > inventory.getAvailableQuantity().intValue()) {
+            throw new IllegalStateException("Not enough stock available");
+        }
+        return inventory;
+    }
+
+    private void validateMaxQuantity(com.mankind.api.product.dto.inventory.InventoryResponseDTO inventory, int quantity) {
+        if (inventory.getMaxQuantityPerPurchase() != null && quantity > inventory.getMaxQuantityPerPurchase().intValue()) {
+            throw new MaxQuantityPerPurchaseExceededException(
+                "Quantity " + quantity + " exceeds the maximum allowed per purchase (" + inventory.getMaxQuantityPerPurchase().intValue() + ") for this product.");
+        }
+    }
+
     @Transactional
     public CartResponseDTO addItemToCart(CartItemDTO itemDTO) {
-        log.info("addItemToCart called with: {}", itemDTO);
         Long userId = currentUserService.getCurrentUserId();
+        // 1. Check if product is active
+        validateProductActive(itemDTO.getProductId());
+        // 2. Get or create cart
         Cart cart = cartRepository.findByUserIdAndStatus(userId, CartStatus.ACTIVE)
-                .orElseGet(() -> {
-                    Cart newCart = Cart.builder()
-                            .userId(userId)
-                            .status(CartStatus.ACTIVE)
-                            .build();
-                    return cartRepository.save(newCart);
-                });
+                .orElse(null);
+        if (cart == null) {
+            cart = Cart.builder()
+                    .userId(userId)
+                    .status(CartStatus.ACTIVE)
+                    .cartItems(new java.util.ArrayList<>())
+                    .build();
+            cart = cartRepository.save(cart);
+        }
         try {
-            // Fetch inventory info for price and maxQuantityPerPurchase
-            ResponseEntity<com.mankind.api.product.dto.inventory.InventoryResponseDTO> inventoryResponse = productClient.getInventoryByProductId(itemDTO.getProductId());
-            if (!inventoryResponse.getStatusCode().is2xxSuccessful() || inventoryResponse.getBody() == null) {
-                throw new EntityNotFoundException("Product inventory not found");
-            }
-            var inventory = inventoryResponse.getBody();
-            if (inventory.getMaxQuantityPerPurchase() != null && itemDTO.getQuantity() > inventory.getMaxQuantityPerPurchase().intValue()) {
-                throw new MaxQuantityPerPurchaseExceededException(
-                    "Quantity " + itemDTO.getQuantity() + " exceeds the maximum allowed per purchase (" + inventory.getMaxQuantityPerPurchase().intValue() + ") for this product.");
-            }
-            // Check if item exists
+            // 3. Fetch inventory info and validate
+            var inventory = validateInventoryAndStock(itemDTO.getProductId(), itemDTO.getQuantity());
+            validateMaxQuantity(inventory, itemDTO.getQuantity());
+            // 4. Check if item exists in cart
             CartItem cartItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), itemDTO.getProductId());
             if (cartItem != null) {
-                cartItem.setQuantity(cartItem.getQuantity() + itemDTO.getQuantity());
+                // Update quantity, enforce max and stock
+                int newQuantity = cartItem.getQuantity() + itemDTO.getQuantity();
+                validateMaxQuantity(inventory, newQuantity);
+                if (inventory.getAvailableQuantity() != null && newQuantity > inventory.getAvailableQuantity().intValue()) {
+                    throw new IllegalStateException("Not enough stock available for the requested quantity");
+                }
+                cartItem.setQuantity(newQuantity);
+                cartItemRepository.save(cartItem);
             } else {
+                // Add new item
                 double price = inventory.getPrice().doubleValue();
                 cartItem = CartItem.builder()
                         .cart(cart)
@@ -77,8 +114,14 @@ public class CartService {
                         .price(price)
                         .build();
                 cart.getCartItems().add(cartItem);
+                cartItemRepository.save(cartItem);
             }
-            cartItemRepository.save(cartItem);
+            // If cart has no items after operation, set status to REMOVED
+            if (cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
+                cart.setStatus(CartStatus.REMOVED);
+            } else {
+                cart.setStatus(CartStatus.ACTIVE);
+            }
             cartRepository.save(cart);
             return cartMapper.toResponseDTO(cart);
         } catch (FeignException e) {
@@ -100,16 +143,10 @@ public class CartService {
             throw new EntityNotFoundException("Cart item not found");
         }
         try {
-            // Fetch inventory info for maxQuantityPerPurchase
-            ResponseEntity<com.mankind.api.product.dto.inventory.InventoryResponseDTO> inventoryResponse = productClient.getInventoryByProductId(productId);
-            if (!inventoryResponse.getStatusCode().is2xxSuccessful() || inventoryResponse.getBody() == null) {
-                throw new EntityNotFoundException("Product inventory not found");
-            }
-            var inventory = inventoryResponse.getBody();
-            if (inventory.getMaxQuantityPerPurchase() != null && quantity > inventory.getMaxQuantityPerPurchase().intValue()) {
-                throw new MaxQuantityPerPurchaseExceededException(
-                    "Quantity " + quantity + " exceeds the maximum allowed per purchase (" + inventory.getMaxQuantityPerPurchase().intValue() + ") for this product.");
-            }
+            // Validate product and inventory for update
+            validateProductActive(productId);
+            var inventory = validateInventoryAndStock(productId, quantity);
+            validateMaxQuantity(inventory, quantity);
             if (quantity <= 0) {
                 cart.getCartItems().remove(cartItem);
                 cartItemRepository.delete(cartItem);
@@ -120,6 +157,8 @@ public class CartService {
             // If cart is empty, close it
             if (cart.getCartItems().isEmpty()) {
                 cart.setStatus(CartStatus.REMOVED); // Use REMOVED as the closed status
+            } else {
+                cart.setStatus(CartStatus.ACTIVE);
             }
             cartRepository.save(cart);
             return cartMapper.toResponseDTO(cart);

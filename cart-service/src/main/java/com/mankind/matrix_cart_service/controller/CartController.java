@@ -32,7 +32,11 @@ public class CartController {
     })
     @GetMapping
     public ResponseEntity<CartResponseDTO> getCart() {
-        return ResponseEntity.ok(cartService.getCurrentUserOpenCart());
+        CartResponseDTO cart = cartService.getCurrentUserOpenCart();
+        if (cart == null) {
+            throw new com.mankind.matrix_cart_service.exception.ResourceNotFoundException("Cart not found");
+        }
+        return ResponseEntity.ok(cart);
     }
 
     @Operation(summary = "Add item to cart", description = "Adds a product to the authenticated user's open cart. If no open cart exists, one is created. Access via /api/v1/cart/items through the gateway.")
@@ -47,26 +51,26 @@ public class CartController {
         return ResponseEntity.ok(cartService.addItemToCart(itemDTO));
     }
 
-    @Operation(summary = "Update quantity of a cart item", description = "Updates the quantity of a product in the authenticated user's open cart. If quantity is set to zero, the item is removed. Access via /api/v1/cart/items/{productId} through the gateway.")
+    @Operation(summary = "Update quantity of a cart item by product ID", description = "Updates the quantity of a product in the authenticated user's open cart by product ID. If quantity is set to zero, the item is removed. Access via /api/v1/cart/items/product/{productId} through the gateway.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Cart item quantity updated successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized - JWT required"),
         @ApiResponse(responseCode = "404", description = "Product not found in cart")
     })
-    @PatchMapping("/items/{productId}")
-    public ResponseEntity<CartResponseDTO> updateQuantity(
-            @Parameter(description = "ID of the product to update", required = true) @PathVariable Long productId,
+    @PatchMapping("/items/product/{productId}")
+    public ResponseEntity<CartResponseDTO> updateQuantityByProduct(
+            @Parameter(description = "ID of the product to update (not cart item ID)", required = true) @PathVariable Long productId,
             @Parameter(description = "New quantity", required = true) @RequestParam int quantity) {
         return ResponseEntity.ok(cartService.updateItemQuantity(productId, quantity));
     }
 
-    @Operation(summary = "Remove item from cart", description = "Removes a product from the authenticated user's open cart. If the cart becomes empty, it is closed. Access via /api/v1/cart/items/{productId} through the gateway.")
+    @Operation(summary = "Remove item from cart", description = "Removes a product from the authenticated user's open cart. If the cart becomes empty, it is closed. Access via /api/v1/cart/items/product/{productId} through the gateway.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Item removed from cart successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized - JWT required"),
         @ApiResponse(responseCode = "404", description = "Product not found in cart")
     })
-    @DeleteMapping("/items/{productId}")
+    @DeleteMapping("/items/product/{productId}")
     public ResponseEntity<CartResponseDTO> removeItem(
             @Parameter(description = "ID of the product to remove", required = true) @PathVariable Long productId) {
         return ResponseEntity.ok(cartService.removeItemFromCart(productId));
