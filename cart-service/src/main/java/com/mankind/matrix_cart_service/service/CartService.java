@@ -4,6 +4,7 @@ import com.mankind.api.product.dto.product.ProductResponseDTO;
 import com.mankind.matrix_cart_service.client.ProductClient;
 import com.mankind.matrix_cart_service.dto.CartItemDTO;
 import com.mankind.matrix_cart_service.dto.CartResponseDTO;
+import com.mankind.matrix_cart_service.dto.CartItemResponseDTO;
 import com.mankind.matrix_cart_service.mapper.CartItemMapper;
 import com.mankind.matrix_cart_service.mapper.CartMapper;
 import com.mankind.matrix_cart_service.model.Cart;
@@ -39,7 +40,45 @@ public class CartService {
     public CartResponseDTO getCurrentUserOpenCart() {
         Long userId = currentUserService.getCurrentUserId();
         Optional<Cart> cartOpt = cartRepository.findByUserIdAndStatus(userId, CartStatus.ACTIVE);
-        return cartOpt.map(cartMapper::toResponseDTO).orElse(null);
+        if (cartOpt.isPresent()) {
+            Cart cart = cartOpt.get();
+            CartResponseDTO cartResponse = cartMapper.toResponseDTO(cart);
+            enrichCartItemsWithProductDetails(cartResponse);
+            return cartResponse;
+        }
+        return null;
+    }
+
+    /**
+     * Enriches cart items with product details (name, image, description)
+     */
+    private void enrichCartItemsWithProductDetails(CartResponseDTO cartResponse) {
+        if (cartResponse.getItems() != null) {
+            for (CartItemResponseDTO item : cartResponse.getItems()) {
+                try {
+                    ResponseEntity<ProductResponseDTO> productResponse = productClient.getProductById(item.getProductId());
+                    if (productResponse.getStatusCode().is2xxSuccessful() && productResponse.getBody() != null) {
+                        ProductResponseDTO product = productResponse.getBody();
+                        item.setProductName(product.getName());
+                        // Use first image from the images list, or empty string if no images
+                        String productImage = (product.getImages() != null && !product.getImages().isEmpty()) 
+                            ? product.getImages().get(0) 
+                            : "";
+                        item.setProductImage(productImage);
+                        item.setProductDescription(product.getDescription());
+                    }
+                } catch (Exception e) {
+                    log.warn("Failed to fetch product details for productId: {}, error: {}", item.getProductId(), e.getMessage());
+                    // Set default values if product fetch fails
+                    item.setProductName("Product not available");
+                    item.setProductImage("");
+                    item.setProductDescription("");
+                }
+                
+                // Calculate subtotal
+                item.setSubtotal(item.getPrice() * item.getQuantity());
+            }
+        }
     }
 
     // --- Helper methods for product and inventory validation ---
@@ -142,7 +181,9 @@ public class CartService {
                 cart.setStatus(CartStatus.ACTIVE);
             }
             cartRepository.save(cart);
-            return cartMapper.toResponseDTO(cart);
+            CartResponseDTO cartResponse = cartMapper.toResponseDTO(cart);
+            enrichCartItemsWithProductDetails(cartResponse);
+            return cartResponse;
         } catch (FeignException e) {
             log.error("Feign error when calling product-service: status={}, content={}", e.status(), e.contentUTF8());
             throw e;
@@ -200,7 +241,9 @@ public class CartService {
                 cart.setStatus(CartStatus.ACTIVE);
             }
             cartRepository.save(cart);
-            return cartMapper.toResponseDTO(cart);
+            CartResponseDTO cartResponse = cartMapper.toResponseDTO(cart);
+            enrichCartItemsWithProductDetails(cartResponse);
+            return cartResponse;
         } catch (FeignException e) {
             log.error("Feign error when calling product-service: status={}, content={}", e.status(), e.contentUTF8());
             throw e;

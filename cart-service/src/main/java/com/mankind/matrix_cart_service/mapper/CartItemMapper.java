@@ -6,6 +6,8 @@ import com.mankind.matrix_cart_service.model.CartItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.AfterMapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface CartItemMapper {
@@ -19,6 +21,10 @@ public interface CartItemMapper {
     @Mapping(target = "productId", source = "productId")
     @Mapping(target = "quantity", source = "quantity")
     @Mapping(target = "price", source = "price")
+    @Mapping(target = "productName", ignore = true)
+    @Mapping(target = "productImage", ignore = true)
+    @Mapping(target = "productDescription", ignore = true)
+    @Mapping(target = "subtotal", ignore = true)
     CartItemResponseDTO toResponseDTO(CartItem entity);
 
     void updateEntityFromDTO(CartItemDTO dto, @MappingTarget CartItem entity);
