@@ -25,7 +25,7 @@ public class InventoryLog {
     private Inventory inventory;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private InventoryActionType actionType;
 
     @Column(nullable = false)
@@ -40,13 +40,22 @@ public class InventoryLog {
     @Column(nullable = false)
     private String createdBy;
 
+    @Column(name = "user_id")
+    private Long userId;
+
+    @Column(name = "cart_id")
+    private Long cartId;
+
     public enum InventoryActionType {
         RESTOCK,
         SALE,
         RESERVATION,
         UNRESERVATION,
         PRICE_CHANGE,
-        STOCK_ADJUSTMENT
+        STOCK_ADJUSTMENT,
+        CART_ADD,
+        CART_UPDATE,
+        CART_REMOVE
     }
 
     @PrePersist

@@ -15,6 +15,13 @@ spring:
         - DedupeResponseHeader=Access-Control-Allow-Credentials,RETAIN_UNIQUE
 
       routes:
+        # Explicit route for /api/v1/cart (no trailing slash)
+        - id: cart-root
+          uri: ${CART_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/v1/cart
+          filters:
+            - SetPath=/cart
         # API routes
         - id: user-profile-root
           uri: ${USER_SERVICE_URL:http://localhost:8081}

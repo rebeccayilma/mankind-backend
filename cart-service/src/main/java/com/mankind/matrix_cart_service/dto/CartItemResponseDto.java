@@ -9,10 +9,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartItemResponseDto {
+public class CartItemResponseDTO {
     private Long id;
-    private Long cartId;
     private Long productId;
-    private int quantity;
+    private String productName;
+    private String productImage;
+    private String productDescription;
+    private Integer quantity;
     private double price;
-}
+    private double subtotal;
+} 

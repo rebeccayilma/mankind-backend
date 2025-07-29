@@ -230,4 +230,101 @@ public class InventoryService {
                 .map(inventoryLogMapper::toDTO)
                 .toList();
     }
+
+    @Transactional
+    public InventoryResponseDTO reserveStockForCart(Long productId, BigDecimal quantity, Long userId, Long cartId) {
+        Inventory inventory = inventoryRepository.findByProductId(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Inventory not found for product: " + productId));
+
+        if (inventory.getAvailableQuantity().compareTo(quantity) < 0) {
+            throw new IllegalStateException("Insufficient stock available for cart reservation");
+        }
+
+        inventory.setAvailableQuantity(inventory.getAvailableQuantity().subtract(quantity));
+        inventory.setReservedQuantity(inventory.getReservedQuantity().add(quantity));
+        inventory = inventoryRepository.save(inventory);
+
+        // Create inventory log for cart reservation
+        InventoryLog log = InventoryLog.builder()
+            .inventory(inventory)
+            .actionType(InventoryActionType.CART_ADD)
+            .quantity(quantity)
+            .description("Stock reserved for cart")
+            .createdBy("CART_SERVICE")
+            .userId(userId)
+            .cartId(cartId)
+            .build();
+        inventoryLogRepository.save(log);
+
+        return inventoryMapper.toResponseDTO(inventory);
+    }
+
+    @Transactional
+    public InventoryResponseDTO unreserveStockForCart(Long productId, BigDecimal quantity, Long userId, Long cartId) {
+        Inventory inventory = inventoryRepository.findByProductId(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Inventory not found for product: " + productId));
+
+        if (inventory.getReservedQuantity().compareTo(quantity) < 0) {
+            throw new IllegalStateException("Insufficient reserved stock for cart unreservation");
+        }
+
+        inventory.setAvailableQuantity(inventory.getAvailableQuantity().add(quantity));
+        inventory.setReservedQuantity(inventory.getReservedQuantity().subtract(quantity));
+        inventory = inventoryRepository.save(inventory);
+
+        // Create inventory log for cart unreservation
+        InventoryLog log = InventoryLog.builder()
+            .inventory(inventory)
+            .actionType(InventoryActionType.CART_REMOVE)
+            .quantity(quantity)
+            .description("Stock reservation removed from cart")
+            .createdBy("CART_SERVICE")
+            .userId(userId)
+            .cartId(cartId)
+            .build();
+        inventoryLogRepository.save(log);
+
+        return inventoryMapper.toResponseDTO(inventory);
+    }
+
+    @Transactional
+    public InventoryResponseDTO updateReservedStockForCart(Long productId, BigDecimal oldQuantity, BigDecimal newQuantity, Long userId, Long cartId) {
+        Inventory inventory = inventoryRepository.findByProductId(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Inventory not found for product: " + productId));
+
+        BigDecimal quantityDiff = newQuantity.subtract(oldQuantity);
+
+        if (quantityDiff.compareTo(BigDecimal.ZERO) > 0) {
+            // Adding more items to cart
+            if (inventory.getAvailableQuantity().compareTo(quantityDiff) < 0) {
+                throw new IllegalStateException("Insufficient stock available for cart update");
+            }
+            inventory.setAvailableQuantity(inventory.getAvailableQuantity().subtract(quantityDiff));
+            inventory.setReservedQuantity(inventory.getReservedQuantity().add(quantityDiff));
+        } else if (quantityDiff.compareTo(BigDecimal.ZERO) < 0) {
+            // Removing items from cart
+            BigDecimal absDiff = quantityDiff.abs();
+            if (inventory.getReservedQuantity().compareTo(absDiff) < 0) {
+                throw new IllegalStateException("Insufficient reserved stock for cart update");
+            }
+            inventory.setAvailableQuantity(inventory.getAvailableQuantity().add(absDiff));
+            inventory.setReservedQuantity(inventory.getReservedQuantity().subtract(absDiff));
+        }
+
+        inventory = inventoryRepository.save(inventory);
+
+        // Create inventory log for cart update
+        InventoryLog log = InventoryLog.builder()
+            .inventory(inventory)
+            .actionType(InventoryActionType.CART_UPDATE)
+            .quantity(quantityDiff.abs())
+            .description(String.format("Cart quantity updated from %s to %s", oldQuantity, newQuantity))
+            .createdBy("CART_SERVICE")
+            .userId(userId)
+            .cartId(cartId)
+            .build();
+        inventoryLogRepository.save(log);
+
+        return inventoryMapper.toResponseDTO(inventory);
+    }
 } 
