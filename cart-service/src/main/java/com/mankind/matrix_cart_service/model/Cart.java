@@ -87,4 +87,14 @@ public class Cart {
         // Calculate total (subtotal + tax)
         this.total = this.subtotal + this.tax;
     }
+
+    // Getter for cart items (needed for service layer)
+    public List<CartItem> getCartItems() {
+        return cartItems;
+    }
+
+    // Setter for cart items (needed for service layer)
+    public void setCartItems(List<CartItem> cartItems) {
+        this.cartItems = cartItems;
+    }
 }
