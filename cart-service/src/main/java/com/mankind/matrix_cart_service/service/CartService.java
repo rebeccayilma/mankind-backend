@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import feign.FeignException;
 import org.springframework.web.server.ResponseStatusException;
@@ -102,10 +103,28 @@ public class CartService {
                 if (inventory.getAvailableQuantity() != null && newQuantity > inventory.getAvailableQuantity().intValue()) {
                     throw new IllegalStateException("Not enough stock available for the requested quantity");
                 }
+                
+                // Update inventory for cart item update
+                int oldQuantity = cartItem.getQuantity();
+                productClient.updateReservedStockForCart(
+                    itemDTO.getProductId(), 
+                    BigDecimal.valueOf(oldQuantity), 
+                    BigDecimal.valueOf(newQuantity), 
+                    userId, 
+                    cart.getId()
+                );
+                
                 cartItem.setQuantity(newQuantity);
                 cartItemRepository.save(cartItem);
             } else {
-                // Add new item
+                // Add new item - reserve stock for cart
+                productClient.reserveStockForCart(
+                    itemDTO.getProductId(), 
+                    BigDecimal.valueOf(itemDTO.getQuantity()), 
+                    userId, 
+                    cart.getId()
+                );
+                
                 double price = inventory.getPrice().doubleValue();
                 cartItem = CartItem.builder()
                         .cart(cart)
@@ -147,10 +166,30 @@ public class CartService {
             validateProductActive(productId);
             var inventory = validateInventoryAndStock(productId, quantity);
             validateMaxQuantity(inventory, quantity);
+            
+            int oldQuantity = cartItem.getQuantity();
+            
             if (quantity <= 0) {
+                // Remove item from cart - unreserve stock
+                productClient.unreserveStockForCart(
+                    productId, 
+                    BigDecimal.valueOf(oldQuantity), 
+                    userId, 
+                    cart.getId()
+                );
+                
                 cart.getCartItems().remove(cartItem);
                 cartItemRepository.delete(cartItem);
             } else {
+                // Update quantity - update reserved stock
+                productClient.updateReservedStockForCart(
+                    productId, 
+                    BigDecimal.valueOf(oldQuantity), 
+                    BigDecimal.valueOf(quantity), 
+                    userId, 
+                    cart.getId()
+                );
+                
                 cartItem.setQuantity(quantity);
                 cartItemRepository.save(cartItem);
             }

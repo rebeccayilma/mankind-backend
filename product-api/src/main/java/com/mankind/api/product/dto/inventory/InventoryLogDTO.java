@@ -19,4 +19,6 @@ public class InventoryLogDTO {
     private String description;
     private LocalDateTime createdAt;
     private String createdBy;
+    private Long userId;
+    private Long cartId;
 } 
