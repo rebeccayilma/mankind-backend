@@ -18,8 +18,9 @@ public interface CartMapper {
         @Mapping(target = "sessionId", source = "sessionId"),
         @Mapping(target = "status", source = "status", qualifiedByName = "stringToCartStatus"),
         @Mapping(target = "cartItems", source = "items"),
-        @Mapping(target = "subtotal", source = "subtotal"),
-        @Mapping(target = "total", source = "total")
+        @Mapping(target = "subtotal", ignore = true),
+        @Mapping(target = "tax", ignore = true),
+        @Mapping(target = "total", ignore = true)
     })
     Cart toEntity(CartResponseDTO dto);
 
@@ -29,8 +30,9 @@ public interface CartMapper {
         @Mapping(target = "sessionId", source = "sessionId"),
         @Mapping(target = "status", source = "status", qualifiedByName = "cartStatusToString"),
         @Mapping(target = "items", source = "cartItems"),
-        @Mapping(target = "subtotal", source = "subtotal"),
-        @Mapping(target = "total", source = "total")
+        @Mapping(target = "subtotal", ignore = true),
+        @Mapping(target = "tax", ignore = true),
+        @Mapping(target = "total", ignore = true)
     })
     CartResponseDTO toResponseDTO(Cart entity);
 

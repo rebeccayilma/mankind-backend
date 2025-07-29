@@ -54,6 +54,8 @@ public class CartService {
      */
     private void enrichCartItemsWithProductDetails(CartResponseDTO cartResponse) {
         if (cartResponse.getItems() != null) {
+            double cartSubtotal = 0.0;
+            
             for (CartItemResponseDTO item : cartResponse.getItems()) {
                 try {
                     ResponseEntity<ProductResponseDTO> productResponse = productClient.getProductById(item.getProductId());
@@ -75,10 +77,31 @@ public class CartService {
                     item.setProductDescription("");
                 }
                 
-                // Calculate subtotal
-                item.setSubtotal(item.getPrice() * item.getQuantity());
+                // Calculate item subtotal
+                double itemSubtotal = item.getPrice() * item.getQuantity();
+                item.setSubtotal(itemSubtotal);
+                
+                // Add to cart subtotal
+                cartSubtotal += itemSubtotal;
             }
+            
+            // Calculate cart totals
+            calculateCartTotals(cartResponse, cartSubtotal);
         }
+    }
+
+    /**
+     * Calculates cart totals including subtotal, tax (10%), and total
+     */
+    private void calculateCartTotals(CartResponseDTO cartResponse, double subtotal) {
+        final double TAX_RATE = 0.10; // 10% tax rate
+        
+        cartResponse.setSubtotal(subtotal);
+        double tax = subtotal * TAX_RATE;
+        double total = subtotal + tax;
+        
+        cartResponse.setTax(tax);
+        cartResponse.setTotal(total);
     }
 
     // --- Helper methods for product and inventory validation ---

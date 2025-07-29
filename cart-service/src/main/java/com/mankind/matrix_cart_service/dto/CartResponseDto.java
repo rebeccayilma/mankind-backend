@@ -18,5 +18,6 @@ public class CartResponseDTO {
     private String status;
     private List<CartItemResponseDTO> items;
     private double subtotal;
+    private double tax;
     private double total;
 } 
