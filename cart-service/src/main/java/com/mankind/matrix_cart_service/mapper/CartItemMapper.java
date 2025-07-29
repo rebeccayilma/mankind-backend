@@ -7,7 +7,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.AfterMapping;
-import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface CartItemMapper {

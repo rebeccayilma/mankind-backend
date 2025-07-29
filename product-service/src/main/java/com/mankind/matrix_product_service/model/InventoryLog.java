@@ -25,7 +25,7 @@ public class InventoryLog {
     private Inventory inventory;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 100)
     private InventoryActionType actionType;
 
     @Column(nullable = false)
