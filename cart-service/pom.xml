@@ -26,6 +26,7 @@
     </scm>
     <properties>
         <!-- No mapstruct.version here, use parent -->
+        <lombok.version>1.18.30</lombok.version>
     </properties>
     <dependencies>
         <dependency>
@@ -137,11 +138,12 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                    <parameters>true</parameters>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.30</version>
+                            <version>${lombok.version}</version>
                         </path>
                         <path>
                             <groupId>org.mapstruct</groupId>
