@@ -10,18 +10,8 @@ RUN mvn clean install -pl user-api,product-api -am -DskipTests
 
 # Then build the cart service
 RUN cd cart-service && \
-    mvn clean compile -DskipTests && \
-    mvn package spring-boot:repackage -DskipTests
-
-# Verify the build was successful
-RUN cd cart-service && \
-    if [ ! -d "target" ]; then \
-        echo "ERROR: target directory not found!" && \
-        ls -la && \
-        exit 1; \
-    fi && \
-    ls -la target/ && \
-    echo "Build completed successfully"
+    mvn clean package spring-boot:repackage -DskipTests && \
+    ls -la target/
 
 # Run stage
 FROM eclipse-temurin:17-jre
