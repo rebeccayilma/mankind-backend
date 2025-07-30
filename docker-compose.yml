@@ -211,6 +211,8 @@ services:
       - DB_HIKARI_CONNECTION_TIMEOUT=${DB_HIKARI_CONNECTION_TIMEOUT}
       - DB_HIKARI_IDLE_TIMEOUT=${DB_HIKARI_IDLE_TIMEOUT}
       - DB_HIKARI_MAX_LIFETIME=${DB_HIKARI_MAX_LIFETIME}
+      - USER_SERVICE_URL=http://mankind-user-service:8080
+      - PRODUCT_SERVICE_URL=http://mankind-product-service:8080
       - KEYCLOAK_URL=http://keycloak:8080
     deploy:
       resources:
@@ -262,6 +264,7 @@ services:
       - DB_HIKARI_CONNECTION_TIMEOUT=${DB_HIKARI_CONNECTION_TIMEOUT}
       - DB_HIKARI_IDLE_TIMEOUT=${DB_HIKARI_IDLE_TIMEOUT}
       - DB_HIKARI_MAX_LIFETIME=${DB_HIKARI_MAX_LIFETIME}
+      - PRODUCT_SERVICE_URL=http://mankind-product-service:8080
       - KEYCLOAK_URL=http://keycloak:8080
     deploy:
       resources:

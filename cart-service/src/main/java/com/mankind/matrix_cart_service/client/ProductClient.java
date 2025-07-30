@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.mankind.api.product.dto.inventory.InventoryResponseDTO;
 import java.math.BigDecimal;
 
-@FeignClient(name = "product-service", url = "${product-service.url:http://localhost:8080}")
+@FeignClient(name = "product-service", url = "${PRODUCT_SERVICE_URL:http://localhost:8080}")
 public interface ProductClient {
     @GetMapping("/products/{id}")
     ResponseEntity<ProductResponseDTO> getProductById(@PathVariable Long id);
