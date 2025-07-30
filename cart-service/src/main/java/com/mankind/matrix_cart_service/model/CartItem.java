@@ -26,4 +26,27 @@ public class CartItem {
 
     @Column(name = "price", nullable = false)
     private double price;
+
+    // Getter and setter for cart (needed for service layer)
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
+
+    // Getter and setter for quantity (needed for service layer)
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    // Getter for price (needed for service layer)
+    public double getPrice() {
+        return price;
+    }
 }
