@@ -17,5 +17,13 @@ public class CartItemDTO {
 
     @NotNull(message = "Quantity is required")
     @Min(value = 1, message = "Quantity must be at least 1")
-    private Integer quantity;
+    private int quantity;
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
 } 
