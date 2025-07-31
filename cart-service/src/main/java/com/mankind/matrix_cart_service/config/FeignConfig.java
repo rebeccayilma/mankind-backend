@@ -4,6 +4,7 @@ import feign.Logger;
 import feign.RequestInterceptor;
 import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +15,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Configuration
 @Slf4j
 public class FeignConfig {
+
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FeignConfig.class);
 
     @Bean
     public Logger.Level feignLoggerLevel() {
@@ -34,12 +37,12 @@ public class FeignConfig {
                 String auth = attrs.getRequest().getHeader(HttpHeaders.AUTHORIZATION);
                 if (StringUtils.hasText(auth)) {
                     template.header(HttpHeaders.AUTHORIZATION, auth);
-                    log.debug("Propagated authorization header to Feign request");
+                    logger.debug("Propagated authorization header to Feign request");
                 } else {
-                    log.debug("No authorization header found in current request");
+                    logger.debug("No authorization header found in current request");
                 }
             } else {
-                log.warn("No ServletRequestAttributes found in RequestContextHolder");
+                logger.warn("No ServletRequestAttributes found in RequestContextHolder");
             }
         };
     }

@@ -8,9 +8,7 @@
         <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <groupId>com.mankind</groupId>
-    <artifactId>Matrix_Payment_Service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>payment-service</artifactId>
     <name>Mankind Matrix Payment Service</name>
     <description>Mankind Matrix Payment Service</description>
     <url/>

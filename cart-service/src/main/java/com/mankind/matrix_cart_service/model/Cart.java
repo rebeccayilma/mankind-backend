@@ -88,13 +88,11 @@ public class Cart {
         this.total = this.subtotal + this.tax;
     }
 
-    // Getter for cart items (needed for service layer)
-    public List<CartItem> getCartItems() {
-        return cartItems;
+    public Long getId() {
+        return id;
     }
 
-    // Setter for cart items (needed for service layer)
-    public void setCartItems(List<CartItem> cartItems) {
-        this.cartItems = cartItems;
+    public void setStatus(CartStatus status) {
+        this.status = status;
     }
 }
