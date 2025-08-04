@@ -44,11 +44,6 @@ public class CreateCouponRequest {
     @Schema(description = "Maximum number of times this coupon can be used", example = "100")
     private Integer maxUsage;
 
-    @NotNull(message = "Current usage is required")
-    @Min(value = 0, message = "Current usage must be 0 or greater")
-    @Schema(description = "Current number of times this coupon has been used", example = "0")
-    private Integer currentUsage;
-
     @NotNull(message = "Valid from date is required")
     @Schema(description = "Date and time when the coupon becomes valid", example = "2025-08-04T17:39:59.297Z")
     private LocalDateTime validFrom;

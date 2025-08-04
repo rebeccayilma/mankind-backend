@@ -1,6 +1,7 @@
 package com.mankind.matrix_coupon_service.controller;
 
 import com.mankind.matrix_coupon_service.dto.CreateCouponRequest;
+import com.mankind.matrix_coupon_service.dto.UseCouponRequest;
 import com.mankind.matrix_coupon_service.model.Coupon;
 import com.mankind.matrix_coupon_service.service.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,34 +29,14 @@ public class CouponController {
 
     private final CouponService couponService;
 
-    @Operation(summary = "Health check", description = "Simple health check endpoint")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Service is healthy")
-    })
-    @GetMapping("/health")
-    public ResponseEntity<String> health() {
-        return ResponseEntity.ok("Coupon Service is running!");
-    }
-
-    @Operation(summary = "Get all active public coupons", description = "Retrieves all active public coupons")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Successfully retrieved coupons",
-                    content = @Content(schema = @Schema(implementation = Coupon.class))),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @GetMapping("/public")
-    public ResponseEntity<List<Coupon>> getPublicCoupons() {
-        return ResponseEntity.ok(couponService.getActivePublicCoupons());
-    }
-
-    @Operation(summary = "Get all coupons (admin)", description = "Retrieves a paginated list of all coupons")
+    @Operation(summary = "Get all active coupons", description = "Retrieves a paginated list of all active coupons (no date validation)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully retrieved coupons",
                     content = @Content(schema = @Schema(implementation = Coupon.class))),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping
-    public ResponseEntity<Page<Coupon>> getAllCoupons(
+    public ResponseEntity<Page<Coupon>> getAllActiveCoupons(
             @Parameter(description = "Pagination and sorting parameters")
             Pageable pageable) {
         return ResponseEntity.ok(couponService.getAllActiveCoupons(pageable));
@@ -75,20 +56,34 @@ public class CouponController {
         return ResponseEntity.ok(couponService.getCouponById(id));
     }
 
-    @Operation(summary = "Validate coupon code", description = "Validates a coupon code for a user")
+    @Operation(summary = "Validate coupon code", description = "Validates a coupon code for a user with date and usage validation")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Coupon is valid"),
         @ApiResponse(responseCode = "400", description = "Coupon is invalid or expired"),
         @ApiResponse(responseCode = "404", description = "Coupon not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping("/validate")
+    @GetMapping("/validate")
     public ResponseEntity<Coupon> validateCoupon(
             @Parameter(description = "Coupon code to validate", required = true)
             @RequestParam String code,
             @Parameter(description = "User ID", required = true)
             @RequestParam Long userId) {
         return ResponseEntity.ok(couponService.validateCoupon(code, userId));
+    }
+
+    @Operation(summary = "Use coupon", description = "Marks a coupon as used for a specific user with optional order ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Coupon successfully used"),
+        @ApiResponse(responseCode = "400", description = "Coupon is invalid or already used"),
+        @ApiResponse(responseCode = "404", description = "Coupon not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PostMapping("/use")
+    public ResponseEntity<Coupon> useCoupon(
+            @Parameter(description = "Use coupon request", required = true)
+            @Valid @RequestBody UseCouponRequest request) {
+        return ResponseEntity.ok(couponService.useCoupon(request));
     }
 
     @Operation(summary = "Create new coupon", description = "Creates a new coupon")
@@ -107,7 +102,7 @@ public class CouponController {
                 .body(couponService.createCoupon(request));
     }
 
-    @Operation(summary = "Update coupon", description = "Updates an existing coupon")
+    @Operation(summary = "Update coupon", description = "Updates an existing coupon with same fields as POST")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Coupon successfully updated",
                     content = @Content(schema = @Schema(implementation = Coupon.class))),
@@ -120,19 +115,19 @@ public class CouponController {
             @Parameter(description = "ID of the coupon to update", required = true)
             @PathVariable Long id,
             @Parameter(description = "Updated coupon object", required = true)
-            @Valid @RequestBody Coupon coupon) {
-        return ResponseEntity.ok(couponService.updateCoupon(id, coupon));
+            @Valid @RequestBody CreateCouponRequest request) {
+        return ResponseEntity.ok(couponService.updateCoupon(id, request));
     }
 
-    @Operation(summary = "Delete coupon", description = "Deletes a coupon")
+    @Operation(summary = "Deactivate coupon", description = "Deactivates a coupon by setting isActive to false (soft delete)")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Coupon successfully deleted"),
+        @ApiResponse(responseCode = "204", description = "Coupon successfully deactivated"),
         @ApiResponse(responseCode = "404", description = "Coupon not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCoupon(
-            @Parameter(description = "ID of the coupon to delete", required = true)
+            @Parameter(description = "ID of the coupon to deactivate", required = true)
             @PathVariable Long id) {
         couponService.deleteCoupon(id);
         return ResponseEntity.noContent().build();
