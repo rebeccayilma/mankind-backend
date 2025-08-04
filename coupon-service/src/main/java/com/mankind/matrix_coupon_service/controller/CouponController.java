@@ -24,10 +24,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/coupons")
 @RequiredArgsConstructor
-@Tag(name = "Coupon Management", description = "APIs for managing coupons and discounts")
 public class CouponController {
 
     private final CouponService couponService;
+
+    // ==================== USER OPERATIONS ====================
 
     @Operation(summary = "Get all active coupons", description = "Retrieves a paginated list of all active coupons (no date validation)")
     @ApiResponses(value = {
@@ -35,6 +36,7 @@ public class CouponController {
                     content = @Content(schema = @Schema(implementation = Coupon.class))),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @Tag(name = "User Operations", description = "APIs for users to view and use coupons")
     @GetMapping
     public ResponseEntity<Page<Coupon>> getAllActiveCoupons(
             @Parameter(description = "Pagination and sorting parameters")
@@ -49,6 +51,7 @@ public class CouponController {
         @ApiResponse(responseCode = "404", description = "Coupon not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @Tag(name = "User Operations", description = "APIs for users to view and use coupons")
     @GetMapping("/{id}")
     public ResponseEntity<Coupon> getCouponById(
             @Parameter(description = "ID of the coupon to retrieve", required = true)
@@ -63,6 +66,7 @@ public class CouponController {
         @ApiResponse(responseCode = "404", description = "Coupon not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @Tag(name = "User Operations", description = "APIs for users to view and use coupons")
     @GetMapping("/validate")
     public ResponseEntity<Coupon> validateCoupon(
             @Parameter(description = "Coupon code to validate", required = true)
@@ -77,6 +81,7 @@ public class CouponController {
         @ApiResponse(responseCode = "404", description = "Coupon not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @Tag(name = "User Operations", description = "APIs for users to view and use coupons")
     @PostMapping("/use")
     public ResponseEntity<Coupon> useCoupon(
             @Parameter(description = "Use coupon request", required = true)
@@ -84,14 +89,18 @@ public class CouponController {
         return ResponseEntity.ok(couponService.useCoupon(request));
     }
 
-    @Operation(summary = "Create new coupon", description = "Creates a new coupon")
+    // ==================== ADMIN OPERATIONS ====================
+
+    @Operation(summary = "Create new coupon", description = "Creates a new coupon (Admin only)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Coupon successfully created",
                     content = @Content(schema = @Schema(implementation = Coupon.class))),
         @ApiResponse(responseCode = "400", description = "Invalid input"),
+        @ApiResponse(responseCode = "403", description = "Admin access required"),
         @ApiResponse(responseCode = "409", description = "Coupon code already exists"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @Tag(name = "Admin Operations", description = "APIs for administrators to manage coupons")
     @PostMapping
     public ResponseEntity<Coupon> createCoupon(
             @Parameter(description = "Coupon details", required = true)
@@ -100,14 +109,16 @@ public class CouponController {
                 .body(couponService.createCoupon(request));
     }
 
-    @Operation(summary = "Update coupon", description = "Updates an existing coupon with same fields as POST")
+    @Operation(summary = "Update coupon", description = "Updates an existing coupon with same fields as POST (Admin only)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Coupon successfully updated",
                     content = @Content(schema = @Schema(implementation = Coupon.class))),
         @ApiResponse(responseCode = "400", description = "Invalid input"),
+        @ApiResponse(responseCode = "403", description = "Admin access required"),
         @ApiResponse(responseCode = "404", description = "Coupon not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @Tag(name = "Admin Operations", description = "APIs for administrators to manage coupons")
     @PutMapping("/{id}")
     public ResponseEntity<Coupon> updateCoupon(
             @Parameter(description = "ID of the coupon to update", required = true)
@@ -117,12 +128,14 @@ public class CouponController {
         return ResponseEntity.ok(couponService.updateCoupon(id, request));
     }
 
-    @Operation(summary = "Deactivate coupon", description = "Deactivates a coupon by setting isActive to false (soft delete)")
+    @Operation(summary = "Deactivate coupon", description = "Deactivates a coupon by setting isActive to false (soft delete) (Admin only)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Coupon successfully deactivated"),
+        @ApiResponse(responseCode = "403", description = "Admin access required"),
         @ApiResponse(responseCode = "404", description = "Coupon not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @Tag(name = "Admin Operations", description = "APIs for administrators to manage coupons")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCoupon(
             @Parameter(description = "ID of the coupon to deactivate", required = true)

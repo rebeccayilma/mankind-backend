@@ -1,5 +1,3 @@
-// COMMENTED OUT: Role verification is disabled, all endpoints are open.
-/*
 package com.mankind.matrix_coupon_service.service;
 
 import com.mankind.api.user.dto.UserDTO;
@@ -16,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Slf4j
 public class RoleVerificationService {
     private final UserClient userClient;
+    
     public void verifyAdminOrSuperAdminRole() {
         try {
             UserDTO currentUser = userClient.getCurrentUser();
@@ -42,6 +41,7 @@ public class RoleVerificationService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error verifying admin role");
         }
     }
+    
     public void verifyAuthenticatedUser() {
         try {
             UserDTO currentUser = userClient.getCurrentUser();
@@ -58,4 +58,3 @@ public class RoleVerificationService {
         }
     }
 }
-*/

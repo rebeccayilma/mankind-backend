@@ -24,6 +24,7 @@ public class CouponService {
     private final CouponRepository couponRepository;
     private final CouponUsageRepository couponUsageRepository;
     private final CurrentUserService currentUserService;
+    private final RoleVerificationService roleVerificationService;
 
     public Page<Coupon> getAllActiveCoupons(Pageable pageable) {
         log.debug("Fetching all active coupons with pagination (no date validation)");
@@ -107,6 +108,9 @@ public class CouponService {
     }
 
     public Coupon createCoupon(CreateCouponRequest request) {
+        // Verify admin role for coupon creation
+        roleVerificationService.verifyAdminOrSuperAdminRole();
+        
         log.debug("Creating new coupon: {}", request.getCode());
         
         // Check if coupon code already exists among active coupons
@@ -135,6 +139,9 @@ public class CouponService {
     }
 
     public Coupon updateCoupon(Long id, CreateCouponRequest request) {
+        // Verify admin role for coupon update
+        roleVerificationService.verifyAdminOrSuperAdminRole();
+        
         log.debug("Updating coupon with id: {}", id);
         
         Coupon existingCoupon = couponRepository.findById(id)
@@ -167,6 +174,9 @@ public class CouponService {
     }
 
     public void deleteCoupon(Long id) {
+        // Verify admin role for coupon deletion
+        roleVerificationService.verifyAdminOrSuperAdminRole();
+        
         log.debug("Deactivating coupon with id: {}", id);
         
         Coupon coupon = couponRepository.findById(id)
