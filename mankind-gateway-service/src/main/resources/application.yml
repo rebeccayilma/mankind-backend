@@ -102,13 +102,6 @@ spring:
           filters:
             - RewritePath=/api/v1/notifications/(?<segment>.*), /notifications/${segment}
 
-        - id: coupons
-          uri: ${COUPON_SERVICE_URL:http://localhost:8087}
-          predicates:
-            - Path=/api/v1/coupons/**
-          filters:
-            - RewritePath=/api/v1/coupons/(?<segment>.*), /${segment}
-
   security:
     oauth2:
       resourceserver:
