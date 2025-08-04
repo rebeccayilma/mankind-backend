@@ -14,6 +14,7 @@
     <module>payment-service</module>
     <module>mankind-gateway-service</module>
     <module>notification-service</module>
+    <module>coupon-service</module>
     <!--  api modules -->
     <module>user-api</module>
     <module>product-api</module>

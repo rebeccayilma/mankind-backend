@@ -6,7 +6,7 @@
 echo "🚀 Starting Mankind Matrix AI Backend Services..."
 
 # Ports used by the services (including Keycloak)
-PORTS=(8180 8080 8081 8082 8083 8084 8085 8086)
+PORTS=(8180 8080 8081 8082 8083 8084 8085 8086 8087)
 
 # Kill any process using the service ports
 echo "🔧 Cleaning up ports..."
@@ -57,6 +57,9 @@ echo "   Starting payment-service on port 8084..."
 echo "   Starting notification-service on port 8086..."
 ( cd notification-service && ./mvnw spring-boot:run > /dev/null 2>&1 & )
 
+echo "   Starting coupon-service on port 8087..."
+( cd coupon-service && ./mvnw spring-boot:run > /dev/null 2>&1 & )
+
 echo ""
 echo "⏳ Waiting 15 seconds for services to initialize..."
 sleep 15
@@ -76,6 +79,7 @@ echo "   Cart Service:     http://localhost:8082/swagger-ui/index.html"
 echo "   Wishlist Service: http://localhost:8083/swagger-ui/index.html"
 echo "   Payment Service:  http://localhost:8084/swagger-ui/index.html"
 echo "   Notification Service: http://localhost:8086/swagger-ui/index.html"
+echo "   Coupon Service:   http://localhost:8087/swagger-ui/index.html"
 echo "   Gateway Service:  http://localhost:8085"
 echo ""
 echo "💡 To stop all services, run: ./scripts/stop-all-services.sh" 
