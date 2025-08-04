@@ -1,5 +1,3 @@
-// COMMENTED OUT: Feign is disabled, all endpoints are open.
-/*
 package com.mankind.matrix_coupon_service.config;
 
 import feign.FeignException;
@@ -30,4 +28,3 @@ public class CustomErrorDecoder implements ErrorDecoder {
         }
     }
 }
-*/

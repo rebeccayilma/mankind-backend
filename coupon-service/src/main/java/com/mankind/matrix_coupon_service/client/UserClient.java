@@ -1,5 +1,3 @@
-// COMMENTED OUT: UserClient is disabled, all endpoints are open.
-/*
 package com.mankind.matrix_coupon_service.client;
 
 import com.mankind.api.user.dto.UserDTO;
@@ -16,4 +14,3 @@ public interface UserClient {
     @GetMapping("/users/me")
     UserDTO getCurrentUser();
 }
-*/

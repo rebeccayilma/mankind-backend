@@ -56,7 +56,7 @@ public class CouponController {
         return ResponseEntity.ok(couponService.getCouponById(id));
     }
 
-    @Operation(summary = "Validate coupon code", description = "Validates a coupon code for a user with date and usage validation")
+    @Operation(summary = "Validate coupon code", description = "Validates a coupon code for the current user with date and usage validation")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Coupon is valid"),
         @ApiResponse(responseCode = "400", description = "Coupon is invalid or expired"),
@@ -66,10 +66,8 @@ public class CouponController {
     @GetMapping("/validate")
     public ResponseEntity<Coupon> validateCoupon(
             @Parameter(description = "Coupon code to validate", required = true)
-            @RequestParam String code,
-            @Parameter(description = "User ID", required = true)
-            @RequestParam Long userId) {
-        return ResponseEntity.ok(couponService.validateCoupon(code, userId));
+            @RequestParam String code) {
+        return ResponseEntity.ok(couponService.validateCoupon(code));
     }
 
     @Operation(summary = "Use coupon", description = "Marks a coupon as used for a specific user with optional order ID")

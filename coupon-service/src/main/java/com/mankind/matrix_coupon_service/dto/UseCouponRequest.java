@@ -13,10 +13,6 @@ public class UseCouponRequest {
     @Schema(description = "Coupon code to use", example = "SAVE20")
     private String code;
 
-    @NotNull(message = "User ID is required")
-    @Schema(description = "User ID", example = "123")
-    private Long userId;
-
     @Schema(description = "Order ID where the coupon is being used (optional)", example = "456")
     private Long orderId;
 } 

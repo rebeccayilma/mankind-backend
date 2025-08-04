@@ -65,6 +65,21 @@ spring:
           filters:
             - RewritePath=/api/v1/cart/(?<segment>.*), /cart/${segment}
           
+        # Explicit route for /api/v1/coupons (no trailing slash)
+        - id: coupons-root
+          uri: ${COUPON_SERVICE_URL:http://localhost:8087}
+          predicates:
+            - Path=/api/v1/coupons
+          filters:
+            - SetPath=/coupons
+          
+        - id: coupons
+          uri: ${COUPON_SERVICE_URL:http://localhost:8087}
+          predicates:
+            - Path=/api/v1/coupons/**
+          filters:
+            - RewritePath=/api/v1/coupons/(?<segment>.*), /coupons/${segment}
+          
         - id: wishlist
           uri: ${WISHLIST_SERVICE_URL:http://localhost:8083}
           predicates:
@@ -92,7 +107,7 @@ spring:
           predicates:
             - Path=/api/v1/coupons/**
           filters:
-            - RewritePath=/api/v1/coupons/(?<segment>.*), /coupons/${segment}
+            - RewritePath=/api/v1/coupons/(?<segment>.*), /${segment}
 
   security:
     oauth2:

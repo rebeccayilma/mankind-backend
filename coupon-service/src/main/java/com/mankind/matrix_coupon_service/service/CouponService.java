@@ -23,6 +23,7 @@ public class CouponService {
 
     private final CouponRepository couponRepository;
     private final CouponUsageRepository couponUsageRepository;
+    private final CurrentUserService currentUserService;
 
     public Page<Coupon> getAllActiveCoupons(Pageable pageable) {
         log.debug("Fetching all active coupons with pagination (no date validation)");
@@ -35,8 +36,8 @@ public class CouponService {
                 .orElseThrow(() -> new RuntimeException("Coupon not found with id: " + id));
     }
 
-    public Coupon validateCoupon(String code, Long userId) {
-        log.debug("Validating coupon code: {} for user: {}", code, userId);
+    public Coupon validateCoupon(String code) {
+        log.debug("Validating coupon code: {} for user: {}", code, currentUserService.getCurrentUserId());
         
         // Find the coupon by code
         Coupon coupon = couponRepository.findByCodeAndIsActiveTrue(code)
@@ -60,22 +61,22 @@ public class CouponService {
         
         // Check if user has already used this coupon (if one-time use per user)
         if (coupon.getOneTimeUsePerUser()) {
-            Long usageCount = couponRepository.countUsageByCouponAndUser(coupon.getId(), userId);
+            Long usageCount = couponRepository.countUsageByCouponAndUser(coupon.getId(), currentUserService.getCurrentUserId());
             if (usageCount > 0) {
                 throw new RuntimeException("Coupon already used by this user: " + code);
             }
         }
         
-        log.info("Coupon validated successfully: {} for user: {}", code, userId);
+        log.info("Coupon validated successfully: {} for user: {}", code, currentUserService.getCurrentUserId());
         return coupon;
     }
 
     @Transactional
     public Coupon useCoupon(UseCouponRequest request) {
-        log.debug("Using coupon code: {} for user: {}", request.getCode(), request.getUserId());
+        log.debug("Using coupon code: {} for user: {}", request.getCode(), currentUserService.getCurrentUserId());
         
         // First validate the coupon (includes all checks: active, dates, max usage, one-time use)
-        Coupon coupon = validateCoupon(request.getCode(), request.getUserId());
+        Coupon coupon = validateCoupon(request.getCode());
         
         // Increment current usage
         coupon.setCurrentUsage(coupon.getCurrentUsage() + 1);
@@ -84,12 +85,12 @@ public class CouponService {
         // Record usage in coupon_usage table with optional orderId
         couponUsageRepository.save(CouponUsage.builder()
                 .coupon(updatedCoupon)
-                .userId(request.getUserId())
+                .userId(currentUserService.getCurrentUserId())
                 .orderId(request.getOrderId())
                 .build());
         
         log.info("Coupon used successfully: {} for user: {} with orderId: {}", 
-                request.getCode(), request.getUserId(), request.getOrderId());
+                request.getCode(), currentUserService.getCurrentUserId(), request.getOrderId());
         return updatedCoupon;
     }
 
