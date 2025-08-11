@@ -133,7 +133,7 @@ public class OrderService {
             if (e.getMessage().contains("404") || e.getMessage().contains("Cart not found")) {
                 throw new CartValidationException("No active cart found. Please add items to your cart before creating an order.");
             } else if (e.getMessage().contains("Connection refused")) {
-                throw new CartValidationException("Cannot connect to cart service. Service may not be running on port 8082.");
+                throw new CartValidationException("Cannot connect to cart service. Service may not be running.");
             } else {
                 throw new CartValidationException("Failed to retrieve cart: " + e.getMessage());
             }
@@ -251,7 +251,9 @@ public class OrderService {
         orderStatusHistoryRepository.save(OrderStatusHistory.builder()
                 .order(order)
                 .status(order.getStatus())
+                .paymentStatus(order.getPaymentStatus())
                 .notes(notes)
+                .createdBy("ORDER_SERVICE")
                 .createdAt(LocalDateTime.now())
                 .build());
     }

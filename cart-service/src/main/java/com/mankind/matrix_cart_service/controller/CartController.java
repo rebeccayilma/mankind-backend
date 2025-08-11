@@ -82,7 +82,7 @@ public class CartController {
         @ApiResponse(responseCode = "401", description = "Unauthorized - JWT required"),
         @ApiResponse(responseCode = "404", description = "Cart not found")
     })
-    @PatchMapping("/convert")
+    @PostMapping("/convert")
     public ResponseEntity<CartResponseDTO> markCartAsConverted(
             @Parameter(description = "Order ID associated with the cart conversion", required = true) 
             @RequestParam("orderId") Long orderId) {

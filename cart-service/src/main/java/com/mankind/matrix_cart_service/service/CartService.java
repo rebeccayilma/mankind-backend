@@ -318,7 +318,6 @@ public class CartService {
         }
         
         CartResponseDTO cartResponse = cartMapper.toResponseDTO(savedCart);
-        enrichCartItemsWithProductDetails(cartResponse);
         return cartResponse;
     }
 }

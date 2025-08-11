@@ -157,8 +157,8 @@ public class GlobalExceptionHandler {
         errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.put("error", "Internal Server Error");
-        errorResponse.put("message", ex.getMessage());
-        errorResponse.put("details", "An unexpected runtime error occurred. Please try again later.");
+        errorResponse.put("message", "An unexpected runtime error occurred. Please try again later.");
+        errorResponse.put("details", ex.getMessage());
         
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
@@ -171,8 +171,8 @@ public class GlobalExceptionHandler {
         errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.put("error", "Internal Server Error");
-        errorResponse.put("message", ex.getMessage());
-        errorResponse.put("details", "An unexpected error occurred. Please try again later.");
+        errorResponse.put("message", "An unexpected error occurred. Please try again later.");
+        errorResponse.put("details", ex.getMessage());
         
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
