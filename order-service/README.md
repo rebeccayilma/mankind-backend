@@ -34,8 +34,11 @@ This service manages orders for the Mankind Matrix AI platform. It handles order
 5. **Coupon Processing**:
    - If coupon code provided, validate via `/coupons/validate` endpoint
    - Calculate discount based on coupon type (percentage or fixed amount)
-   - Apply discount to final amount
-6. **Order Creation**: Create order with PENDING status
+   - Apply discount to subtotal
+6. **Tax Calculation**: Calculate 10% tax on (subtotal - discounts)
+7. **Shipping**: Add shipping value to the order
+8. **Total Calculation**: subtotal - discounts + tax + shipping
+9. **Order Creation**: Create order with PENDING status
 7. **Order Items**: Convert cart items to order items
 8. **Inventory Update**: Mark products as sold (change from reserved to sold)
 9. **Cart Status Update**: Set cart status to CONVERTED
@@ -48,6 +51,10 @@ This service manages orders for the Mankind Matrix AI platform. It handles order
 - **Address Ownership**: Both shipping and billing addresses must belong to the current user
 - **Coupon Validation**: Coupons must be validated before application
 - **Inventory Check**: Products must have sufficient inventory before marking as sold
+- **Shipping Value**: 
+  - Required field
+  - Must be greater than or equal to 0
+  - Must not exceed 1000 (excessive amount validation)
 
 ### Integration Points
 
@@ -55,6 +62,15 @@ This service manages orders for the Mankind Matrix AI platform. It handles order
 - **Coupon Service**: Validate coupon codes, mark coupons as used
 - **Product Service**: Update inventory status, mark products as sold
 - **User Service**: Get current user information, validate address ownership
+
+## Order Fields
+
+### Financial Fields
+- **subtotal**: Sum of all cart items
+- **tax**: 10% of (subtotal - discounts)
+- **discounts**: Total discount amount from coupons
+- **shippingValue**: Shipping cost (required parameter)
+- **total**: Final amount (subtotal - discounts + tax + shipping)
 
 ## Order Status Lifecycle
 

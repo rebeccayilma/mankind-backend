@@ -1,5 +1,13 @@
 server:
   port: 8088
+  shutdown: graceful
+  tomcat:
+    threads:
+      max: 20
+      min-spare: 5
+    connection-timeout: 20000
+    max-connections: 100
+    accept-count: 10
 springdoc:
   api-docs:
     path: /v3/api-docs
@@ -15,6 +23,8 @@ springdoc:
   packages-to-scan: com.mankind.matrix_order_service.controller
   paths-to-match: /**
 spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 10s
   datasource:
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:mankind_matrix_db}?connectTimeout=${DB_CONNECT_TIMEOUT:60000}&socketTimeout=${DB_SOCKET_TIMEOUT:60000}&useSSL=${DB_USE_SSL:false}&allowPublicKeyRetrieval=${DB_ALLOW_PUBLIC_KEY_RETRIEVAL:true}&serverTimezone=${DB_SERVER_TIMEZONE:UTC}&autoReconnect=${DB_AUTO_RECONNECT:true}&failOverReadOnly=${DB_FAIL_OVER_READ_ONLY:false}
     username: ${DB_USERNAME:matrix_user}
@@ -30,6 +40,8 @@ spring:
       connection-test-query: SELECT 1
       validation-timeout: 5000
       auto-commit: true
+      allow-pool-suspension: false
+      register-mbeans: false
   security:
     oauth2:
       resourceserver:
@@ -41,6 +53,7 @@ spring:
       ddl-auto: update
     show-sql: true
     database-platform: org.hibernate.dialect.MySQLDialect
+    open-in-view: false
     properties:
       hibernate:
         connection:
@@ -49,6 +62,11 @@ spring:
         current_session_context_class: thread
         transaction:
           auto_commit: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
   profiles:
     active: dev
 management:

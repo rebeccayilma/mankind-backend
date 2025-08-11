@@ -43,14 +43,17 @@ public class Order {
     @Column(name = "payment_status", nullable = false)
     private PaymentStatus paymentStatus;
 
-    @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
-    private BigDecimal totalAmount;
+    @Column(name = "subtotal", nullable = false, precision = 10, scale = 2)
+    private BigDecimal subtotal;
 
-    @Column(name = "discount_amount", precision = 10, scale = 2)
-    private BigDecimal discountAmount;
+    @Column(name = "tax", nullable = false, precision = 10, scale = 2)
+    private BigDecimal tax;
 
-    @Column(name = "final_amount", nullable = false, precision = 10, scale = 2)
-    private BigDecimal finalAmount;
+    @Column(name = "discounts", nullable = false, precision = 10, scale = 2)
+    private BigDecimal discounts;
+
+    @Column(name = "total", nullable = false, precision = 10, scale = 2)
+    private BigDecimal total;
 
     @Column(name = "payment_id")
     private String paymentId;
@@ -60,6 +63,9 @@ public class Order {
 
     @Column(name = "billing_address_id")
     private Long billingAddressId;
+
+    @Column(name = "shipping_value", nullable = false, precision = 10, scale = 2)
+    private BigDecimal shippingValue;
 
     @Column(columnDefinition = "TEXT")
     private String notes;

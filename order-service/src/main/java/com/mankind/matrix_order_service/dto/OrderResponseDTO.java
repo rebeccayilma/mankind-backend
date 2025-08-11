@@ -34,14 +34,20 @@ public class OrderResponseDTO {
     @Schema(description = "Payment status", example = "PENDING")
     private String paymentStatus;
 
-    @Schema(description = "Total amount before discounts", example = "100.00")
-    private BigDecimal totalAmount;
+    @Schema(description = "Subtotal (sum of all items)", example = "100.00")
+    private BigDecimal subtotal;
 
-    @Schema(description = "Total discount amount", example = "20.00")
-    private BigDecimal discountAmount;
+    @Schema(description = "Tax amount", example = "8.50")
+    private BigDecimal tax;
 
-    @Schema(description = "Final amount after discounts", example = "80.00")
-    private BigDecimal finalAmount;
+    @Schema(description = "Total discounts from coupons", example = "20.00")
+    private BigDecimal discounts;
+
+    @Schema(description = "Total amount after all calculations", example = "88.50")
+    private BigDecimal total;
+
+    @Schema(description = "Shipping cost", example = "15.99")
+    private BigDecimal shippingValue;
 
     @Schema(description = "Payment ID", example = "pay_123456789")
     private String paymentId;

@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,13 +59,16 @@ public class OrderService {
         // Validate cart and addresses
         CartResponseDTO cart = validateAndGetCart(userId);
         validateAddresses(request, userId);
+        validateShippingValue(request);
 
         // Generate order number and calculate totals
         String orderNumber = orderNumberGenerator.generateOrderNumber();
-        OrderCalculation calculation = calculateOrderTotals(cart, request.getCouponCode());
+        // Round shipping value to 2 decimal places
+        BigDecimal roundedShippingValue = request.getShippingValue().setScale(2, RoundingMode.HALF_UP);
+        OrderCalculation calculation = calculateOrderTotals(cart, request.getCouponCode(), roundedShippingValue);
 
         // Create and save order
-        Order order = createOrderEntity(request, userId, cart, orderNumber, calculation);
+        Order order = createOrderEntity(request, userId, cart, orderNumber, calculation, roundedShippingValue);
         final Order savedOrder = orderRepository.save(order);
 
         // Process order items
@@ -145,6 +149,20 @@ public class OrderService {
         validateAddressOwnership(request.getBillingAddressId(), "billing", userId);
     }
 
+    private void validateShippingValue(CreateOrderRequest request) {
+        if (request.getShippingValue() == null) {
+            throw new CartValidationException("Shipping value is required");
+        }
+        if (request.getShippingValue().compareTo(BigDecimal.ZERO) < 0) {
+            throw new CartValidationException("Shipping value must be greater than or equal to 0");
+        }
+        // Additional validation: shipping value should not be excessively high (e.g., > 1000)
+        if (request.getShippingValue().compareTo(BigDecimal.valueOf(1000)) > 0) {
+            throw new CartValidationException("Shipping value seems excessively high. Please verify the amount.");
+        }
+        log.info("Validated shipping value: {}", request.getShippingValue());
+    }
+
     private void validateAddressOwnership(Long addressId, String addressType, Long userId) {
         try {
             AddressDTO address = userClient.getAddressById(addressId);
@@ -158,22 +176,34 @@ public class OrderService {
         }
     }
 
-    private OrderCalculation calculateOrderTotals(CartResponseDTO cart, String couponCode) {
-        BigDecimal totalAmount = BigDecimal.valueOf(cart.getTotal());
-        BigDecimal discountAmount = BigDecimal.ZERO;
-        BigDecimal finalAmount = totalAmount;
+    private OrderCalculation calculateOrderTotals(CartResponseDTO cart, String couponCode, BigDecimal shippingValue) {
+        // Calculate subtotal from cart items and round to 2 decimal places
+        BigDecimal subtotal = cart.getItems().stream()
+                .mapToDouble(item -> item.getSubtotal())
+                .mapToObj(amount -> BigDecimal.valueOf(amount))
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
+        
+        // Calculate discount from coupon if provided
+        BigDecimal discounts = BigDecimal.ZERO;
         CouponDTO appliedCoupon = null;
 
         if (couponCode != null && !couponCode.isEmpty()) {
-            appliedCoupon = validateAndApplyCoupon(couponCode, totalAmount);
-            discountAmount = calculateDiscount(appliedCoupon, totalAmount);
-            finalAmount = totalAmount.subtract(discountAmount);
-            if (finalAmount.compareTo(BigDecimal.ZERO) < 0) {
-                finalAmount = BigDecimal.ZERO;
-            }
+            appliedCoupon = validateAndApplyCoupon(couponCode, subtotal);
+            discounts = calculateDiscount(appliedCoupon, subtotal);
         }
 
-        return new OrderCalculation(totalAmount, discountAmount, finalAmount, appliedCoupon);
+        // Calculate tax as 10% of (subtotal - discounts)
+        BigDecimal taxableAmount = subtotal.subtract(discounts).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal tax = taxableAmount.multiply(BigDecimal.valueOf(0.10)).setScale(2, RoundingMode.HALF_UP);
+
+        // Calculate total: subtotal - discounts + tax + shipping
+        BigDecimal total = taxableAmount.add(tax).add(shippingValue).setScale(2, RoundingMode.HALF_UP);
+        if (total.compareTo(BigDecimal.ZERO) < 0) {
+            total = BigDecimal.ZERO;
+        }
+
+        return new OrderCalculation(subtotal, tax, discounts, shippingValue, total, appliedCoupon);
     }
 
     private CouponDTO validateAndApplyCoupon(String couponCode, BigDecimal totalAmount) {
@@ -192,27 +222,32 @@ public class OrderService {
     }
 
     private BigDecimal calculateDiscount(CouponDTO coupon, BigDecimal totalAmount) {
+        BigDecimal discount;
         if (coupon.getType() == CouponDTO.CouponType.PERCENTAGE) {
-            return totalAmount.multiply(coupon.getValue()).divide(BigDecimal.valueOf(100));
+            discount = totalAmount.multiply(coupon.getValue()).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
         } else if (coupon.getType() == CouponDTO.CouponType.FIXED_AMOUNT) {
-            return coupon.getValue();
+            discount = coupon.getValue();
+        } else {
+            discount = BigDecimal.ZERO;
         }
-        return BigDecimal.ZERO;
+        return discount.setScale(2, RoundingMode.HALF_UP);
     }
 
     private Order createOrderEntity(CreateOrderRequest request, Long userId, CartResponseDTO cart, 
-                                  String orderNumber, OrderCalculation calculation) {
+                                  String orderNumber, OrderCalculation calculation, BigDecimal roundedShippingValue) {
         return Order.builder()
                 .orderNumber(orderNumber)
                 .userId(userId.toString())
                 .cartId(cart.getId())
                 .status(Order.OrderStatus.PENDING)
                 .paymentStatus(Order.PaymentStatus.PENDING)
-                .totalAmount(calculation.getTotalAmount())
-                .discountAmount(calculation.getDiscountAmount())
-                .finalAmount(calculation.getFinalAmount())
+                .subtotal(calculation.getSubtotal())
+                .tax(calculation.getTax())
+                .discounts(calculation.getDiscounts())
+                .total(calculation.getTotal())
                 .shippingAddressId(request.getShippingAddressId())
                 .billingAddressId(request.getBillingAddressId())
+                .shippingValue(roundedShippingValue)
                 .notes(request.getNotes())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -308,7 +343,7 @@ public class OrderService {
             couponDTO = OrderCouponDTO.builder()
                     .couponCode(calculation.getAppliedCoupon().getCode())
                     .couponName(calculation.getAppliedCoupon().getName())
-                    .discountAmount(calculation.getDiscountAmount())
+                    .discountAmount(calculation.getDiscounts())
                     .discountType(calculation.getAppliedCoupon().getType().name())
                     .appliedAt(LocalDateTime.now())
                     .build();
@@ -321,9 +356,11 @@ public class OrderService {
                 .cartId(order.getCartId())
                 .status(order.getStatus().name())
                 .paymentStatus(order.getPaymentStatus().name())
-                .totalAmount(order.getTotalAmount())
-                .discountAmount(order.getDiscountAmount())
-                .finalAmount(order.getFinalAmount())
+                .subtotal(order.getSubtotal())
+                .tax(order.getTax())
+                .discounts(order.getDiscounts())
+                .total(order.getTotal())
+                .shippingValue(order.getShippingValue())
                 .shippingAddressId(order.getShippingAddressId())
                 .billingAddressId(order.getBillingAddressId())
                 .notes(order.getNotes())
@@ -336,22 +373,28 @@ public class OrderService {
 
     // Helper class for order calculations
     private static class OrderCalculation {
-        private final BigDecimal totalAmount;
-        private final BigDecimal discountAmount;
-        private final BigDecimal finalAmount;
+        private final BigDecimal subtotal;
+        private final BigDecimal tax;
+        private final BigDecimal discounts;
+        private final BigDecimal shippingValue;
+        private final BigDecimal total;
         private final CouponDTO appliedCoupon;
 
-        public OrderCalculation(BigDecimal totalAmount, BigDecimal discountAmount, 
-                              BigDecimal finalAmount, CouponDTO appliedCoupon) {
-            this.totalAmount = totalAmount;
-            this.discountAmount = discountAmount;
-            this.finalAmount = finalAmount;
+        public OrderCalculation(BigDecimal subtotal, BigDecimal tax, 
+                              BigDecimal discounts, BigDecimal shippingValue, BigDecimal total, CouponDTO appliedCoupon) {
+            this.subtotal = subtotal;
+            this.tax = tax;
+            this.discounts = discounts;
+            this.shippingValue = shippingValue;
+            this.total = total;
             this.appliedCoupon = appliedCoupon;
         }
 
-        public BigDecimal getTotalAmount() { return totalAmount; }
-        public BigDecimal getDiscountAmount() { return discountAmount; }
-        public BigDecimal getFinalAmount() { return finalAmount; }
+        public BigDecimal getSubtotal() { return subtotal; }
+        public BigDecimal getTax() { return tax; }
+        public BigDecimal getDiscounts() { return discounts; }
+        public BigDecimal getShippingValue() { return shippingValue; }
+        public BigDecimal getTotal() { return total; }
         public CouponDTO getAppliedCoupon() { return appliedCoupon; }
     }
 }
