@@ -28,7 +28,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @Operation(summary = "Create order from cart", description = "Creates a new order from the current user's active cart. Cart status will be changed to CONVERTED. Both shipping and billing addresses must belong to the current user.")
+    @Operation(summary = "Create order from cart", description = "Creates a new order from the current user's active cart. Cart status will be changed to CONVERTED. Shipping address must belong to the current user.")
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Order created successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid request - no active cart, invalid addresses, or coupon validation failed"),
@@ -68,19 +68,5 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
-    @Operation(summary = "Cancel order", description = "Cancels an order if it's in a cancellable status (not shipped or delivered).")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Order cancelled successfully"),
-        @ApiResponse(responseCode = "400", description = "Order cannot be cancelled in current status"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized - JWT required"),
-        @ApiResponse(responseCode = "403", description = "Forbidden - order does not belong to current user"),
-        @ApiResponse(responseCode = "404", description = "Order not found")
-    })
-    @PatchMapping("/{orderId}/cancel")
-    public ResponseEntity<OrderResponseDTO> cancelOrder(
-            @Parameter(description = "ID of the order to cancel", required = true) 
-            @PathVariable Long orderId) {
-        OrderResponseDTO order = orderService.cancelOrder(orderId);
-        return ResponseEntity.ok(order);
-    }
+
 }

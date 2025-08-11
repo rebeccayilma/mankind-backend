@@ -9,10 +9,9 @@ Content-Type: application/json
 Authorization: Bearer YOUR_JWT_TOKEN
 
 {
-  "cartId": 1,
   "shippingAddressId": 1,
-  "billingAddressId": 1,
-  "couponCodes": ["SAVE20", "FREESHIP"],
+  "shippingValue": 15.99,
+  "couponCode": "SAVE20",
   "notes": "Please deliver in the morning"
 }
 
@@ -24,8 +23,8 @@ Authorization: Bearer YOUR_JWT_TOKEN
 GET http://localhost:8088/orders/1
 Authorization: Bearer YOUR_JWT_TOKEN
 
-### Cancel Order
-PATCH http://localhost:8088/orders/1/cancel
+### Cancel Order (Admin Only)
+PATCH http://localhost:8088/admin/orders/1/cancel
 Authorization: Bearer YOUR_JWT_TOKEN
 
 ### Admin Endpoints (Require ADMIN Role)

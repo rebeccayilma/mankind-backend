@@ -68,4 +68,20 @@ public class AdminOrderController {
         // TODO: Implement admin service method for updating order status
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "Cancel order (admin)", description = "Cancels an order if it's in a cancellable status (not shipped or delivered). Only admins can cancel orders.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Order cancelled successfully"),
+        @ApiResponse(responseCode = "400", description = "Order cannot be cancelled in current status"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - JWT required"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - ADMIN role required"),
+        @ApiResponse(responseCode = "404", description = "Order not found")
+    })
+    @PatchMapping("/{orderId}/cancel")
+    public ResponseEntity<OrderResponseDTO> cancelOrder(
+            @Parameter(description = "ID of the order to cancel", required = true) 
+            @PathVariable Long orderId) {
+        OrderResponseDTO order = orderService.cancelOrderByAdmin(orderId);
+        return ResponseEntity.ok(order);
+    }
 }

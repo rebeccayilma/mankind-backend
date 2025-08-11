@@ -116,6 +116,19 @@ public class OrderService {
         return buildOrderResponseDTO(order, null, null);
     }
 
+    @Transactional
+    public OrderResponseDTO cancelOrderByAdmin(Long orderId) {
+        Order order = findOrderById(orderId);
+        validateOrderCanBeCancelled(order);
+
+        order.setStatus(Order.OrderStatus.CANCELLED);
+        order.setUpdatedAt(LocalDateTime.now());
+        order = orderRepository.save(order);
+
+        createOrderStatusHistory(order, "Order cancelled by admin");
+        return buildOrderResponseDTO(order, null, null);
+    }
+
     // Private helper methods
 
     private CartResponseDTO validateAndGetCart(Long userId) {
@@ -146,7 +159,6 @@ public class OrderService {
 
     private void validateAddresses(CreateOrderRequest request, Long userId) {
         validateAddressOwnership(request.getShippingAddressId(), "shipping", userId);
-        validateAddressOwnership(request.getBillingAddressId(), "billing", userId);
     }
 
     private void validateShippingValue(CreateOrderRequest request) {
@@ -246,7 +258,7 @@ public class OrderService {
                 .discounts(calculation.getDiscounts())
                 .total(calculation.getTotal())
                 .shippingAddressId(request.getShippingAddressId())
-                .billingAddressId(request.getBillingAddressId())
+
                 .shippingValue(roundedShippingValue)
                 .notes(request.getNotes())
                 .createdAt(LocalDateTime.now())
@@ -362,7 +374,7 @@ public class OrderService {
                 .total(order.getTotal())
                 .shippingValue(order.getShippingValue())
                 .shippingAddressId(order.getShippingAddressId())
-                .billingAddressId(order.getBillingAddressId())
+
                 .notes(order.getNotes())
                 .items(orderItemDTOs)
                 .appliedCoupon(couponDTO)

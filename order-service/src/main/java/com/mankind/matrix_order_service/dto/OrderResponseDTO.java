@@ -55,8 +55,7 @@ public class OrderResponseDTO {
     @Schema(description = "Shipping address ID", example = "1")
     private Long shippingAddressId;
 
-    @Schema(description = "Billing address ID", example = "1")
-    private Long billingAddressId;
+
 
     @Schema(description = "Order notes")
     private String notes;

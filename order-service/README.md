@@ -11,6 +11,7 @@ This service manages orders for the Mankind Matrix AI platform. It handles order
 - **Cart Integration**: Orders created from active carts, cart status changed to CONVERTED
 - **Inventory Management**: Items marked as sold when order is created
 - **Payment Tracking**: Link orders to payments
+- **Admin Controls**: Order cancellation and status updates restricted to admin users
 
 ## Swagger Documentation
 
@@ -28,8 +29,6 @@ This service manages orders for the Mankind Matrix AI platform. It handles order
    - Ensure cart status is ACTIVE
 3. **Address Validation**:
    - Validate shipping address belongs to current user via `/users/me/addresses/{addressId}`
-   - Validate billing address belongs to current user via `/users/me/addresses/{addressId}`
-   - Both addresses must belong to the authenticated user
 4. **Order Number Generation**: Generate unique order number (format: ORD-YYYYMMDD-HHMMSS-XXXXX)
 5. **Coupon Processing**:
    - If coupon code provided, validate via `/coupons/validate` endpoint
@@ -48,7 +47,8 @@ This service manages orders for the Mankind Matrix AI platform. It handles order
 ### Validation Rules
 
 - **Cart Status**: Only ACTIVE carts can be converted to orders
-- **Address Ownership**: Both shipping and billing addresses must belong to the current user
+- **Address Ownership**: Shipping address must belong to the current user
+
 - **Coupon Validation**: Coupons must be validated before application
 - **Inventory Check**: Products must have sufficient inventory before marking as sold
 - **Shipping Value**: 
@@ -79,7 +79,7 @@ This service manages orders for the Mankind Matrix AI platform. It handles order
 - **PROCESSING**: Order being prepared for shipping
 - **SHIPPED**: Order shipped to customer
 - **DELIVERED**: Order delivered to customer
-- **CANCELLED**: Order cancelled (can be cancelled before shipping)
+- **CANCELLED**: Order cancelled (admin only, can be cancelled before shipping)
 
 ## Payment Status
 
@@ -88,6 +88,12 @@ This service manages orders for the Mankind Matrix AI platform. It handles order
 - **FAILED**: Payment failed
 - **REFUNDED**: Payment refunded
 - **PARTIALLY_REFUNDED**: Partial refund issued
+
+## Admin-Only Operations
+
+- **Order Cancellation**: Only administrators can cancel orders
+- **Status Updates**: Order status changes are restricted to admin users
+- **Order Management**: Full access to all orders in the system
 
 
 ## Configuration

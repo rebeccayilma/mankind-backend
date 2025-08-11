@@ -12,9 +12,7 @@ public class CreateOrderRequest {
     @Schema(description = "Shipping address ID", example = "1")
     private Long shippingAddressId;
 
-    @NotNull(message = "Billing address ID is required")
-    @Schema(description = "Billing address ID", example = "1")
-    private Long billingAddressId;
+
 
     @NotNull(message = "Shipping value is required")
     @jakarta.validation.constraints.DecimalMin(value = "0.0", inclusive = true, message = "Shipping value must be greater than or equal to 0")

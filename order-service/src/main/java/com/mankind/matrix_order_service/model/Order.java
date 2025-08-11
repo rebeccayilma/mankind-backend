@@ -61,8 +61,7 @@ public class Order {
     @Column(name = "shipping_address_id")
     private Long shippingAddressId;
 
-    @Column(name = "billing_address_id")
-    private Long billingAddressId;
+
 
     @Column(name = "shipping_value", nullable = false, precision = 10, scale = 2)
     private BigDecimal shippingValue;
