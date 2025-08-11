@@ -18,12 +18,6 @@ This service manages orders for the Mankind Matrix AI platform. It handles order
 - **Swagger UI**: http://localhost:8088/swagger-ui
 - **OpenAPI Spec**: http://localhost:8088/v3/api-docs
 
-### Through Gateway
-- **Swagger UI**: http://localhost:8085/api/v1/orders/swagger-ui
-- **API Endpoints**: http://localhost:8085/api/v1/orders/**
-
-For detailed Swagger documentation, see [swagger-documentation.md](docs/swagger-documentation.md).
-
 ## Business Rules
 
 ### Order Creation Process
@@ -55,32 +49,12 @@ For detailed Swagger documentation, see [swagger-documentation.md](docs/swagger-
 - **Coupon Validation**: Coupons must be validated before application
 - **Inventory Check**: Products must have sufficient inventory before marking as sold
 
-### Error Handling
-
-- **CartValidationException**: No active cart, cart not active, or addresses don't belong to user
-- **CouponValidationException**: Invalid or expired coupon codes
-- **OrderCreationException**: Failures during order creation process
-- **Global Exception Handler**: Consistent error response format
-
 ### Integration Points
 
 - **Cart Service**: Get current user's cart, update cart status to CONVERTED
 - **Coupon Service**: Validate coupon codes, mark coupons as used
 - **Product Service**: Update inventory status, mark products as sold
 - **User Service**: Get current user information, validate address ownership
-
-### Request Format
-
-```json
-{
-  "shippingAddressId": 1,
-  "billingAddressId": 2,
-  "couponCode": "SAVE20",
-  "notes": "Additional notes for the order"
-}
-```
-
-**Note**: No `cartId` required - the service automatically gets the current user's active cart.
 
 ## Order Status Lifecycle
 
@@ -107,4 +81,3 @@ The service requires the following environment variables:
 - `COUPON_SERVICE_URL`: URL for coupon service (default: http://localhost:8087)
 - `PRODUCT_SERVICE_URL`: URL for product service (default: http://localhost:8080)
 - `USER_SERVICE_URL`: URL for user service (default: http://localhost:8081)
-

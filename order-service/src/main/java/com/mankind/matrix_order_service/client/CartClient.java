@@ -16,9 +16,6 @@ public interface CartClient {
     @GetMapping("/cart")
     CartResponseDTO getCurrentUserCart();
 
-    @GetMapping("/cart/{cartId}")
-    CartResponseDTO getCartById(@PathVariable("cartId") Long cartId);
-
     @PatchMapping("/cart/{cartId}/status/CONVERTED")
     CartResponseDTO updateCartStatusToConverted(@PathVariable("cartId") Long cartId);
 }

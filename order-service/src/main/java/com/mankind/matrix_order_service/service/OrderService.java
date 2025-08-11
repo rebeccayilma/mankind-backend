@@ -117,16 +117,29 @@ public class OrderService {
     // Private helper methods
 
     private CartResponseDTO validateAndGetCart(Long userId) {
-        CartResponseDTO cart = cartClient.getCurrentUserCart();
-        if (cart == null) {
-            throw new CartValidationException("No active cart found for current user");
-        }
+        try {
+            CartResponseDTO cart = cartClient.getCurrentUserCart();
+            if (cart == null) {
+                throw new CartValidationException("No active cart found for current user. Please add items to your cart before creating an order.");
+            }
 
-        if (!"ACTIVE".equals(cart.getStatus())) {
-            throw new CartValidationException("Cart is not active. Current status: " + cart.getStatus());
-        }
+            if (!"ACTIVE".equals(cart.getStatus())) {
+                throw new CartValidationException("Cart is not active. Current status: " + cart.getStatus());
+            }
 
-        return cart;
+            return cart;
+        } catch (Exception e) {
+            log.error("Failed to get current user cart: {}", e.getMessage());
+            
+            // Provide more specific error messages
+            if (e.getMessage().contains("404") || e.getMessage().contains("Cart not found")) {
+                throw new CartValidationException("No active cart found. Please add items to your cart before creating an order.");
+            } else if (e.getMessage().contains("Connection refused")) {
+                throw new CartValidationException("Cannot connect to cart service. Service may not be running on port 8082.");
+            } else {
+                throw new CartValidationException("Failed to retrieve cart: " + e.getMessage());
+            }
+        }
     }
 
     private void validateAddresses(CreateOrderRequest request, Long userId) {
