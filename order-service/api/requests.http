@@ -1,0 +1,46 @@
+### Order Service API Tests
+
+### Health Check
+GET http://localhost:8088/actuator/health
+
+### Create Order from Cart
+POST http://localhost:8088/orders
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "cartId": 1,
+  "shippingAddressId": 1,
+  "billingAddressId": 1,
+  "couponCodes": ["SAVE20", "FREESHIP"],
+  "notes": "Please deliver in the morning"
+}
+
+### Get User's Order History
+GET http://localhost:8088/orders?page=0&size=10
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Get Order by ID
+GET http://localhost:8088/orders/1
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Cancel Order
+PATCH http://localhost:8088/orders/1/cancel
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Admin Endpoints (Require ADMIN Role)
+
+### Get All Orders (Admin)
+GET http://localhost:8088/admin/orders?page=0&size=20
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Get Order by ID (Admin)
+GET http://localhost:8088/admin/orders/1
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Update Order Status (Admin)
+PATCH http://localhost:8088/admin/orders/1/status?status=CONFIRMED
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Swagger UI
+GET http://localhost:8088/swagger-ui
