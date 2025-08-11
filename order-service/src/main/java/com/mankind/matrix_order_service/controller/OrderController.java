@@ -42,15 +42,16 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 
-    @Operation(summary = "Get user's order history", description = "Retrieves a list of orders for the authenticated user.")
+    @Operation(summary = "Get user's order history", description = "Retrieves a paginated list of orders for the authenticated user. Supports pagination with page, size, and sort parameters.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Order history retrieved successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized - JWT required")
     })
     @GetMapping
-    public ResponseEntity<List<OrderResponseDTO>> getUserOrders() {
-        List<OrderResponseDTO> orders = orderService.getUserOrders();
-        return ResponseEntity.ok(orders);
+    public ResponseEntity<Page<OrderResponseDTO>> getUserOrders(
+            @Parameter(description = "Pagination and sorting parameters")
+            Pageable pageable) {
+        return ResponseEntity.ok(orderService.getUserOrdersPaginated(pageable));
     }
 
     @Operation(summary = "Get order by ID", description = "Retrieves a specific order by its ID. Only accessible by the order owner.")

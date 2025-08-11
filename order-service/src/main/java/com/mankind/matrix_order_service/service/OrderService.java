@@ -33,6 +33,8 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @RequiredArgsConstructor
@@ -94,12 +96,10 @@ public class OrderService {
         return buildOrderResponseDTO(order, null, null);
     }
 
-    public List<OrderResponseDTO> getUserOrders() {
+    public Page<OrderResponseDTO> getUserOrdersPaginated(Pageable pageable) {
         Long userId = currentUserService.getCurrentUserId();
-        List<Order> orders = orderRepository.findByUserIdOrderByCreatedAtDesc(userId.toString());
-        return orders.stream()
-                .map(order -> buildOrderResponseDTO(order, null, null))
-                .collect(Collectors.toList());
+        Page<Order> ordersPage = orderRepository.findByUserIdOrderByCreatedAtDesc(userId.toString(), pageable);
+        return ordersPage.map(order -> buildOrderResponseDTO(order, null, null));
     }
 
     @Transactional

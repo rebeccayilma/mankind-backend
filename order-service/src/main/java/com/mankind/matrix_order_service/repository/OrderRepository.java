@@ -18,7 +18,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     
     List<Order> findByUserId(String userId);
     
-    Page<Order> findByUserId(String userId, Pageable pageable);
+    Page<Order> findByUserIdOrderByCreatedAtDesc(String userId, Pageable pageable);
     
     List<Order> findByStatus(Order.OrderStatus status);
     
@@ -29,8 +29,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     
     @Query("SELECT o FROM Order o WHERE o.cartId = :cartId")
     Optional<Order> findByCartId(@Param("cartId") Long cartId);
-    
-    List<Order> findByUserIdOrderByCreatedAtDesc(String userId);
     
     boolean existsByOrderNumber(String orderNumber);
 }
