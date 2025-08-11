@@ -6,7 +6,6 @@ import com.mankind.api.coupon.dto.CouponDTO;
 import com.mankind.api.user.dto.AddressDTO;
 import com.mankind.matrix_order_service.client.CartClient;
 import com.mankind.matrix_order_service.client.CouponClient;
-import com.mankind.matrix_order_service.client.ProductClient;
 import com.mankind.matrix_order_service.client.UserClient;
 import com.mankind.matrix_order_service.dto.CreateOrderRequest;
 import com.mankind.matrix_order_service.dto.OrderResponseDTO;
@@ -44,7 +43,7 @@ public class OrderService {
     private final OrderPaymentRepository orderPaymentRepository;
     private final CartClient cartClient;
     private final CouponClient couponClient;
-    private final ProductClient productClient;
+
     private final UserClient userClient;
     private final CurrentUserService currentUserService;
     private final OrderNumberGenerator orderNumberGenerator;
@@ -68,12 +67,11 @@ public class OrderService {
         Order order = createOrderEntity(request, userId, cart, orderNumber, calculation);
         final Order savedOrder = orderRepository.save(order);
 
-        // Process order items and inventory
+        // Process order items
         List<OrderItem> orderItems = createOrderItems(cart, savedOrder);
-        updateInventory(cart.getItems());
 
         // Update cart status and create status history
-        updateCartStatus(cart.getId());
+        updateCartStatus(cart.getId(), savedOrder.getId());
         createOrderStatusHistory(savedOrder, "Order created from cart");
 
         // Mark coupon as used if applied
@@ -237,24 +235,14 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-    private void updateInventory(List<CartItemResponseDTO> cartItems) {
-        for (CartItemResponseDTO cartItem : cartItems) {
-            try {
-                productClient.markProductAsSold(cartItem.getProductId(), BigDecimal.valueOf(cartItem.getQuantity()));
-                log.info("Marked product {} as sold with quantity {}", cartItem.getProductId(), cartItem.getQuantity());
-            } catch (Exception e) {
-                log.error("Failed to mark product {} as sold: {}", cartItem.getProductId(), e.getMessage());
-                throw new OrderCreationException("Failed to update inventory for product: " + cartItem.getProductId());
-            }
-        }
-    }
 
-    private void updateCartStatus(Long cartId) {
+
+    private void updateCartStatus(Long cartId, Long orderId) {
         try {
-            cartClient.updateCartStatusToConverted(cartId);
-            log.info("Updated cart {} status to CONVERTED", cartId);
+            cartClient.markCartAsConverted(orderId);
+            log.info("Updated cart status to CONVERTED for cart: {} with order: {}", cartId, orderId);
         } catch (Exception e) {
-            log.error("Failed to update cart status to CONVERTED: {}", e.getMessage());
+            log.error("Failed to update cart status to CONVERTED for cart {} with order {}: {}", cartId, orderId, e.getMessage());
             throw new OrderCreationException("Failed to update cart status");
         }
     }

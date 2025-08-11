@@ -19,12 +19,4 @@ import java.math.BigDecimal;
 public interface ProductClient {
     @GetMapping("/products/{id}")
     ProductResponseDTO getProductById(@PathVariable Long id);
-
-    @GetMapping("/inventory/{productId}")
-    InventoryResponseDTO getInventoryByProductId(@PathVariable Long productId);
-
-    @PostMapping("/inventory/{productId}/sold")
-    InventoryResponseDTO markProductAsSold(
-            @PathVariable Long productId,
-            @RequestParam BigDecimal quantity);
 }
