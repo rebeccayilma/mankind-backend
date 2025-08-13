@@ -11,6 +11,8 @@ import com.mankind.matrix_order_service.dto.CreateOrderRequest;
 import com.mankind.matrix_order_service.dto.OrderResponseDTO;
 import com.mankind.matrix_order_service.dto.OrderItemDTO;
 import com.mankind.matrix_order_service.dto.OrderCouponDTO;
+import com.mankind.matrix_order_service.dto.AdminOrderFilters;
+import com.mankind.matrix_order_service.dto.UpdateOrderStatusRequest;
 import com.mankind.matrix_order_service.exception.CartValidationException;
 import com.mankind.matrix_order_service.exception.CouponValidationException;
 import com.mankind.matrix_order_service.exception.OrderCreationException;
@@ -96,9 +98,53 @@ public class OrderService {
         return buildOrderResponseDTO(order, null, null);
     }
 
+    public OrderResponseDTO getOrderByIdForAdmin(Long orderId) {
+        Order order = findOrderById(orderId);
+        // Admin can access any order, no ownership validation needed
+        return buildOrderResponseDTO(order, null, null);
+    }
+
+    @Transactional
+    public OrderResponseDTO updateOrderStatusByAdmin(Long orderId, Order.OrderStatus newStatus, String notes) {
+        Order order = findOrderById(orderId);
+        validateOrderStatusTransition(order.getStatus(), newStatus);
+        
+        order.setStatus(newStatus);
+        order.setUpdatedAt(LocalDateTime.now());
+        order = orderRepository.save(order);
+        
+        String statusChangeNote = notes != null ? notes : String.format("Order status changed to %s by admin", newStatus);
+        createOrderStatusHistory(order, statusChangeNote);
+        
+        log.info("Order {} status updated to {} by admin", orderId, newStatus);
+        return buildOrderResponseDTO(order, null, null);
+    }
+
     public Page<OrderResponseDTO> getUserOrdersPaginated(Pageable pageable) {
         Long userId = currentUserService.getCurrentUserId();
         Page<Order> ordersPage = orderRepository.findByUserIdOrderByCreatedAtDesc(userId.toString(), pageable);
+        return ordersPage.map(order -> buildOrderResponseDTO(order, null, null));
+    }
+
+    public Page<OrderResponseDTO> getAllOrdersWithFilters(AdminOrderFilters filters, Pageable pageable) {
+        log.info("Admin querying all orders with filters: {}", filters);
+        
+        // Create a new Pageable with safe default sorting
+        Pageable safePageable = org.springframework.data.domain.PageRequest.of(
+            pageable.getPageNumber(), 
+            pageable.getPageSize(), 
+            org.springframework.data.domain.Sort.by("createdAt").descending()
+        );
+        
+        Page<Order> ordersPage = orderRepository.findAllWithFilters(
+            filters.getStatus(),
+            filters.getPaymentStatus(),
+            filters.getOrderNumber(),
+            filters.getCreatedAtFrom(),
+            filters.getCreatedAtTo(),
+            safePageable
+        );
+        
         return ordersPage.map(order -> buildOrderResponseDTO(order, null, null));
     }
 
@@ -331,6 +377,46 @@ public class OrderService {
     private void validateOrderCanBeCancelled(Order order) {
         if (order.getStatus() != Order.OrderStatus.PENDING) {
             throw new CartValidationException("Order cannot be cancelled. Current status: " + order.getStatus());
+        }
+    }
+
+    private void validateOrderStatusTransition(Order.OrderStatus currentStatus, Order.OrderStatus newStatus) {
+        // Define valid status transitions
+        if (currentStatus == Order.OrderStatus.CANCELLED) {
+            throw new CartValidationException("Cannot change status of a cancelled order");
+        }
+        
+        if (currentStatus == Order.OrderStatus.DELIVERED && newStatus != Order.OrderStatus.DELIVERED) {
+            throw new CartValidationException("Cannot change status of a delivered order");
+        }
+        
+        // Validate specific transitions
+        switch (newStatus) {
+            case CONFIRMED:
+                if (currentStatus != Order.OrderStatus.PENDING) {
+                    throw new CartValidationException("Only pending orders can be confirmed");
+                }
+                break;
+            case PROCESSING:
+                if (currentStatus != Order.OrderStatus.CONFIRMED) {
+                    throw new CartValidationException("Only confirmed orders can be processed");
+                }
+                break;
+            case SHIPPED:
+                if (currentStatus != Order.OrderStatus.PROCESSING) {
+                    throw new CartValidationException("Only processing orders can be shipped");
+                }
+                break;
+            case DELIVERED:
+                if (currentStatus != Order.OrderStatus.SHIPPED) {
+                    throw new CartValidationException("Only shipped orders can be marked as delivered");
+                }
+                break;
+            case CANCELLED:
+                if (currentStatus != Order.OrderStatus.PENDING && currentStatus != Order.OrderStatus.CONFIRMED) {
+                    throw new CartValidationException("Only pending or confirmed orders can be cancelled");
+                }
+                break;
         }
     }
 

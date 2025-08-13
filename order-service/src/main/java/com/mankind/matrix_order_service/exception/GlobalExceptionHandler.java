@@ -10,6 +10,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -83,6 +84,20 @@ public class GlobalExceptionHandler {
         errorResponse.put("message", ex.getMessage());
         
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Map<String, Object>> handleResponseStatusException(ResponseStatusException ex) {
+        log.error("Response status error: {} - Status: {}", ex.getMessage(), ex.getStatusCode());
+        
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", ex.getStatusCode().value());
+        errorResponse.put("error", ex.getStatusCode().toString());
+        errorResponse.put("message", ex.getReason());
+        errorResponse.put("details", ex.getMessage());
+        
+        return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);
     }
 
     // Handle missing request body

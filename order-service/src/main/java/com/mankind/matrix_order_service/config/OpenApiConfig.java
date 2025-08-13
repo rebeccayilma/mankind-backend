@@ -44,11 +44,11 @@ public class OpenApiConfig {
                                 .url("https://www.apache.org/licenses/LICENSE-2.0")))
                 .servers(List.of(
                         new Server()
-                                .url("http://localhost:8088")
-                                .description("Local Development Server (Direct Access)"),
+                                .url("http://localhost:8085/api/v1")
+                                .description("Gateway Server (Production)"),
                         new Server()
-                                .url("http://localhost:8085/api/v1/orders")
-                                .description("Gateway Server (Through Gateway)")
+                                .url("http://localhost:8088")
+                                .description("Direct Service (Development)")
                 ))
                 .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
                 .components(new Components()
