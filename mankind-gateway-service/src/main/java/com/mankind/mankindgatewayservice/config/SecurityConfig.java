@@ -58,7 +58,7 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.PATCH, "/api/v1/products/**").authenticated()
                         
                         // Protected endpoints (authentication required)
-                        .pathMatchers("/api/v1/users/**").hasRole("ADMIN")  // Admin endpoints
+                        .pathMatchers("/api/v1/users/**").authenticated()  // Admin endpoints - just require authentication
                         .pathMatchers("/api/v1/cart/**").authenticated()
                         .pathMatchers("/api/v1/wishlist/**").authenticated()
                         .pathMatchers("/api/v1/payments/**").authenticated()
@@ -66,7 +66,7 @@ public class SecurityConfig {
                         .pathMatchers("/api/v1/notifications/**").authenticated()
                         .pathMatchers("/api/v1/coupons/**").authenticated()  // Coupon service requires authentication
                         .pathMatchers("/api/v1/orders/**").authenticated()  // Order service requires authentication
-                        .pathMatchers("/api/v1/admin/orders/**").hasRole("ADMIN")  // Admin order endpoints
+                        .pathMatchers("/api/v1/admin/orders/**").authenticated()  // Admin order endpoints - just require authentication
                         
                         // Default: require authentication for any other endpoints
                         .anyExchange().authenticated()
