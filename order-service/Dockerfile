@@ -1,40 +1,30 @@
-# Use the official OpenJDK 17 runtime as the base image
-FROM openjdk:17-jdk-slim
+# Build stage
+FROM maven:3.9-eclipse-temurin-17 AS build
+WORKDIR /build
 
-# Set the working directory
+# Copy the entire project
+COPY . .
+
+# First, build and install the API modules to local repository
+RUN mvn clean install -pl user-api,product-api,cart-api,coupon-api -am -DskipTests
+
+# Then build the order service
+RUN cd order-service && \
+    mvn clean package spring-boot:repackage -DskipTests && \
+    ls -la target/
+
+# Run stage
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 
-# Copy the Maven wrapper and pom.xml
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
-
-# Make the Maven wrapper executable
-RUN chmod +x mvnw
-
-# Download dependencies (this layer will be cached if pom.xml doesn't change)
-RUN ./mvnw dependency:go-offline -B
-
-# Copy the source code
-COPY src src
-
-# Build the application
-RUN ./mvnw clean package -DskipTests
-
-# Create a new stage for the runtime
-FROM openjdk:17-jdk-slim
-
-# Set the working directory
-WORKDIR /app
-
-# Copy the built JAR file from the build stage
-COPY --from=0 /app/target/matrix-order-service-*.jar app.jar
-
-# Expose the port
-EXPOSE 8088
+# Copy the built jar from build stage
+COPY --from=build /build/order-service/target/*.jar app.jar
 
 # Set environment variables
 ENV JAVA_OPTS="-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m"
+
+# Expose the application port
+EXPOSE 8080
 
 # Run the application
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
