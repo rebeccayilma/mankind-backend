@@ -63,6 +63,7 @@ public class SecurityConfig {
                         .pathMatchers("/api/v1/payments/**").authenticated()
                         .pathMatchers("/api/v1/admin/payments/**").authenticated()
                         .pathMatchers("/api/v1/notifications/**").authenticated()
+                        .pathMatchers("/api/v1/coupons/**").authenticated()  // Coupon service requires authentication
                         
                         // Default: require authentication for any other endpoints
                         .anyExchange().authenticated()

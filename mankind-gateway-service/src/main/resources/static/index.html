@@ -258,6 +258,7 @@
         .wishlist-icon { background: linear-gradient(45deg, #ff9ff3, #f368e0); }
         .payment-icon { background: linear-gradient(45deg, #10ac84, #00d2d3); }
         .notification-icon { background: linear-gradient(45deg, #ff9f43, #feca57); }
+        .coupon-icon { background: linear-gradient(45deg, #ff9ff3, #f368e0); }
 
         .service-title {
             font-size: 1.6rem;
@@ -674,6 +675,40 @@
                     <div class="link-item">
                         <span class="link-label">API Base:</span>
                         <a href="/api/v1/notifications" class="link-url" target="_blank">/api/v1/notifications</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coupon Service -->
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon coupon-icon">🎫</div>
+                    <div>
+                        <h2 class="service-title">Coupon Service</h2>
+                        <div class="service-badges">
+                            <span class="badge badge-online">Online</span>
+                            <span class="badge badge-secured">Secured</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="service-description">
+                    Comprehensive discount management system with coupon validation, usage tracking, 
+                    and flexible discount rules for marketing campaigns.
+                </p>
+                
+                <div class="links-section">
+                    <h3 class="links-title">Documentation & API</h3>
+                    <div class="link-item">
+                        <span class="link-label">Swagger:</span>
+                        <a href="http://localhost:8087/swagger-ui/index.html" class="link-url" target="_blank">Coupon API Docs</a>
+                    </div>
+                    <div class="link-item">
+                        <span class="link-label">API Base:</span>
+                        <a href="/api/v1/coupons" class="link-url" target="_blank">/api/v1/coupons</a>
+                    </div>
+                    <div class="link-item">
+                        <span class="link-label">Health Check:</span>
+                        <a href="/api/v1/coupons/health" class="link-url" target="_blank">/api/v1/coupons/health</a>
                     </div>
                 </div>
             </div>
