@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 
 @Entity
 @Table(name = "products")
@@ -71,6 +73,14 @@ public class Product {
 
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Inventory inventory;
+
+    @ManyToMany
+    @JoinTable(
+        name = "product_suppliers",
+        joinColumns = @JoinColumn(name = "product_id"),
+        inverseJoinColumns = @JoinColumn(name = "supplier_id")
+    )
+    private Set<Supplier> suppliers = new HashSet<>();
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
