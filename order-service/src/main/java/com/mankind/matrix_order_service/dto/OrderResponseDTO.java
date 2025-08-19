@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -55,7 +56,11 @@ public class OrderResponseDTO {
     @Schema(description = "Shipping address ID", example = "1")
     private Long shippingAddressId;
 
+    @Schema(description = "Delivery type", example = "STANDARD", allowableValues = {"STANDARD", "EXPRESS"})
+    private String deliveryType;
 
+    @Schema(description = "Shipping date for delivery", example = "2024-12-25")
+    private LocalDate shippingDate;
 
     @Schema(description = "Order notes")
     private String notes;
@@ -65,6 +70,12 @@ public class OrderResponseDTO {
 
     @Schema(description = "Applied coupon")
     private OrderCouponDTO appliedCoupon;
+
+    @Schema(description = "Coupon code applied to the order", example = "SAVE20")
+    private String couponCode;
+
+    @Schema(description = "Type of discount applied", example = "PERCENTAGE", allowableValues = {"PERCENTAGE", "FIXED_AMOUNT", "FREE_SHIPPING"})
+    private String discountType;
 
     @Schema(description = "Order creation date")
     private LocalDateTime createdAt;

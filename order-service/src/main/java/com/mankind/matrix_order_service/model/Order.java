@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,10 +62,21 @@ public class Order {
     @Column(name = "shipping_address_id")
     private Long shippingAddressId;
 
-
-
     @Column(name = "shipping_value", nullable = false, precision = 10, scale = 2)
     private BigDecimal shippingValue;
+
+    @Column(name = "coupon_code")
+    private String couponCode;
+
+    @Column(name = "discount_type", length = 20)
+    private String discountType;
+
+    @Column(name = "delivery_type", length = 20)
+    @Enumerated(EnumType.STRING)
+    private DeliveryType deliveryType;
+
+    @Column(name = "shipping_date")
+    private LocalDate shippingDate;
 
     @Column(columnDefinition = "TEXT")
     private String notes;
@@ -85,10 +97,6 @@ public class Order {
     @Builder.Default
     private List<OrderStatusHistory> statusHistory = new ArrayList<>();
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<OrderPayment> payments = new ArrayList<>();
-
     public enum OrderStatus {
         PENDING,
         CONFIRMED,
@@ -104,5 +112,10 @@ public class Order {
         FAILED,
         REFUNDED,
         PARTIALLY_REFUNDED
+    }
+
+    public enum DeliveryType {
+        STANDARD,
+        EXPRESS
     }
 }

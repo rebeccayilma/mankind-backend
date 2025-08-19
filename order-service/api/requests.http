@@ -1,45 +1,84 @@
-### Order Service API Tests
+### Order Service API Requests
 
-### Health Check
-GET http://localhost:8088/actuator/health
-
-### Create Order from Cart
+# Create a new order with all fields
 POST http://localhost:8088/orders
 Content-Type: application/json
-Authorization: Bearer YOUR_JWT_TOKEN
+Authorization: Bearer {{jwt_token}}
 
 {
   "shippingAddressId": 1,
   "shippingValue": 15.99,
   "couponCode": "SAVE20",
-  "notes": "Please deliver in the morning"
+  "notes": "Please deliver to the front door",
+  "deliveryType": "EXPRESS",
+  "shippingDate": "2024-12-25"
 }
 
-### Get User's Order History
+###
+
+# Create order with standard delivery
+POST http://localhost:8088/orders
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+  "shippingAddressId": 1,
+  "shippingValue": 8.99,
+  "deliveryType": "STANDARD",
+  "shippingDate": "2024-12-30"
+}
+
+###
+
+# Create order without coupon
+POST http://localhost:8088/orders
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+  "shippingAddressId": 1,
+  "shippingValue": 12.50,
+  "notes": "Gift wrapping requested",
+  "deliveryType": "STANDARD",
+  "shippingDate": "2024-12-28"
+}
+
+###
+
+# Update existing order (same cart, different data)
+POST http://localhost:8088/orders
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+  "shippingAddressId": 2,
+  "shippingValue": 20.00,
+  "couponCode": "FREESHIP",
+  "notes": "Changed to express delivery",
+  "deliveryType": "EXPRESS",
+  "shippingDate": "2024-12-24"
+}
+
+###
+
+# Get user orders
 GET http://localhost:8088/orders?page=0&size=10
-Authorization: Bearer YOUR_JWT_TOKEN
+Authorization: Bearer {{jwt_token}}
 
-### Get Order by ID
+###
+
+# Get specific order
 GET http://localhost:8088/orders/1
-Authorization: Bearer YOUR_JWT_TOKEN
+Authorization: Bearer {{jwt_token}}
 
-### Cancel Order (Admin Only)
-PATCH http://localhost:8088/admin/orders/1/cancel
-Authorization: Bearer YOUR_JWT_TOKEN
+###
 
-### Admin Endpoints (Require ADMIN Role)
+# Pay order
+POST http://localhost:8088/orders/1/pay
+Authorization: Bearer {{jwt_token}}
 
-### Get All Orders (Admin)
-GET http://localhost:8088/admin/orders?page=0&size=20
-Authorization: Bearer YOUR_JWT_TOKEN
+###
 
-### Get Order by ID (Admin)
-GET http://localhost:8088/admin/orders/1
-Authorization: Bearer YOUR_JWT_TOKEN
-
-### Update Order Status (Admin)
-PATCH http://localhost:8088/admin/orders/1/status?status=CONFIRMED
-Authorization: Bearer YOUR_JWT_TOKEN
-
-### Swagger UI
-GET http://localhost:8088/swagger-ui
+# Cancel order
+DELETE http://localhost:8088/orders/1
+Authorization: Bearer {{jwt_token}}

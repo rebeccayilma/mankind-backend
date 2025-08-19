@@ -66,7 +66,6 @@ public class SecurityConfig {
                         .pathMatchers("/api/v1/notifications/**").authenticated()
                         .pathMatchers("/api/v1/coupons/**").authenticated()  // Coupon service requires authentication
                         .pathMatchers("/api/v1/orders/**").authenticated()  // Order service requires authentication
-                        .pathMatchers("/api/v1/admin/orders/**").authenticated()  // Admin order endpoints - just require authentication
                         
                         // Default: require authentication for any other endpoints
                         .anyExchange().authenticated()

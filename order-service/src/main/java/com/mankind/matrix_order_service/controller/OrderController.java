@@ -17,8 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/orders")
 @RequiredArgsConstructor
@@ -69,5 +67,20 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
+    @Operation(summary = "Pay order", description = "Completes the payment for an order and updates cart status to CONVERTED. Only orders with PENDING status can be paid. Payment will change order status to CONFIRMED and payment status to PAID.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Order payment completed successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid request - order cannot be paid (wrong status)"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - JWT required"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - order does not belong to current user"),
+        @ApiResponse(responseCode = "404", description = "Order not found")
+    })
+    @PostMapping("/{orderId}/pay")
+    public ResponseEntity<OrderResponseDTO> payOrder(
+            @Parameter(description = "ID of the order to pay", required = true) 
+            @PathVariable Long orderId) {
+        OrderResponseDTO order = orderService.payOrder(orderId);
+        return ResponseEntity.ok(order);
+    }
 
 }

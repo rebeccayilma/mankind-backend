@@ -1,188 +1,107 @@
-# Mankind Matrix Order Service
+# Order Service
 
-A microservice that manages the complete order lifecycle for the Mankind Matrix AI platform, from cart conversion to delivery tracking.
+This service handles order creation, management, and processing for the Mankind e-commerce platform.
 
-## Quick Start
+## Features
 
-- **Service Port**: 8088
-- **Swagger UI**: http://localhost:8088/swagger-ui
-- **API Docs**: http://localhost:8088/v3/api-docs
-- **Gateway Access**: 
-  - User endpoints: `/api/v1/orders/*`
-  - Admin endpoints: `/api/v1/admin/orders/*`
+- Create orders from user carts
+- Update existing orders with new information
+- Handle coupon discounts
+- Manage order status and payment status
+- Support for different delivery types (Standard/Express)
+- Shipping date scheduling
+- Order history and admin management
 
-## Core Features
+## New Fields Added
 
-| Feature | Description |
-|---------|-------------|
-| **Order Management** | Create, read, update, and track orders throughout lifecycle |
-| **Cart Integration** | Seamless conversion from active carts to orders |
-| **Smart Numbering** | Unique order numbers (ORD-YYYYMMDD-HHMMSS-XXXXX) |
-| **Status Tracking** | Comprehensive order and payment status management |
-| **Coupon Support** | Discount validation and application |
-| **Admin Controls** | Full administrative order management capabilities |
-| **Audit Trail** | Complete history of all order changes |
+The order creation endpoint now supports the following additional fields:
 
-## Architecture Overview
+### CreateOrderRequest
+- `couponCode`: Optional coupon code for discounts
+- `deliveryType`: Delivery type - "STANDARD" or "EXPRESS"
+- `notes`: Additional notes for the order
+- `shippingAddressId`: ID of the shipping address
+- `shippingDate`: Date for delivery
+- `shippingValue`: Cost of shipping
 
-### Service Dependencies
-- **Cart Service** (8082): Cart retrieval and status updates
-- **User Service** (8081): User authentication and address validation
-- **Coupon Service** (8087): Coupon validation and usage tracking
-- **Product Service** (8080): Inventory management
+### Order Model
+- `deliveryType`: Enum field for STANDARD/EXPRESS delivery
+- `shippingDate`: Date field for scheduled delivery
 
-### Data Flow
-```
-Cart → Order Creation → Status Management → Delivery Tracking
-  ↓           ↓              ↓                    ↓
-Validation → Processing → Admin Updates → Completion
-```
+## API Endpoints
 
-## Order Lifecycle
+### POST /orders
+Creates a new order from the current user's active cart or updates an existing order.
 
-### 1. Order Creation Process
-
-```mermaid
-graph TD
-    A[User Authentication] --> B[Cart Retrieval]
-    B --> C[Address Validation]
-    C --> D[Coupon Processing]
-    D --> E[Tax Calculation]
-    E --> F[Order Creation]
-    F --> G[Cart Conversion]
-    G --> H[Status History]
+**Request Body:**
+```json
+{
+  "shippingAddressId": 1,
+  "shippingValue": 15.99,
+  "couponCode": "SAVE20",
+  "notes": "Please deliver to the front door",
+  "deliveryType": "EXPRESS",
+  "shippingDate": "2024-12-25"
+}
 ```
 
-**Step-by-Step Flow:**
-1. **Authentication**: Validate JWT token and get current user
-2. **Cart Validation**: Ensure active cart exists and is in ACTIVE status
-3. **Address Verification**: Validate shipping address ownership
-4. **Coupon Application**: Process and validate discount codes
-5. **Financial Calculation**: Compute subtotal, tax, discounts, shipping, and total
-6. **Order Generation**: Create order with unique number and PENDING status
-7. **Inventory Update**: Mark products as sold
-8. **Cart Conversion**: Change cart status to CONVERTED
-9. **Audit Logging**: Record all actions in status history
-
-### 2. Order Status Flow
-
-| Status | Description | Next Possible Status |
-|--------|-------------|---------------------|
-| **PENDING** | Order created, awaiting confirmation | CONFIRMED, CANCELLED |
-| **CONFIRMED** | Payment verified, order confirmed | PROCESSING, CANCELLED |
-| **PROCESSING** | Order being prepared for shipping | SHIPPED |
-| **SHIPPED** | Order dispatched to customer | DELIVERED |
-| **DELIVERED** | Order completed successfully | None (final) |
-| **CANCELLED** | Order cancelled (admin only) | None (final) |
-
-### 3. Payment Status Tracking
-
-| Status | Description | Business Impact |
-|--------|-------------|-----------------|
-| **PENDING** | Payment not yet processed | Order remains in PENDING status |
-| **PAID** | Payment completed successfully | Order can proceed to CONFIRMED |
-| **FAILED** | Payment processing failed | Order remains in PENDING status |
-| **REFUNDED** | Full refund issued | Order may be cancelled |
-| **PARTIALLY_REFUNDED** | Partial refund issued | Order total adjusted |
-
-## Financial Calculations
-
-### Formula Breakdown
-```
-Subtotal = Sum of all cart items
-Discounts = Total coupon savings
-Tax = 10% × (Subtotal - Discounts)
-Shipping = User-provided shipping cost
-Total = Subtotal - Discounts + Tax + Shipping
+**Response:**
+```json
+{
+  "id": 1,
+  "orderNumber": "ORD-20241201-143022-12345",
+  "userId": 123,
+  "cartId": 1,
+  "status": "PENDING",
+  "paymentStatus": "PENDING",
+  "subtotal": 100.00,
+  "tax": 8.50,
+  "discounts": 20.00,
+  "total": 88.50,
+  "shippingValue": 15.99,
+  "shippingAddressId": 1,
+  "deliveryType": "EXPRESS",
+  "shippingDate": "2024-12-25",
+  "notes": "Please deliver to the front door",
+  "couponCode": "SAVE20",
+  "discountType": "PERCENTAGE",
+  "items": [...],
+  "createdAt": "2024-12-01T14:30:22",
+  "updatedAt": "2024-12-01T14:30:22"
+}
 ```
 
-### Field Descriptions
-- **Subtotal**: Base amount before any modifications
-- **Tax**: 10% tax applied to discounted subtotal
-- **Discounts**: Total savings from applied coupons
-- **Shipping**: Delivery cost (user-specified, validated)
-- **Total**: Final amount customer pays
+## Order Update Behavior
 
-## Validation Rules
+When an order already exists for a cart:
+1. **Always updates** the order with new request data
+2. **Recalculates totals** based on current cart items and coupon
+3. **Updates order items** to match current cart
+4. **Preserves order ID** and order number
+5. **Creates status history** for tracking changes
 
-### Cart Requirements
-- ✅ Must be in ACTIVE status
-- ✅ Must belong to authenticated user
-- ✅ Must contain at least one item
+## Database Setup
 
-### Address Validation
-- ✅ Shipping address must belong to current user
-- ✅ Address must exist and be valid
+Run the SQL script in `scripts/order_tables.sql` to create the required tables:
 
-### Coupon Rules
-- ✅ Must be valid and not expired
-- ✅ Must not exceed order value
-- ✅ Can only be used once per order
-
-### Shipping Validation
-- ✅ Required field
-- ✅ Must be ≥ 0
-- ✅ Must not exceed 1000 (anti-fraud)
-
-## Admin Operations
-
-### Access Control
-- **Role Required**: ADMIN or SUPER_ADMIN
-- **Authentication**: JWT token validation
-- **Role Verification**: Comprehensive role validation service
-- **Endpoint Base**: `/api/v1/admin/orders`
-
-### Key Capabilities
-
-#### Advanced Filtering
-| Filter Type | Example | Description |
-|-------------|---------|-------------|
-| **Status** | `?status=PENDING` | Filter by order status |
-| **Payment** | `?paymentStatus=PAID` | Filter by payment status |
-| **Order Number** | `?orderNumber=ORD-2024` | Partial match search |
-| **Date Range** | `?createdAtFrom=2024-01-01T00:00:00` | ISO 8601 format |
-| **Page** | `?page=0` | Page number (0-based, default: 0) |
-| **Size** | `?size=20` | Page size (default: 20) |
-
-#### Bulk Operations
-- **Pagination**: Always required (prevents performance issues)
-- **Default Sorting**: `createdAt` descending (newest first)
-- **Fixed Sorting**: Orders are always sorted by creation date for consistency
-- **Combined Filters**: Multiple filters simultaneously
-
-#### Status Management
-- **Business Rule Validation**: Enforces status transition rules
-- **Audit Logging**: All changes recorded with timestamps and notes
-- **Role-Based Access**: Only admins can modify order status
-
-### Admin Business Rules
-
-#### Status Transition Matrix
-```
-PENDING → CONFIRMED → PROCESSING → SHIPPED → DELIVERED
-   ↓           ↓
-CANCELLED   CANCELLED
+```bash
+mysql -u matrix_user -p mankind_matrix_db < scripts/order_tables.sql
 ```
 
-#### Validation Rules
-- **CANCELLED orders**: Cannot be modified further
-- **DELIVERED orders**: Cannot be modified further
-- **Status changes**: Must follow defined lifecycle
-- **Admin actions**: Always logged with notes
+## Configuration
 
-## Performance & Security
+The service uses the following environment variables:
+- `DB_HOST`: Database host (default: localhost)
+- `DB_PORT`: Database port (default: 3306)
+- `DB_NAME`: Database name (default: mankind_matrix_db)
+- `DB_USERNAME`: Database username (default: matrix_user)
+- `DB_PASSWORD`: Database password (default: matrix_pass)
 
-### Performance Optimizations
-- **Database Indexing**: Optimized queries for all filter combinations
-- **Pagination**: Prevents memory issues with large datasets
-- **Efficient Queries**: Single database call for filtered results
-- **Connection Pooling**: Optimized database connections
+## Dependencies
 
-### Security Features
-- **JWT Authentication**: Secure token-based access control
-- **Role-Based Access**: ADMIN role required for administrative operations
-- **Role Verification Service**: Comprehensive admin role validation (ADMIN or SUPER_ADMIN)
-- **Input Validation**: Comprehensive parameter validation
-- **Audit Logging**: Complete trail of all administrative actions
-- **Rate Limiting**: Protection against abuse
+- Spring Boot 3.x
+- Spring Data JPA
+- MySQL Database
+- Feign Clients for Cart, Coupon, and User services
+- JWT Authentication via Keycloak
 
