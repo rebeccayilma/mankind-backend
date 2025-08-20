@@ -173,8 +173,6 @@ public class OrderService {
         return buildOrderResponseDTO(updatedOrder, updatedOrderItems, calculation);
     }
 
-
-
     @Transactional
     private List<OrderItem> updateOrderItems(Order order, CartResponseDTO cart) {
         try {
@@ -467,8 +465,6 @@ public class OrderService {
         
         return orderItems;
     }
-
-
 
     private void createOrderStatusHistory(Order order, String notes) {
         orderStatusHistoryRepository.save(OrderStatusHistory.builder()
