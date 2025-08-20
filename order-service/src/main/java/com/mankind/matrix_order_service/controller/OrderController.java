@@ -83,4 +83,20 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
+    @Operation(summary = "Cancel order", description = "Cancels an order. Only orders with PENDING status can be cancelled. Order status will be changed to CANCELLED.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Order cancelled successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid request - order cannot be cancelled (wrong status)"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - JWT required"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - order does not belong to current user"),
+        @ApiResponse(responseCode = "404", description = "Order not found")
+    })
+    @PostMapping("/{orderId}/cancel")
+    public ResponseEntity<OrderResponseDTO> cancelOrder(
+            @Parameter(description = "ID of the order to cancel", required = true) 
+            @PathVariable Long orderId) {
+        OrderResponseDTO order = orderService.cancelOrder(orderId);
+        return ResponseEntity.ok(order);
+    }
+
 }

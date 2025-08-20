@@ -1,107 +1,118 @@
 # Order Service
 
-This service handles order creation, management, and processing for the Mankind e-commerce platform.
+This service handles order creation, management, payment processing, and lifecycle management for the Mankind e-commerce platform.
 
-## Features
+## Core Features
 
-- Create orders from user carts
-- Update existing orders with new information
-- Handle coupon discounts
-- Manage order status and payment status
-- Support for different delivery types (Standard/Express)
-- Shipping date scheduling
-- Order history and admin management
+- **Order Management**: Create, update, and manage user orders
+- **Payment Processing**: Handle order payments with external service integration
+- **Cart Integration**: Convert active carts to confirmed orders
+- **Coupon Management**: Apply and track discount coupons
+- **Status Tracking**: Comprehensive order and payment status management
+- **Delivery Options**: Support for Standard and Express delivery types
+- **Shipping Management**: Address validation and shipping date scheduling
 
-## New Fields Added
+## Business Rules
 
-The order creation endpoint now supports the following additional fields:
+### Order Creation & Updates
+- Orders are created from active user carts only
+- If an order already exists for a cart, it will be updated with new information
+- Order updates always recalculate totals based on current cart items
+- Shipping address must belong to the authenticated user
+- Shipping value must be between 0 and 1000
 
-### CreateOrderRequest
-- `couponCode`: Optional coupon code for discounts
-- `deliveryType`: Delivery type - "STANDARD" or "EXPRESS"
-- `notes`: Additional notes for the order
-- `shippingAddressId`: ID of the shipping address
-- `shippingDate`: Date for delivery
-- `shippingValue`: Cost of shipping
+### Order Status Flow
+1. **PENDING** → Initial status when order is created
+2. **CONFIRMED** → Order confirmed after successful payment
+3. **PROCESSING** → Order being prepared for shipping
+4. **SHIPPED** → Order has been shipped
+5. **DELIVERED** → Order delivered to customer
+6. **CANCELLED** → Order cancelled (only from PENDING status)
 
-### Order Model
-- `deliveryType`: Enum field for STANDARD/EXPRESS delivery
-- `shippingDate`: Date field for scheduled delivery
+### Payment Status Flow
+1. **PENDING** → Initial payment status
+2. **PAID** → Payment completed successfully
+3. **FAILED** → Payment processing failed
+4. **REFUNDED** → Payment has been refunded
+5. **PARTIALLY_REFUNDED** → Partial refund processed
 
-## API Endpoints
+### Payment Processing Rules
+- Only orders with **PENDING** status can be paid
+- Already paid orders cannot be paid again
+- Failed payments can be retried
+- Payment attempts are tracked and logged
+- External payment service integration is supported
+- Cart status automatically changes to **CONVERTED** after payment
 
-### POST /orders
-Creates a new order from the current user's active cart or updates an existing order.
+### Coupon Rules
+- Coupons are validated during order creation
+- Discounts are calculated and applied to order totals
+- Coupons are marked as used only after successful payment
+- Coupon validation occurs through external coupon service
 
-**Request Body:**
-```json
-{
-  "shippingAddressId": 1,
-  "shippingValue": 15.99,
-  "couponCode": "SAVE20",
-  "notes": "Please deliver to the front door",
-  "deliveryType": "EXPRESS",
-  "shippingDate": "2024-12-25"
-}
-```
+### Cart Integration
+- Cart must be in **ACTIVE** status for order creation
+- Cart status changes to **CONVERTED** after payment completion
+- Cart items are automatically converted to order items
+- Cart service is called externally to update status
 
-**Response:**
-```json
-{
-  "id": 1,
-  "orderNumber": "ORD-20241201-143022-12345",
-  "userId": 123,
-  "cartId": 1,
-  "status": "PENDING",
-  "paymentStatus": "PENDING",
-  "subtotal": 100.00,
-  "tax": 8.50,
-  "discounts": 20.00,
-  "total": 88.50,
-  "shippingValue": 15.99,
-  "shippingAddressId": 1,
-  "deliveryType": "EXPRESS",
-  "shippingDate": "2024-12-25",
-  "notes": "Please deliver to the front door",
-  "couponCode": "SAVE20",
-  "discountType": "PERCENTAGE",
-  "items": [...],
-  "createdAt": "2024-12-01T14:30:22",
-  "updatedAt": "2024-12-01T14:30:22"
-}
-```
+## Payment Service Integration
 
-## Order Update Behavior
+### Architecture
+- **PaymentService Interface**: Defines contract for payment operations
+- **DraftPaymentService**: Development/testing implementation
+- **Future Implementations**: Stripe, PayPal, Square, etc.
 
-When an order already exists for a cart:
-1. **Always updates** the order with new request data
-2. **Recalculates totals** based on current cart items and coupon
-3. **Updates order items** to match current cart
-4. **Preserves order ID** and order number
-5. **Creates status history** for tracking changes
+### Payment Flow
+1. User initiates payment via `/orders/{orderId}/pay`
+2. System validates order can be paid
+3. Payment is processed through configured payment service
+4. Order status updates to CONFIRMED
+5. Payment status updates to PAID
+6. Cart status changes to CONVERTED
+7. Coupons are marked as used
+8. Complete audit trail is created
 
-## Database Setup
+### Error Handling
+- Payment failures are logged and tracked
+- Failed payments can be retried
+- Payment attempt limits are configurable
+- Comprehensive error messages for debugging
 
-Run the SQL script in `scripts/order_tables.sql` to create the required tables:
+## Database Schema
 
-```bash
-mysql -u matrix_user -p mankind_matrix_db < scripts/order_tables.sql
-```
+### Core Tables
+- `orders` - Main order information
+- `order_items` - Individual items in orders
+- `order_status_history` - Complete audit trail
 
-## Configuration
+### Payment Fields
+- `payment_id` - External payment service reference ID
+- `payment_status` - Current payment status (PENDING, PAID, FAILED, etc.)
 
-The service uses the following environment variables:
-- `DB_HOST`: Database host (default: localhost)
-- `DB_PORT`: Database port (default: 3306)
-- `DB_NAME`: Database name (default: mankind_matrix_db)
-- `DB_USERNAME`: Database username (default: matrix_user)
-- `DB_PASSWORD`: Database password (default: matrix_pass)
+## External Service Dependencies
 
-## Dependencies
+### Cart Service
+- **Purpose**: Update cart status to CONVERTED after payment
+- **Required**: For successful order completion
 
-- Spring Boot 3.x
-- Spring Data JPA
-- MySQL Database
-- Feign Clients for Cart, Coupon, and User services
-- JWT Authentication via Keycloak
+### Coupon Service
+- **Purpose**: Mark coupons as used after payment
+- **Required**: For coupon tracking and validation
 
+### User Service
+- **Purpose**: Validate shipping address ownership
+- **Required**: For address validation during order creation
+
+## Getting Started
+
+1. **Database Setup**: Run `scripts/order_tables.sql`
+2. **Configuration**: Set environment variables
+3. **External Services**: Ensure cart, coupon, and user services are running
+4. **Start Service**: Run the Spring Boot application
+
+## Documentation
+
+- **API Documentation**: Available via Swagger UI
+- **Database Schema**: See `scripts/` directory
+- **Architecture**: See `docs/` directory

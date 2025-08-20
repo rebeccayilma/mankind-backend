@@ -45,10 +45,10 @@ public class OrderService {
     private final OrderStatusHistoryRepository orderStatusHistoryRepository;
     private final CartClient cartClient;
     private final CouponClient couponClient;
-
     private final UserClient userClient;
     private final CurrentUserService currentUserService;
     private final OrderNumberGenerator orderNumberGenerator;
+    
 
     /**
      * Creates a new order from the current user's active cart or updates an existing order if cart items changed.
@@ -245,28 +245,58 @@ public class OrderService {
      */
     @Transactional
     public OrderResponseDTO payOrder(Long orderId) {
-        Order order = findOrderById(orderId);
-        validateOrderOwnership(order);
-        validateOrderCanBePaid(order);
+        log.info("Starting payment process for order: {}", orderId);
+        
+        try {
+            // Step 1: Validate order and ownership
+            Order order = findOrderById(orderId);
+            validateOrderOwnership(order);
+            validateOrderCanBePaid(order);
+            
+            log.info("Order {} validation passed - Status: {}, PaymentStatus: {}", 
+                    orderId, order.getStatus(), order.getPaymentStatus());
+            
+            // Step 2: Simulate successful payment (to be replaced by external service in the future)
+            log.info("Simulating payment success for order {}", order.getOrderNumber());
+            
+            // Step 3: Update order status to CONFIRMED and payment status to PAID
+            order.setStatus(Order.OrderStatus.CONFIRMED);
+            order.setPaymentStatus(Order.PaymentStatus.PAID);
+            order.setUpdatedAt(LocalDateTime.now());
+            order = orderRepository.save(order);
+            
+            log.info("Order {} status updated - Status: {}, PaymentStatus: {}", 
+                    orderId, order.getStatus(), order.getPaymentStatus());
 
-        // Update order status to CONFIRMED and payment status to PAID
-        order.setStatus(Order.OrderStatus.CONFIRMED);
-        order.setPaymentStatus(Order.PaymentStatus.PAID);
-        order.setUpdatedAt(LocalDateTime.now());
-        order = orderRepository.save(order);
+            // Step 4: Update cart status to CONVERTED via external service
+            updateCartStatus(order.getCartId(), orderId);
 
-        // Update cart status to CONVERTED (moved from order creation)
-        updateCartStatus(order.getCartId(), orderId);
+            // Step 5: Mark coupon as used if applied
+            markCouponAsUsedIfApplied(order);
 
-        // Mark coupon as used now that payment is completed
-        markCouponAsUsedIfApplied(order);
+            // Step 6: Create comprehensive status history
+            createOrderStatusHistory(order, "Order payment completed successfully - Status: CONFIRMED, Payment: PAID, Cart: CONVERTED");
 
-        // Create status history
-        createOrderStatusHistory(order, "Order payment completed, status changed to CONFIRMED, cart converted");
-
-        log.info("Order {} payment completed successfully, status: CONFIRMED", order.getOrderNumber());
-        return buildOrderResponseDTO(order, null, null);
+            log.info("Order {} payment completed successfully - Order: CONFIRMED, Payment: PAID, Cart: CONVERTED", 
+                    order.getOrderNumber());
+            
+            return buildOrderResponseDTO(order, null, null);
+            
+        } catch (Exception e) {
+            log.error("Payment failed for order {}: {}", orderId, e.getMessage(), e);
+            
+            // Create failure history if order exists
+            try {
+                Order order = findOrderById(orderId);
+                createOrderStatusHistory(order, "Payment failed: " + e.getMessage());
+            } catch (Exception historyException) {
+                log.warn("Could not create payment failure history for order {}: {}", orderId, historyException.getMessage());
+            }
+            
+            throw e;
+        }
     }
+
 
     // Private helper methods
 
@@ -342,6 +372,12 @@ public class OrderService {
         }
         if (order.getPaymentStatus() == Order.PaymentStatus.PAID) {
             throw new CartValidationException("Order is already paid");
+        }
+        if (order.getPaymentStatus() == Order.PaymentStatus.FAILED) {
+            throw new CartValidationException("Order payment has failed. Please try again or contact support.");
+        }
+        if (order.getTotal() == null || order.getTotal().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new CartValidationException("Order has invalid total amount: " + order.getTotal());
         }
     }
 
