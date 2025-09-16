@@ -34,8 +34,7 @@ Thumbs.db
 
 # Docker
 .docker/
-docker-compose*.yml
-Dockerfile*
+
 
 # Documentation
 **/docs/
